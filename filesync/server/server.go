@@ -1,7 +1,6 @@
 package server
 
 import (
-	"filesync/rpc"
 	"fmt"
 	"net/http"
 
@@ -14,6 +13,8 @@ var upgrader = websocket.Upgrader{
 		return true
 	},
 }
+
+var ActiveConnection *websocket.Conn
 
 func Start(port int) {
 	print("\n---- Starting Server ----\n")
@@ -37,18 +38,12 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer conn.Close()
 
-	print("Home connected!\n")
-
-	testMsg := rpc.NewRPC(rpc.GetFileNames)
-	testMsg.Params.Add("server", "home")
-
-	fmt.Printf("Sending test message: %s\n", testMsg.String())
-
-	err = conn.WriteMessage(websocket.TextMessage, []byte(testMsg.String()))
-	if err != nil {
-		println(err)
-		return
+	if ActiveConnection != nil {
+		fmt.Printf("Overwriting existing connections with new one\n")
 	}
+
+	ActiveConnection = conn
+	defer func() { ActiveConnection = nil }()
 
 	// Listen for incoming messages
 	for {
@@ -60,11 +55,5 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		fmt.Printf("Received: %s\n", message)
-
-		// // Echo the message back to the client
-		// if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
-		// 	fmt.Println("Error writing message:", err)
-		// 	break
-		// }
 	}
 }
