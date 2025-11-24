@@ -2,7 +2,7 @@ package main
 
 import (
 	"filesync/debug"
-	"filesync/server"
+	"filesync/rpc"
 )
 
 const port = 8080
@@ -12,5 +12,5 @@ func main() {
 	defer print("\n---- Program END ----")
 
 	go debug.DebugCommandListener()
-	server.Start(port)
+	rpc.StartServer(port)
 }

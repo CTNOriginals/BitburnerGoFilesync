@@ -1,4 +1,4 @@
-package server
+package rpc
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ var upgrader = websocket.Upgrader{
 
 var ActiveConnection *websocket.Conn
 
-func Start(port int) {
+func StartServer(port int) {
 	print("\n---- Starting Server ----\n")
 
 	http.HandleFunc("/", wsHandler)

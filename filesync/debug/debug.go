@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"filesync/rpc"
 	"filesync/rpc/definitions"
-	"filesync/server"
 	"fmt"
 	"os"
 	"strings"
@@ -27,7 +26,7 @@ func DebugCommandListener() {
 			continue
 		}
 
-		if server.ActiveConnection == nil {
+		if rpc.ActiveConnection == nil {
 			fmt.Println("No active connection")
 			continue
 		}
@@ -62,7 +61,7 @@ func DebugCommandListener() {
 
 		fmt.Printf("✅ Sending: %s\n", cmd)
 
-		err := server.ActiveConnection.WriteMessage(websocket.TextMessage, []byte(cmd))
+		err := rpc.ActiveConnection.WriteMessage(websocket.TextMessage, []byte(cmd))
 		if err != nil {
 			fmt.Println("Error sending:", err)
 		}
