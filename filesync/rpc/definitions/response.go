@@ -10,10 +10,10 @@ const (
 )
 
 type ResponseField struct {
-	// A field type should never be of type object
-	Typ TResponse
 	// The name/key of the field
 	Field string
+	// A field type should never be of type object
+	Typ TResponse
 }
 
 type Response struct {
