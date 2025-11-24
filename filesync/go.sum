@@ -1,5 +1,3 @@
-github.com/CTNOriginals/CTNGoUtils/v2 v2.2.0 h1:tREa5C0zs00z39+AQ7YpLVhya69TWH2dfSi7K69G+Yg=
-github.com/CTNOriginals/CTNGoUtils/v2 v2.2.0/go.mod h1:VAJt/7jTpvhkr78N8HmvC7OWBsUxPyV/ItXnPIzLpww=
 github.com/CTNOriginals/CTNGoUtils/v2 v2.2.1 h1:GLHimS0IaFlfzggTVl21W0IDOM7u/mM/uNcZyBAF1tg=
 github.com/CTNOriginals/CTNGoUtils/v2 v2.2.1/go.mod h1:VAJt/7jTpvhkr78N8HmvC7OWBsUxPyV/ItXnPIzLpww=
 github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aNNg=
