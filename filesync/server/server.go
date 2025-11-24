@@ -54,6 +54,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		fmt.Printf("Received: %s\n", message)
+		fmt.Printf("🔻 Received: %s\n", message)
 	}
 }

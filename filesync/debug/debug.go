@@ -13,7 +13,9 @@ import (
 )
 
 var DefaultParameters = map[definitions.Method][]string{
-	definitions.GetFileNames: {"home"},
+	definitions.GetFileNames:    {"home"},
+	definitions.GetFile:         {"proto.ts", "home"},
+	definitions.GetFileMetadata: {"proto.ts", "home"},
 }
 
 func DebugCommandListener() {
@@ -57,6 +59,8 @@ func DebugCommandListener() {
 		} else {
 			fmt.Printf("Invalid method name: %s\nSending raw input instead.\n", cmd)
 		}
+
+		fmt.Printf("✅ Sending: %s\n", cmd)
 
 		err := server.ActiveConnection.WriteMessage(websocket.TextMessage, []byte(cmd))
 		if err != nil {
