@@ -12,24 +12,21 @@ func GetId() int {
 }
 
 type RPC struct {
-	Jsonrpc string
-	Id      int
-	Method  string
-	Params  Param
+	Id     int
+	Method string
+	Params Param
 }
 
 func NewRPC(method Method) RPC {
 	return RPC{
-		Jsonrpc: "2.0",
-		Id:      GetId(),
-		Method:  string(method),
+		Id:     GetId(),
+		Method: string(method),
 	}
 }
 
 func (this RPC) String() string {
 	return fmt.Sprintf(
-		"{\n \"jsonrpc\": \"%s\",\n \"id\": %d,\n \"method\": \"%s\",\n \"params\": {%s }\n}",
-		this.Jsonrpc,
+		"{\n \"jsonrpc\": \"2.0\",\n \"id\": %d,\n \"method\": \"%s\",\n \"params\": {%s }\n}",
 		this.Id,
 		this.Method,
 		this.Params.String(),
