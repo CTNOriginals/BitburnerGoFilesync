@@ -34,6 +34,3 @@ var RPCDefinitions = Definitions{
 		},
 	},
 }
-
-// {"jsonrpc":"2.0","id":3,"method":"getSaveFile"}
-// {"jsonrpc":"2.0","id":3,"method":"getSaveFile"}
