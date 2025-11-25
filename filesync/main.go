@@ -12,6 +12,6 @@ func main() {
 
 	println(handler.GetFileByPath("proto.ts"))
 
-	// go debug.DebugCommandListener()
-	// rpc.StartServer(port)
+	go debug.DebugCommandListener()
+	rpc.StartServer(constants.Port)
 }

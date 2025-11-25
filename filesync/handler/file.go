@@ -8,7 +8,7 @@ import (
 
 // The path needs to be relative the the bitburner dir
 func GetFileByPath(path string) string {
-	filePath := ctnfile.ParseFilePath("../bitburner/" + path)
+	filePath := ctnfile.ParseFilePath(constants.BitburnerRelativePath + path)
 
 	println(filePath.String())
 
