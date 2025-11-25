@@ -15,7 +15,7 @@ func (this ParameterFields) Generate(values []string) string {
 			break
 		}
 
-		str += fmt.Sprintf("\"%s\": \"%s\"", field, values[i])
+		str += fmt.Sprintf("  \"%s\": \"%s\"", field, values[i])
 
 		if i < len(this)-1 {
 			str += ",\n"

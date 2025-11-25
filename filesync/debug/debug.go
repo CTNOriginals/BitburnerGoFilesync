@@ -2,6 +2,7 @@ package debug
 
 import (
 	"bufio"
+	"filesync/handler"
 	"filesync/rpc"
 	"filesync/rpc/definitions"
 	"fmt"
@@ -15,6 +16,7 @@ var DefaultParameters = map[definitions.Method][]string{
 	definitions.GetFileNames:    {"home"},
 	definitions.GetFile:         {"proto.ts", "home"},
 	definitions.GetFileMetadata: {"proto.ts", "home"},
+	definitions.PushFile:        {"proto.ts", string(handler.SanitizeFileContent(handler.GetFileByPath("proto.ts"))), "home"},
 }
 
 func DebugCommandListener() {
@@ -23,11 +25,6 @@ func DebugCommandListener() {
 		cmd := strings.TrimSpace(scanner.Text())
 
 		if cmd == "" {
-			continue
-		}
-
-		if rpc.ActiveConnection == nil {
-			fmt.Println("No active connection")
 			continue
 		}
 
@@ -42,6 +39,11 @@ func DebugCommandListener() {
 				msg.WriteString(string(method) + " ")
 			}
 			println(msg.String())
+			continue
+		}
+
+		if rpc.ActiveConnection == nil {
+			fmt.Println("No active connection")
 			continue
 		}
 

@@ -1,16 +1,18 @@
 package main
 
 import (
-	"filesync/handler"
+	"filesync/constants"
+	"filesync/debug"
+	"filesync/rpc"
 )
 
-const port = 8080
-
 func main() {
-	print("\n---- FileSync START ----\n")
-	defer print("\n---- Program END ----")
+	print("\n\n---- FileSync START ----\n")
+	defer print("---- Program END ----")
 
-	println(handler.GetFileByPath("proto.ts"))
+	// fileContent := handler.GetFileByPath("fileTest.ts")
+	// sanitized := handler.SanitizeFileContent(fileContent)
+	// println(string(sanitized))
 
 	go debug.DebugCommandListener()
 	rpc.StartServer(constants.Port)
