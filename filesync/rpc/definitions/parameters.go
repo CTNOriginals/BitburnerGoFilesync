@@ -22,5 +22,5 @@ func (this ParameterFields) Generate(values []string) string {
 		}
 	}
 
-	return fmt.Sprintf("{\n  %s\n }", str)
+	return fmt.Sprintf("{\n%s\n }", str)
 }
