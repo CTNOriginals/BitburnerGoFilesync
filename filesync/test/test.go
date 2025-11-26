@@ -1,9 +1,5 @@
 package test
 
-import (
-	"filesync/watcher"
-)
-
 func DoTest() {
 	// var testFile watcher.FileInfo
 
@@ -27,10 +23,10 @@ func DoTest() {
 
 	// println("")
 
-	watcher.Initialize()
-	println(watcher.FileStates.String())
+	// watcher.Initialize()
+	// println(watcher.FileStateMap.String())
 
-	watcher.FileScanner()
+	// watcher.FileScanner()
 
 	// info, _ := os.Stat(constants.BitburnerRelativePath + "fileWatch.ts")
 	// println(info.ModTime().Clock())

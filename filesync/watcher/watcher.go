@@ -10,13 +10,13 @@ import (
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/utils/file"
 )
 
-var FileStates FileStateMap = FileStateMap{}
+var FileStateMap MFileState = MFileState{}
 
-var FileEventHandlers = FileEventHandler{
+var FileEventHandlerMap = MFileEventHandler{
 	OnFileCreate: func(file *FileInfo) {
 		fmt.Printf("%s: OnFileCreate\n", file.Path)
 		// TODO Push the file over the websocket
-		FileStates[file.Path] = file
+		FileStateMap[file.Path] = file
 	},
 	OnFileModify: func(file *FileInfo) {
 		fmt.Printf("%s: OnFileModify\n", file.Path)
@@ -26,17 +26,17 @@ var FileEventHandlers = FileEventHandler{
 	OnFileDelete: func(file *FileInfo) {
 		fmt.Printf("%s: OnFileDelete\n", file.Path)
 		// TODO Handle websocket
-		delete(FileStates, file.Path)
+		delete(FileStateMap, file.Path)
 	},
 }
 
 // Initialize all relevant files and store them
-// in a data object along with their current stats.
+// in a data object along with their current states.
 func Initialize() {
 	// Register the existing files without calling the OnCreate event
 	// to prevent them from being sent over the websocket
 	for _, file := range getUnregisteredFiles(constants.BitburnerRelativePath) {
-		FileStates[file.Path] = file
+		FileStateMap[file.Path] = file
 	}
 }
 
@@ -51,21 +51,21 @@ func FileScanner() {
 // Once a change is detected on one of the files,
 // the event will be added to the state.
 func scanFiles() {
-	for path, state := range FileStates {
+	for path, state := range FileStateMap {
 		if !ctnfile.FileExists(path) {
-			FileEventHandlers.Handle(state, OnFileDelete)
+			FileEventHandlerMap.Handle(state, OnFileDelete)
 			continue
 		}
 
 		if state.GetInfo().ModTime().Compare(state.Info.ModTime()) == 1 {
-			FileEventHandlers.Handle(state, OnFileModify)
+			FileEventHandlerMap.Handle(state, OnFileModify)
 		}
 	}
 
 	newFiles := getUnregisteredFiles(constants.BitburnerRelativePath)
 
 	for _, file := range newFiles {
-		FileEventHandlers.Handle(file, OnFileCreate)
+		FileEventHandlerMap.Handle(file, OnFileCreate)
 	}
 }
 
@@ -74,7 +74,7 @@ func scanFiles() {
 func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	handler.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
 		path := fmt.Sprintf("%s/%s", dir, file.Name())
-		_, exists := FileStates[path]
+		_, exists := FileStateMap[path]
 
 		if exists {
 			return

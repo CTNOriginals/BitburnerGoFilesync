@@ -8,9 +8,9 @@ const (
 	OnFileDelete
 )
 
-type FileEventHandler map[FileEvent]func(file *FileInfo)
+type MFileEventHandler map[FileEvent]func(file *FileInfo)
 
-func (this FileEventHandler) Handle(file *FileInfo, event FileEvent) {
+func (this MFileEventHandler) Handle(file *FileInfo, event FileEvent) {
 	fn := this[event]
 	fn(file)
 }

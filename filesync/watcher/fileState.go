@@ -28,9 +28,9 @@ func (this FileInfo) String() string {
 	return fmt.Sprintf("Name: %s,\nModTime: %s,", this.Info.Name(), this.Info.ModTime())
 }
 
-type FileStateMap map[string]*FileInfo
+type MFileState map[string]*FileInfo
 
-func (this FileStateMap) String() string {
+func (this MFileState) String() string {
 	return ctnmap.ToStringFunc(this, func(val *FileInfo) string {
 		return val.String()
 	})
