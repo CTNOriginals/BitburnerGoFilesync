@@ -33,7 +33,8 @@ func ForEachFileInDir(dir string, fn func(file os.FileInfo)) {
 func ForEachFileInDirRecursive(dir string, fn func(file os.FileInfo, dir string)) {
 	ForEachFileInDir(dir, func(file os.FileInfo) {
 		if file.IsDir() {
-			ForEachFileInDirRecursive(dir+file.Name(), fn)
+			childDir := fmt.Sprintf("%s/%s", dir, file.Name())
+			ForEachFileInDirRecursive(childDir, fn)
 			return
 		}
 

@@ -10,7 +10,7 @@ import (
 func DoTest() {
 	handler.ForEachFileInDirRecursive(constants.BitburnerRelativePath, func(file os.FileInfo, dir string) {
 		h, m, s := file.ModTime().Clock()
-		fmt.Printf("File %s %s: %d:%d:%d\n", dir, file.Name(), h, m, s)
+		fmt.Printf("File %s/%s: %d:%d:%d\n", dir, file.Name(), h, m, s)
 	})
 	// info, _ := os.Stat(constants.BitburnerRelativePath + "fileWatch.ts")
 	// println(info.ModTime().Clock())
