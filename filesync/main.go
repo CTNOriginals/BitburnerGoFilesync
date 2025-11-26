@@ -5,7 +5,9 @@ import (
 	"filesync/debug"
 	"filesync/rpc"
 	"filesync/test"
+	"fmt"
 	"os"
+	"time"
 )
 
 var (
@@ -16,8 +18,9 @@ var (
 func main() {
 	parseArgs(os.Args)
 
-	print("\n\n---- FileSync START ----\n")
-	defer print("---- Program END ----")
+	startTime := time.Now()
+	fmt.Printf("\n\n---- FileSync START %s ----\n", startTime.Format(time.TimeOnly))
+	defer fmt.Printf("---- FileSync END %s ----", startTime.Format(time.TimeOnly))
 
 	if testMode {
 		test.DoTest()
