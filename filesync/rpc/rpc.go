@@ -5,24 +5,17 @@ import (
 	"fmt"
 )
 
-var id = 0
-
-func GetId() int {
-	id += 1
-	return id - 1
-}
-
 // The "jsonrpc" field is excluded from this struct, it will be added in RPC.String().
 type RPC struct {
-	Id         int
-	Method     string
+	// Id         int
+	Method     definitions.Method
 	Parameters string
 }
 
 func NewRPC(method definitions.Method, parameters ...string) (rpc RPC) {
 	rpc = RPC{
-		Id:     GetId(),
-		Method: string(method),
+		// Id:     GetId(),
+		Method: method,
 	}
 
 	def := definitions.RPCDefinitions.GetByMethod(method)
@@ -41,8 +34,16 @@ func NewRPC(method definitions.Method, parameters ...string) (rpc RPC) {
 
 func (this RPC) String() string {
 	return fmt.Sprintf(
+		"{\n\"method\": \"%s\",\n \"params\": %s\n}",
+		this.Method,
+		this.Parameters,
+	)
+}
+
+func (this RPC) JSON(id int) string {
+	return fmt.Sprintf(
 		"{\n \"jsonrpc\": \"2.0\",\n \"id\": %d,\n \"method\": \"%s\",\n \"params\": %s\n}",
-		this.Id,
+		id,
 		this.Method,
 		this.Parameters,
 	)

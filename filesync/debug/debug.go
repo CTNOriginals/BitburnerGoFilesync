@@ -4,12 +4,11 @@ import (
 	"bufio"
 	"filesync/rpc"
 	"filesync/rpc/definitions"
+	"filesync/rpc/rpcHandler"
 	"filesync/utils"
 	"fmt"
 	"os"
 	"strings"
-
-	"github.com/gorilla/websocket"
 )
 
 var DefaultParameters = map[definitions.Method][]string{
@@ -56,16 +55,16 @@ func DebugCommandListener() {
 				return
 			}
 
-			cmd = rpc.NewRPC(def.Method, defaultParameters...).String()
+			rpcHandler.SendRequest(rpc.NewRPC(def.Method, defaultParameters...))
 		} else {
 			fmt.Printf("Invalid method name: %s\nSending raw input instead.\n", cmd)
 		}
 
-		fmt.Printf("✅ Sending: %s\n", cmd)
+		// fmt.Printf("✅ Sending: %s\n", cmd)
 
-		err := rpc.ActiveConnection.WriteMessage(websocket.TextMessage, []byte(cmd))
-		if err != nil {
-			fmt.Println("Error sending:", err)
-		}
+		// err := rpc.ActiveConnection.WriteMessage(websocket.TextMessage, []byte(cmd))
+		// if err != nil {
+		// 	fmt.Println("Error sending:", err)
+		// }
 	}
 }
