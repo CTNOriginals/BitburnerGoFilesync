@@ -3,9 +3,43 @@ package handler
 import (
 	"filesync/constants"
 	"fmt"
+	"os"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/utils/file"
 )
+
+// Calls fn for each file in dir.
+// Does not recurse into child directories.
+// Also returns directories.
+func ForEachFileInDir(dir string, fn func(file os.FileInfo)) {
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		println(err)
+		return
+	}
+
+	for _, file := range files {
+		info, err := file.Info()
+		if err != nil {
+			println(err)
+			continue
+		}
+
+		fn(info)
+	}
+}
+
+// Calls fn for each file in dir recursivly
+func ForEachFileInDirRecursive(dir string, fn func(file os.FileInfo, dir string)) {
+	ForEachFileInDir(dir, func(file os.FileInfo) {
+		if file.IsDir() {
+			ForEachFileInDirRecursive(dir+file.Name(), fn)
+			return
+		}
+
+		fn(file, dir)
+	})
+}
 
 // The path needs to be relative the the bitburner dir
 func GetFileByPath(path string) []rune {
