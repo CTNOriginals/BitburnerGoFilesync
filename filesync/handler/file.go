@@ -43,7 +43,7 @@ func ForEachFileInDirRecursive(dir string, fn func(file os.FileInfo, dir string)
 }
 
 // The path needs to be relative the the bitburner dir
-func GetFileByPath(path string) []rune {
+func GetFileContentByPath(path string) []rune {
 	filePath := ctnfile.ParseFilePath(constants.BitburnerRelativePath + path)
 
 	// println(filePath.String())

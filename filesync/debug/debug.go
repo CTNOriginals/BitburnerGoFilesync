@@ -16,7 +16,7 @@ var DefaultParameters = map[definitions.Method][]string{
 	definitions.GetFileNames:    {"home"},
 	definitions.GetFile:         {"proto.ts", "home"},
 	definitions.GetFileMetadata: {"proto.ts", "home"},
-	definitions.PushFile:        {"proto.ts", string(handler.SanitizeFileContent(handler.GetFileByPath("proto.ts"))), "home"},
+	definitions.PushFile:        {"proto.ts", string(handler.SanitizeFileContent(handler.GetFileContentByPath("proto.ts"))), "home"},
 }
 
 func DebugCommandListener() {
