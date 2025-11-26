@@ -2,7 +2,7 @@ package watcher
 
 import (
 	"filesync/constants"
-	"filesync/handler"
+	"filesync/utils"
 	"fmt"
 	"os"
 	"time"
@@ -72,7 +72,7 @@ func scanFiles() {
 // Checks the dir recursivly for any files
 // that are not present in FileStates and returns them.
 func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
-	handler.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
+	utils.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
 		path := fmt.Sprintf("%s/%s", dir, file.Name())
 		_, exists := FileStateMap[path]
 
