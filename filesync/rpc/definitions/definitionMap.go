@@ -94,7 +94,7 @@ var RPCDefinitions = Definitions{
 	},
 
 	GetAllServers: {
-		Method:     PushFile,
+		Method:     GetAllServers,
 		Parameters: ParameterFields{},
 		Response: Response{
 			Typ:     ResObject,

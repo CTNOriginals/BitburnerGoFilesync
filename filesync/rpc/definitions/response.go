@@ -23,3 +23,31 @@ type Response struct {
 	// This field should only be populated if Typ == Object
 	Fields []ResponseField
 }
+
+/*
+GetAllFiles
+"filename", ResString
+"content", 	ResString
+
+GetFileMetadata
+"filename", ResString
+"atime", 	ResString
+"btime", 	ResString
+"mtime", 	ResString
+
+GetAllFileMetadata
+"filename", ResString
+"atime", 	ResString
+"btime", 	ResString
+"mtime", 	ResString
+
+GetSaveFile
+"identifier", 	ResString
+"binary", 		ResBoolean
+"save", 		ResString
+
+GetAllServers
+"hostname", 		ResString
+"hasAdminRights", 	ResBoolean
+"purchasedByPlayer",ResBoolean
+*/
