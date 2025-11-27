@@ -18,7 +18,7 @@ func NewRPC(method definitions.Method, parameters ...string) (rpc RPC) {
 		Method: method,
 	}
 
-	def := definitions.RPCDefinitions.GetByMethod(method)
+	def := definitions.RPCDefinitions[method]
 
 	if def.IsError() {
 		print(fmt.Errorf("RPC.NewRPC: Invalid parameter (method): %s\n", method))

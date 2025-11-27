@@ -16,7 +16,7 @@ type Message struct {
 
 func NewMessage(msg rpc.RPC) Message {
 	return Message{
-		Definition: definitions.RPCDefinitions.GetByMethod(msg.Method),
+		Definition: definitions.RPCDefinitions[msg.Method],
 		Request:    msg,
 	}
 }

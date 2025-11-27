@@ -46,19 +46,20 @@ func DebugCommandListener() {
 			continue
 		}
 
-		def := definitions.RPCDefinitions.GetByMethod(definitions.Method(cmd))
-		defaultParameters, exists := DefaultParameters[def.Method]
+		def, exists := definitions.RPCDefinitions[definitions.Method(cmd)]
+		defaultParameters, defaultExists := DefaultParameters[def.Method]
 
-		if !def.IsError() {
-			if !exists {
-				fmt.Printf("This method does not have default parameters defined")
-				return
-			}
-
-			rpcHandler.SendRequest(rpc.NewRPC(def.Method, defaultParameters...))
-		} else {
+		if !exists {
 			fmt.Printf("Invalid method name: %s\nSending raw input instead.\n", cmd)
+			return
 		}
+
+		if !defaultExists {
+			fmt.Printf("This method does not have default parameters defined")
+			return
+		}
+
+		rpcHandler.SendRequest(rpc.NewRPC(def.Method, defaultParameters...))
 
 		// fmt.Printf("✅ Sending: %s\n", cmd)
 
