@@ -1,28 +1,6 @@
 package definitions
 
-type Definition struct {
-	Method     Method
-	Parameters ParameterFields
-	Response   Response
-}
-
-func (this Definition) IsError() bool {
-	return this.Method == MethodError
-}
-
 type Definitions map[Method]Definition
-
-// func (this Definitions) GetByMethod(method Method) Definition {
-// 	for _, def := range this {
-// 		if def.Method == method {
-// 			return def
-// 		}
-// 	}
-
-// 	return Definition{
-// 		Method: MethodError,
-// 	}
-// }
 
 var RPCDefinitions = Definitions{
 	GetFile: {
@@ -106,6 +84,25 @@ var RPCDefinitions = Definitions{
 				{Field: "identifier", Typ: ResString},
 				{Field: "binary", Typ: ResBoolean},
 				{Field: "save", Typ: ResString},
+			},
+		},
+	},
+	GetDefinitionFile: {
+		Method:     GetDefinitionFile,
+		Parameters: ParameterFields{},
+		Response:   Response{Typ: ResString},
+	},
+
+	GetAllServers: {
+		Method:     PushFile,
+		Parameters: ParameterFields{},
+		Response: Response{
+			Typ:     ResObject,
+			IsArray: true,
+			Fields: []ResponseField{
+				{Field: "hostname", Typ: ResString},
+				{Field: "hasAdminRights", Typ: ResBoolean},
+				{Field: "purchasedByPlayer", Typ: ResBoolean},
 			},
 		},
 	},
