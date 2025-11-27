@@ -44,16 +44,17 @@ func ForEachFileInDirRecursive(dir string, fn func(file os.FileInfo, dir string)
 
 // The path needs to be relative the the bitburner dir
 func GetFileContentByPath(path string) []rune {
-	filePath := ctnfile.ParseFilePath(constants.BitburnerRelativePath + path)
+	var filePath = fmt.Sprintf("%s/%s", constants.BitburnerRoot, path)
+	// filePath := ctnfile.ParseFilePath()
 
 	// println(filePath.String())
 
-	if !ctnfile.FileExists(filePath.Full) {
-		fmt.Printf("File does not exist: %s\n", path)
+	if !ctnfile.FileExists(filePath) {
+		fmt.Printf("utils/GetFileContentByPath: File does not exist: %s\n", filePath)
 		return []rune{}
 	}
 
-	return ctnfile.GetFileRunes(filePath.Full)
+	return ctnfile.GetFileRunes(filePath)
 }
 
 // Will return the content with any string termenating character escapes.

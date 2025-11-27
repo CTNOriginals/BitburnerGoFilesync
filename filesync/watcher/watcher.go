@@ -35,7 +35,7 @@ var FileEventHandlerMap = MFileEventHandler{
 func Initialize() {
 	// Register the existing files without calling the OnCreate event
 	// to prevent them from being sent over the websocket
-	for _, file := range getUnregisteredFiles(constants.BitburnerRelativePath) {
+	for _, file := range getUnregisteredFiles(constants.BitburnerRoot) {
 		FileStateMap[file.Path] = file
 	}
 }
@@ -62,7 +62,7 @@ func scanFiles() {
 		}
 	}
 
-	newFiles := getUnregisteredFiles(constants.BitburnerRelativePath)
+	newFiles := getUnregisteredFiles(constants.BitburnerRoot)
 
 	for _, file := range newFiles {
 		FileEventHandlerMap.Handle(file, OnFileCreate)
