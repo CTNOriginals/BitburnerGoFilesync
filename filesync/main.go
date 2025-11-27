@@ -13,6 +13,7 @@ import (
 var (
 	debugMode = false
 	testMode  = false
+	noServer  = false
 )
 
 func main() {
@@ -24,11 +25,14 @@ func main() {
 
 	if testMode {
 		test.DoTest()
-		return
 	}
 
 	if debugMode {
 		go debug.DebugCommandListener()
+	}
+
+	if noServer {
+		return
 	}
 
 	communication.StartServer(constants.Port)
@@ -41,6 +45,8 @@ func parseArgs(args []string) {
 			testMode = true
 		case "--debug":
 			debugMode = true
+		case "--no-server":
+			noServer = true
 		}
 	}
 }

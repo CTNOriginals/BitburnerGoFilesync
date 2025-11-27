@@ -38,6 +38,12 @@ func DebugCommandListener() {
 			}
 			println(msg.String())
 			continue
+		case "--test":
+			for method, params := range DefaultParameters {
+				var msg = communication.SendRequest(method, params...)
+				println(msg.String())
+			}
+			continue
 		}
 
 		if communication.ActiveConnection == nil {
@@ -50,21 +56,15 @@ func DebugCommandListener() {
 
 		if !exists {
 			fmt.Printf("Invalid method name: %s\nSending raw input instead.\n", cmd)
-			return
+			continue
 		}
 
 		if !defaultExists {
 			fmt.Printf("This method does not have default parameters defined")
-			return
+			continue
 		}
 
-		communication.SendRequest(def.Method, defaultParameters...)
-
-		// fmt.Printf("✅ Sending: %s\n", cmd)
-
-		// err := rpc.ActiveConnection.WriteMessage(websocket.TextMessage, []byte(cmd))
-		// if err != nil {
-		// 	fmt.Println("Error sending:", err)
-		// }
+		var msg = communication.SendRequest(def.Method, defaultParameters...)
+		println(msg.String())
 	}
 }

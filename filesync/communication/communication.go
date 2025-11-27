@@ -33,9 +33,14 @@ func SendRequest(method definitions.Method, parameters ...string) *constructor.M
 	var msg = constructor.NewMessage(rpc)
 	var json = rpc.JSON(id)
 
-	MessageLog[id] = *constructor.NewMessage(rpc)
+	var err = ActiveConnection.WriteMessage(websocket.TextMessage, []byte(json))
 
-	ActiveConnection.WriteMessage(websocket.TextMessage, []byte(json))
+	if err != nil {
+		println(err)
+		return nil
+	}
+
+	MessageLog[id] = *constructor.NewMessage(rpc)
 
 	return msg
 }
