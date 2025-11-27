@@ -7,14 +7,14 @@ import (
 
 type Message struct {
 	Definition definitions.Definition
-	Request    RPC
+	Request    *RPC
 	Responce   utils.JSONMap
 }
 
-func NewMessage(msg RPC) Message {
-	return Message{
-		Definition: definitions.RPCDefinitions[msg.Method],
-		Request:    msg,
+func NewMessage(rpc *RPC) *Message {
+	return &Message{
+		Definition: definitions.RPCDefinitions[rpc.Method],
+		Request:    rpc,
 	}
 }
 

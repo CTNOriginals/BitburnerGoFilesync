@@ -12,9 +12,8 @@ type RPC struct {
 	Parameters string
 }
 
-func NewRPC(method definitions.Method, parameters ...string) (rpc RPC) {
-	rpc = RPC{
-		// Id:     GetId(),
+func NewRPC(method definitions.Method, parameters ...string) (rpc *RPC) {
+	rpc = &RPC{
 		Method: method,
 	}
 
