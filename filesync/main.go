@@ -1,9 +1,9 @@
 package main
 
 import (
+	"filesync/communication"
 	"filesync/constants"
 	"filesync/debug"
-	"filesync/rpc"
 	"filesync/test"
 	"fmt"
 	"os"
@@ -31,7 +31,7 @@ func main() {
 		go debug.DebugCommandListener()
 	}
 
-	rpc.StartServer(constants.Port)
+	communication.StartServer(constants.Port)
 }
 
 func parseArgs(args []string) {

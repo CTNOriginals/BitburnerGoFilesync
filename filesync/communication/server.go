@@ -1,4 +1,4 @@
-package rpc
+package communication
 
 import (
 	"fmt"

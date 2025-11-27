@@ -2,9 +2,8 @@ package debug
 
 import (
 	"bufio"
-	"filesync/rpc"
-	"filesync/rpc/definitions"
-	"filesync/rpc/rpcHandler"
+	"filesync/communication"
+	"filesync/communication/definitions"
 	"filesync/utils"
 	"fmt"
 	"os"
@@ -41,7 +40,7 @@ func DebugCommandListener() {
 			continue
 		}
 
-		if rpc.ActiveConnection == nil {
+		if communication.ActiveConnection == nil {
 			fmt.Println("No active connection")
 			continue
 		}
@@ -59,7 +58,7 @@ func DebugCommandListener() {
 			return
 		}
 
-		rpcHandler.SendRequest(rpc.NewRPC(def.Method, defaultParameters...))
+		communication.SendRequest(def.Method, defaultParameters...)
 
 		// fmt.Printf("✅ Sending: %s\n", cmd)
 

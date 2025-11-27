@@ -1,7 +1,7 @@
-package rpc
+package constructor
 
 import (
-	"filesync/rpc/definitions"
+	"filesync/communication/definitions"
 	"fmt"
 )
 
