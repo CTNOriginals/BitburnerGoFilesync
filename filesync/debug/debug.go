@@ -44,7 +44,7 @@ func DebugCommandListener() {
 			continue
 		case "--test":
 			for method, params := range DefaultParameters {
-				var msg = communication.SendRequest(method, params...)
+				var msg = communication.SendRequest(method, nil, params...)
 				println(msg.String())
 			}
 			continue
@@ -73,6 +73,6 @@ func DebugCommandListener() {
 			continue
 		}
 
-		communication.SendRequest(def.Method, defaultParameters...)
+		communication.SendRequest(def.Method, nil, defaultParameters...)
 	}
 }

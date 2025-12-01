@@ -11,19 +11,19 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var currentId = 0
-
 // Keeps track of all the outgoing messages by linking them with their id.
 // If a response is received, the original request can be found in here as it should share an id.
 // Once the response is linked, the response body will be parced and added to the initial message object
 var MessageLog constructor.MMessageLog = constructor.MMessageLog{}
+
+var currentId = 0
 
 func GetId() int {
 	currentId += 1
 	return currentId - 1
 }
 
-func SendRequest(method definitions.Method, parameters ...string) *constructor.Message {
+func SendRequest(method definitions.Method, callback constructor.OnResponseCallback, parameters ...string) *constructor.Message {
 	if ActiveConnection == nil {
 		fmt.Printf("ActiveConnection is nil\nUnable to send message (%s)\n", method)
 		return nil
@@ -31,7 +31,7 @@ func SendRequest(method definitions.Method, parameters ...string) *constructor.M
 
 	var id = GetId()
 	var rpc = constructor.NewRPC(method, parameters...)
-	var msg = constructor.NewMessage(rpc)
+	var msg = constructor.NewMessage(rpc, callback)
 	var json = rpc.JSON(id)
 
 	var err = ActiveConnection.WriteMessage(websocket.TextMessage, []byte(json))
@@ -40,7 +40,7 @@ func SendRequest(method definitions.Method, parameters ...string) *constructor.M
 		panic(err)
 	}
 
-	MessageLog[id] = constructor.NewMessage(rpc)
+	MessageLog[id] = msg
 
 	return msg
 }
@@ -54,15 +54,18 @@ func OnResponse(body []byte) {
 		return
 	}
 
+	var message = MessageLog[id]
+
 	if _, exists := json["error"]; exists {
 		var val = json["error"]
 		fmt.Printf("communication.OnResponse: Message (%d) Received an error response:\n%v\n", id, val)
-		MessageLog[id].Response = val
+		message.Response = val
 		return
 	}
 
-	MessageLog[id].Response = json["result"]
+	message.Response = json["result"]
 
-	fmt.Printf("OnResponse %d: %v\n", id, MessageLog[id].Response)
-	fmt.Printf("%v\n", *MessageLog[id])
+	fmt.Printf("OnResponse %d: %v\n", id, *message)
+
+	message.OnResponse(message)
 }
