@@ -8,7 +8,7 @@ import (
 )
 
 type Message struct {
-	Definition definitions.Definition
+	Definition *definitions.Definition
 	Request    *RPC
 	Response   utils.JSONMap
 }

@@ -1,6 +1,6 @@
 package definitions
 
-type Definitions map[Method]Definition
+type Definitions map[Method]*Definition
 
 var RPCDefinitions = Definitions{
 	GetFile: {
