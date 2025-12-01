@@ -10,7 +10,7 @@ import (
 type Message struct {
 	Definition definitions.Definition
 	Request    *RPC
-	Responce   utils.JSONMap
+	Response   utils.JSONMap
 }
 
 func NewMessage(rpc *RPC) *Message {
@@ -25,7 +25,7 @@ func (this Message) String() string {
 }
 
 func (this Message) Result() any {
-	return this.Responce["result"]
+	return this.Response["result"]
 }
 
 // func (this Message) GetResponseField(field string) any {
