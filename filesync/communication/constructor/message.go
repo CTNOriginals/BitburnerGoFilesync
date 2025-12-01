@@ -2,7 +2,6 @@ package constructor
 
 import (
 	"filesync/communication/definitions"
-	"filesync/utils"
 
 	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 )
@@ -10,7 +9,7 @@ import (
 type Message struct {
 	Definition *definitions.Definition
 	Request    *RPC
-	Response   utils.JSONMap
+	Response   any
 }
 
 func NewMessage(rpc *RPC) *Message {
@@ -24,14 +23,4 @@ func (this Message) String() string {
 	return ctnstruct.ToString(this)
 }
 
-func (this Message) Result() any {
-	return this.Response["result"]
-}
-
-// func (this Message) GetResponseField(field string) any {
-// 	for _, v := range v {
-
-// 	}
-// }
-
-type MMessageLog map[int]Message
+type MMessageLog map[int]*Message

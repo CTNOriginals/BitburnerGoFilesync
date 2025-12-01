@@ -37,20 +37,32 @@ func SendRequest(method definitions.Method, parameters ...string) *constructor.M
 	var err = ActiveConnection.WriteMessage(websocket.TextMessage, []byte(json))
 
 	if err != nil {
-		println(err)
-		return nil
+		panic(err)
 	}
 
-	MessageLog[id] = *constructor.NewMessage(rpc)
+	MessageLog[id] = constructor.NewMessage(rpc)
 
 	return msg
 }
 
 func OnResponse(body []byte) {
 	var json = utils.JSONToMap(body)
-	fmt.Printf("%f\n", json["id"])
+	var id = int(json["id"].(float64))
 
-	for key, val := range json {
-		fmt.Printf("%s: %v\n", key, val)
+	if _, exists := MessageLog[id]; !exists {
+		fmt.Printf("communication.OnResponse: Unknown id (%d) received.\nDiscarding response:\n%v\n", id, json)
+		return
 	}
+
+	if _, exists := json["error"]; exists {
+		var val = json["error"]
+		fmt.Printf("communication.OnResponse: Message (%d) Received an error response:\n%v\n", id, val)
+		MessageLog[id].Response = val
+		return
+	}
+
+	MessageLog[id].Response = json["result"]
+
+	fmt.Printf("OnResponse %d: %v\n", id, MessageLog[id].Response)
+	fmt.Printf("%v\n", *MessageLog[id])
 }
