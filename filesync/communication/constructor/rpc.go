@@ -40,6 +40,14 @@ func (this RPC) String() string {
 }
 
 func (this RPC) JSON(id int) string {
+	if this.Parameters == "" {
+		return fmt.Sprintf(
+			"{\n \"jsonrpc\": \"2.0\",\n \"id\": %d,\n \"method\": \"%s\"\n}",
+			id,
+			this.Method,
+		)
+	}
+
 	return fmt.Sprintf(
 		"{\n \"jsonrpc\": \"2.0\",\n \"id\": %d,\n \"method\": \"%s\",\n \"params\": %s\n}",
 		id,
