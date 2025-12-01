@@ -8,6 +8,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
+	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 )
 
 var DefaultParameters = map[definitions.Method][]string{
@@ -45,6 +48,11 @@ func DebugCommandListener() {
 				println(msg.String())
 			}
 			continue
+		case "--log":
+			for id, msg := range communication.MessageLog {
+				fmt.Printf("%d: {\n%s\n}\n", id, ctnstring.Indent(ctnstruct.ToString(*msg), 2, " "))
+			}
+			continue
 		}
 
 		if communication.ActiveConnection == nil {
@@ -52,13 +60,13 @@ func DebugCommandListener() {
 			continue
 		}
 
-		def, exists := definitions.RPCDefinitions[definitions.Method(cmd)]
-		defaultParameters, defaultExists := DefaultParameters[def.Method]
-
-		if !exists {
+		if _, exists := definitions.RPCDefinitions[definitions.Method(cmd)]; !exists {
 			fmt.Printf("Invalid method name: %s\nSending raw input instead.\n", cmd)
 			continue
 		}
+
+		def := definitions.RPCDefinitions[definitions.Method(cmd)]
+		defaultParameters, defaultExists := DefaultParameters[def.Method]
 
 		if !defaultExists {
 			fmt.Printf("This method does not have default parameters defined")
