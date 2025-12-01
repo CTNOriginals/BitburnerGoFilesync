@@ -54,6 +54,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		fmt.Printf("\n🔻 Received: %s\n\n", message)
+		// fmt.Printf("\n🔻 Received: %s\n\n", message)
+
+		OnResponse(message)
 	}
 }

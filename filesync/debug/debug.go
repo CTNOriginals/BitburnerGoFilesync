@@ -14,6 +14,7 @@ var DefaultParameters = map[definitions.Method][]string{
 	definitions.GetFileNames:    {"home"},
 	definitions.GetFile:         {"proto.ts", "home"},
 	definitions.GetFileMetadata: {"proto.ts", "home"},
+	definitions.GetAllServers:   {},
 	definitions.PushFile:        {"proto.ts", string(utils.SanitizeFileContent(utils.GetFileContentByPath("proto.ts"))), "home"},
 }
 
@@ -64,7 +65,6 @@ func DebugCommandListener() {
 			continue
 		}
 
-		var msg = communication.SendRequest(def.Method, defaultParameters...)
-		println(msg.String())
+		communication.SendRequest(def.Method, defaultParameters...)
 	}
 }

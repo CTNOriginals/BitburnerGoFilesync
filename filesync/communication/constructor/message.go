@@ -24,4 +24,14 @@ func (this Message) String() string {
 	return ctnstruct.ToString(this)
 }
 
+func (this Message) Result() any {
+	return this.Responce["result"]
+}
+
+// func (this Message) GetResponseField(field string) any {
+// 	for _, v := range v {
+
+// 	}
+// }
+
 type MMessageLog map[int]Message

@@ -5,6 +5,7 @@ package communication
 import (
 	"filesync/communication/constructor"
 	"filesync/communication/definitions"
+	"filesync/utils"
 	"fmt"
 
 	"github.com/gorilla/websocket"
@@ -45,4 +46,11 @@ func SendRequest(method definitions.Method, parameters ...string) *constructor.M
 	return msg
 }
 
-func OnResponse(msg []byte) {}
+func OnResponse(body []byte) {
+	var json = utils.JSONToMap(body)
+	fmt.Printf("%f\n", json["id"])
+
+	for key, val := range json {
+		fmt.Printf("%s: %v\n", key, val)
+	}
+}
