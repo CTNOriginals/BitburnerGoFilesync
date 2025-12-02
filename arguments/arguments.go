@@ -1,6 +1,8 @@
 package arguments
 
 import (
+	"filesync/constants"
+	"filesync/test"
 	"fmt"
 	"strings"
 
@@ -8,8 +10,9 @@ import (
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 )
 
-// This list is only used by the help argument action
-// to workaround the initialization cycle error
+// This list can be used inside the actions of arguments
+// to workaround the initialization cycle error.
+// It will be assigned once ParseArgs is called.
 var onInitList argList = nil
 
 var argumentList = argList{
@@ -65,19 +68,6 @@ var argumentList = argList{
 			println("")
 		},
 	},
-	{Alias: []string{"--config"},
-		Description: []string{
-			"Specify the location of the config file.",
-		},
-		Params: argParameters{
-			{Name: "file", Description: []string{
-				"The file path to the config",
-			}},
-		},
-		Action: func(params []string) {
-			println("TODO: Link the config file")
-		},
-	},
 	{Alias: []string{"--dir"},
 		Description: []string{
 			"Specify the directory where this tool should watch",
@@ -90,11 +80,67 @@ var argumentList = argList{
 			}},
 		},
 		Action: func(params []string) {
-			println("TODO: Set the directory path")
+			if len(params) == 0 {
+				fmt.Print("'--dir' requires at least 1 parameter.\n")
+				return
+			}
+
 			if !ctnfile.PathExists(params[0]) {
 				fmt.Printf("Directory does not exist: %s\n", params[0])
 				return
 			}
+
+			constants.SetBitburnerDir(params[0])
 		},
 	},
+	{Alias: []string{"--test"},
+		Description: []string{
+			"Runs the test function if it exists",
+		},
+		Params: argParameters{},
+		Action: func(params []string) {
+			test.DoTest()
+		},
+	},
+	{Alias: []string{"--no-watcher"},
+		Description: []string{
+			"Prevents the program from watching file events.",
+		},
+		Params: argParameters{},
+		Action: func(params []string) {
+			constants.NoWatcher = true
+		},
+	},
+	{Alias: []string{"--no-server"},
+		Description: []string{
+			"Prevents the program from creating a server and connecting to bitburner.",
+		},
+		Params: argParameters{
+			{Name: "keep-alive", Description: []string{
+				"Accepts: true, false",
+				"Usually when a server is ran, the program wont exit because as it keeps evaluating it,",
+				"if this param is set to true, the program will still be prevented from exiting without a server active.",
+			}},
+		},
+		Action: func(params []string) {
+			constants.NoServer = true
+
+			if len(params) > 0 && params[0] == "true" {
+				constants.KeepAlive = true
+			}
+		},
+	},
+	// {Alias: []string{"--config"},
+	// 	Description: []string{
+	// 		"COMING SOON: Specify the location of the config file.",
+	// 	},
+	// 	Params: argParameters{
+	// 		{Name: "file", Description: []string{
+	// 			"The file path to the config",
+	// 		}},
+	// 	},
+	// 	Action: func(params []string) {
+	// 		println("TODO: Add a global config")
+	// 	},
+	// },
 }

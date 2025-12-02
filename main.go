@@ -33,6 +33,9 @@ package main
 
 import (
 	"filesync/arguments"
+	"filesync/communication"
+	"filesync/constants"
+	"filesync/watcher"
 	"fmt"
 	"os"
 	"time"
@@ -63,18 +66,18 @@ func main() {
 	// 	go debug.DebugCommandListener()
 	// }
 
-	// if !noWatcher {
-	// 	watcher.Initialize()
-	// 	go watcher.FileScanner()
-	// }
+	if !constants.NoWatcher {
+		watcher.Initialize()
+		go watcher.FileScanner()
+	}
 
-	// if !noServer {
-	// 	communication.StartServer(constants.Port)
-	// } else if keepAlive {
-	// 	for {
-	// 		time.Sleep(time.Millisecond)
-	// 	}
-	// }
+	if !constants.NoServer {
+		communication.StartServer(constants.Port)
+	} else if constants.KeepAlive {
+		for {
+			time.Sleep(time.Millisecond)
+		}
+	}
 }
 
 // func parseArgs(args []string) {

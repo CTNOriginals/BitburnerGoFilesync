@@ -30,10 +30,9 @@ func ParseArgs(args []string) {
 			appendStream()
 			currentKey = part
 			currentParams = currentParams[:0]
-			continue
+		} else {
+			currentParams = append(currentParams, part)
 		}
-
-		currentParams = append(currentParams, part)
 
 		if i == len(args)-1 {
 			appendStream()
