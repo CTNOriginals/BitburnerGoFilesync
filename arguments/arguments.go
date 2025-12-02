@@ -27,9 +27,9 @@ var argumentList = argList{
 			"you can do --help followed by the name of the argument without the '--'.",
 			"",
 			"Some arguments may accept a specific amount of parameters where others accept a range.",
-			"If an argument doesnt have its required parameters, it will say say so in the console,",
+			"If an argument doesnt have its required parameters, it will say so in the console,",
 			"this argument will not execute anything after that and will be ignored.",
-			"If you pass in more parameters then an argument needs, it simply ignores the overflow.",
+			"If you pass in more parameters than an argument needs, it simply ignores the overflow.",
 		},
 	},
 
@@ -37,14 +37,14 @@ var argumentList = argList{
 		Description: []string{
 			"Prints a list of arguments and their descriptions.",
 			"Follow it up with another argument (without the -- before it)",
-			"to get a more detailed explination about that argument.",
+			"to get a more detailed explanation about that argument.",
 		},
 		Params: argParameters{
 			{
 				Name: "command",
 				Description: []string{
 					"The name (without the -- before it) of a command.",
-					"Print a detailed explination about a specific command.",
+					"Print a detailed explanation about a specific command.",
 				},
 			},
 		},
@@ -129,7 +129,7 @@ var argumentList = argList{
 		},
 		Params: argParameters{
 			{Name: "extensions", Description: []string{
-				"Any number of file extensions seperated with spaces.",
+				"Any number of file extensions separated with spaces.",
 				"Example: js ts json",
 			}},
 		},

@@ -9,17 +9,17 @@ Current automated triggers:
 
 ## Why use this tool?
 
-### Resons not to use NPM
+### Reasons not to use NPM
 
-- The reason that I started this project is because I have gotten frustraighted with the NPM package manager and how many packages it installs to use one single thing on it.
-- [NPM also keeps getting hacked](https://www.youtube.com/watch?v=M_W-dleZXCs) and it doesnt seem to get better anytime soon, which simply makes it unsafe to use.
-- But overall, I just like having a tool that does one single thing whithout requiring to install ([at the time of writing](https://github.com/bitburner-official/typescript-template/blob/4136ab7107b75cf381acb21d1da7aa9e5e5b80fa/package-lock.json)) 185 dependencies...
+- The reason that I started this project is because I have gotten frustrated with the NPM package manager and how many packages it installs to use one single thing on it.
+- [NPM also keeps getting hacked](https://www.youtube.com/watch?v=M_W-dleZXCs) and it doesn't seem to get better anytime soon, which simply makes it unsafe to use.
+- But overall, I just like having a tool that does one single thing without requiring to install ([at the time of writing](https://github.com/bitburner-official/typescript-template/blob/4136ab7107b75cf381acb21d1da7aa9e5e5b80fa/package-lock.json)) 185 dependencies...
 
 ### Reasons to use this instead
 
 - The only thing you are required to install is [the latest release](https://github.com/CTNOriginals/BitburnerGoFilesync/releases) of this project.
 - The only files that are required to be present on your system for this tool to work are: the executable and optionally a config file to change the default config fields.
-- Because this is written in golang, the tool is way ligher for your system to run, and way faster then javascript could ever be executed. The speed at which this tool can operate is only limited to how fast bitburner is able to respond back to it.
+- Because this is written in golang, the tool is way lighter for your system to run, and way faster than javascript could ever be executed. The speed at which this tool can operate is only limited to how fast bitburner is able to respond back to it.
 - The executable can be anywhere you like, as long as you can execute it from the commandline to start it.
 
 
@@ -34,7 +34,7 @@ You may skip step 2 and put the executable anywhere you like, but for the progra
 
 ## Usage
 
-Once the executable is installed you are ready to get started with the game, the only thing you would still need to do is start the filesyncer via the commandline that you should have opened in step 3 of the instaliation guide.
+Once the executable is installed you are ready to get started with the game, the only thing you would still need to do is start the filesyncer via the commandline that you should have opened in step 3 of the installation guide.
 
 Simply enter `BitburnerGoFilesync.exe` (or whatever the executable is called on your system) and pass in any arguments that you like.
 
@@ -53,18 +53,18 @@ Formatting Rules:
     you can do --help followed by the name of the argument without the '--'.
 
     Some arguments may accept a specific amount of parameters where others accept a range.
-    If an argument doesnt have its required parameters, it will say say so in the console,
+    If an argument doesn't have its required parameters, it will say so in the console,
     this argument will not execute anything after that and will be ignored.
-    If you pass in more parameters then an argument needs, it simply ignores the overflow.
+    If you pass in more parameters than an argument needs, it simply ignores the overflow.
 
 --help, --wtf:
     Prints a list of arguments and their descriptions.
     Follow it up with another argument (without the -- before it)
-    to get a more detailed explination about that argument.
+    to get a more detailed explanation about that argument.
   Parameters:
     command:
       The name (without the -- before it) of a command.
-      Print a detailed explination about a specific command.
+      Print a detailed explanation about a specific command.
 
 --full-help, --fhelp:
     The same as --help, but it also includes all of the extra information
@@ -83,7 +83,7 @@ Formatting Rules:
     Default: js ts txt
   Parameters:
     extensions:
-      Any number of file extensions seperated with spaces.
+      Any number of file extensions separated with spaces.
       Example: js ts json
 
 DEBUG ARGUMENTS
@@ -99,6 +99,6 @@ DEBUG ARGUMENTS
   Parameters:
     keep-alive:
       Accepts: true, false
-      Usually when a server is ran, the program wont exit as it keeps evaluating it,
+      Usually when a server is ran, the program won't exit as it keeps evaluating it,
       if this parameter is set to true, the program will still be prevented from exiting.
 ```
