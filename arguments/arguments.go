@@ -16,7 +16,24 @@ import (
 var onInitList argList = nil
 
 var argumentList = argList{
-	{Alias: []string{"--help", "--wtf", "?"},
+	{Alias: []string{"Formatting Rules"},
+		Description: []string{
+			"Each new argument always has to start with a double dash '--'.",
+			"If the argument does not start with '--' it is considered a parameter",
+			"for the most recent argument that started with '--'.",
+			"",
+			"Each argument may have any number of parameters,",
+			"to check what an argument may accept or require,",
+			"you can do --help followed by the name of the argument without the '--'.",
+			"",
+			"Some arguments may accept a specific amount of parameters where others accept a range.",
+			"If an argument doesnt have its required parameters, it will say say so in the console,",
+			"this argument will not execute anything after that and will be ignored.",
+			"If you pass in more parameters then an argument needs, it simply ignores the overflow.",
+		},
+	},
+
+	{Alias: []string{"--help", "--wtf"},
 		Description: []string{
 			"Prints a list of arguments and their descriptions.",
 			"Follow it up with another argument (without the -- before it)",
@@ -93,6 +110,9 @@ var argumentList = argList{
 			constants.SetBitburnerDir(params[0])
 		},
 	},
+
+	{Alias: []string{"DEBUG ARGUMENTS"}},
+
 	{Alias: []string{"--test"},
 		Description: []string{
 			"Runs the test function if it exists",
