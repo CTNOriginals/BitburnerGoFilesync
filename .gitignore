@@ -4,3 +4,6 @@ archive/
 tmp/
 bitburner/
 test/
+build/
+
+*.exe
