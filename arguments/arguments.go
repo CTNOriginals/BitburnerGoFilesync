@@ -4,6 +4,7 @@ import (
 	"filesync/constants"
 	"filesync/test"
 	"fmt"
+	"os"
 	"strings"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
@@ -82,7 +83,7 @@ var argumentList = argList{
 				fmt.Printf("%s: %s\n\n", alias, desc)
 			}
 
-			println("")
+			os.Exit(1)
 		},
 	},
 	{Alias: []string{"--full-help", "--fhelp"},
@@ -95,6 +96,8 @@ var argumentList = argList{
 			for _, arg := range onInitList {
 				println(arg.String())
 			}
+
+			os.Exit(1)
 		},
 	},
 	{Alias: []string{"--dir"},
@@ -147,6 +150,7 @@ var argumentList = argList{
 		Params: argParameters{},
 		Action: func(params []string) {
 			test.DoTest()
+			os.Exit(1)
 		},
 	},
 	{Alias: []string{"--no-watcher"},
