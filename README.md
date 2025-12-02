@@ -25,12 +25,17 @@ Current automated triggers:
 
 ## How to install
 
-1. Download the [latest release](https://github.com/CTNOriginals/BitburnerGoFilesync/releases) executable
+1. Download the [latest release](https://github.com/CTNOriginals/BitburnerGoFilesync/releases) file
+    - windows: `BitburnerGoFilesync.exe`
+    - linux: `BitburnerGoFilesync`
 2. Put the executable in same directory where you keep all your bitburner scripts
 3. Open a commandline in the directory you put the executable in
 4. Move on to **Usage**
 
 You may skip step 2 and put the executable anywhere you like, but for the program to work you will then have to supply it with a `--dir` argument flag, more about that in **Arguments**.
+
+Alternatively if you rather not download an executable from this repository (I would not blame you for being careful) you may also clone this repository and build it yourself.<br>
+If you do clone the project instead, you will need [go](https://go.dev/doc/install) installed locally on your system to run the project.
 
 ## Usage
 
