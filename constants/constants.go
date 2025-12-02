@@ -8,13 +8,13 @@ import (
 )
 
 var WorkindDirectory, _ = os.Getwd()
-var BitburnerRoot = WorkindDirectory + "/bitburner"
+var BitburnerRoot = WorkindDirectory
 
 var NoWatcher = false
 var NoServer = false
 var KeepAlive = false
 
-var IncludeFileExt []string
+var IncludeFileExt = []string{"js", "ts", "txt"}
 
 func SetBitburnerDir(dir string) {
 	//! This may not work on linux

@@ -125,7 +125,7 @@ var argumentList = argList{
 	{Alias: []string{"--include-ext", "--ext"},
 		Description: []string{
 			"Specify which file extensions the file watcher should include.",
-			"If ommited, all file types will be included inside the root --dir",
+			"Default: js ts txt",
 		},
 		Params: argParameters{
 			{Name: "extensions", Description: []string{
