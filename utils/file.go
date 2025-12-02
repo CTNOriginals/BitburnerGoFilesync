@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/utils/file"
+	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )
 
 // Calls fn for each file in dir.

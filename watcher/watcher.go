@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/utils/file"
+	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )
 
 var FileStateMap MFileState = MFileState{}
