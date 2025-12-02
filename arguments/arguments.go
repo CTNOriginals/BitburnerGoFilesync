@@ -110,6 +110,21 @@ var argumentList = argList{
 			constants.SetBitburnerDir(params[0])
 		},
 	},
+	{Alias: []string{"--include-ext", "--ext"},
+		Description: []string{
+			"Specify which file extensions the file watcher should include.",
+			"If ommited, all file types will be included inside the root --dir",
+		},
+		Params: argParameters{
+			{Name: "extensions", Description: []string{
+				"Any number of file extensions seperated with spaces.",
+				"Example: js ts json",
+			}},
+		},
+		Action: func(params []string) {
+			constants.IncludeFileExt = params
+		},
+	},
 
 	{Alias: []string{"DEBUG ARGUMENTS"}},
 

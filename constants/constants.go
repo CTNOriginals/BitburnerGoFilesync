@@ -14,6 +14,8 @@ var NoWatcher = false
 var NoServer = false
 var KeepAlive = false
 
+var IncludeFileExt []string
+
 func SetBitburnerDir(dir string) {
 	//! This may not work on linux
 	if !(dir[1] == ':' && (dir[2] == '/' || dir[2] == '\\')) {

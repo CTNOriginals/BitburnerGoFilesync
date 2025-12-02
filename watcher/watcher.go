@@ -5,6 +5,8 @@ import (
 	"filesync/utils"
 	"fmt"
 	"os"
+	"slices"
+	"strings"
 	"time"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
@@ -55,6 +57,16 @@ func scanFiles() {
 // that are not present in FileStates and returns them.
 func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	utils.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
+		if len(constants.IncludeFileExt) > 0 {
+			//TODO functionality for wildcard matching (*.js, *.d.ts)
+			var split = strings.Split(file.Name(), ".")
+			var ext = split[len(split)-1]
+
+			if !slices.Contains(constants.IncludeFileExt, ext) {
+				return
+			}
+		}
+
 		path := fmt.Sprintf("%s/%s", dir, file.Name())
 		_, exists := FileStateMap[path]
 
