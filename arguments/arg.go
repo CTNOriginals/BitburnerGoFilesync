@@ -18,12 +18,20 @@ type argDef struct {
 
 func (this argDef) String() string {
 	var alias = strings.Join(this.Alias, ", ")
-	var desc = strings.Join(this.Description, "\n"+ctnstring.Repeat(" ", len(alias)+2))
+	var desc = strings.Join(this.Description, "\n"+ctnstring.Repeat(" ", 4))
+	var params = ctnstring.Indent(this.Params.String(), 2, " ")
 
-	var params = ctnstring.Indent(this.Params.String(), len(alias), " ")
-	// params = strings.Join(strings.Split(params, "\n"), "\n  ")
+	var str = alias
 
-	return fmt.Sprintf("%s: %s\n%s\n", alias, desc, params)
+	if len(this.Description) > 0 {
+		str += fmt.Sprintf(":\n    %s", desc)
+	}
+
+	if len(this.Params) > 0 {
+		str += fmt.Sprintf("\n%s", params)
+	}
+
+	return str + "\n"
 }
 
 type argList []*argDef

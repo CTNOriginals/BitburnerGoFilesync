@@ -17,14 +17,18 @@ type argParameters []argParamDef
 func (this argParameters) String() string {
 	var str = ""
 
-	for _, param := range this {
-		if str != "" {
+	if len(this) > 0 {
+		str = "Parameters:\n"
+	}
+
+	for i, param := range this {
+		var desc = strings.Join(param.Description, "\n"+ctnstring.Repeat(" ", 4))
+
+		str += fmt.Sprintf("  %s:\n    %s", param.Name, desc)
+
+		if i < len(this)-1 {
 			str += "\n"
 		}
-
-		var desc = strings.Join(param.Description, "\n"+ctnstring.Repeat(" ", len(param.Name)+4))
-
-		str += fmt.Sprintf("- %s: %s", param.Name, desc)
 	}
 
 	return str

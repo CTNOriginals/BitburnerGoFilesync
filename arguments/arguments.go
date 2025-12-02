@@ -85,6 +85,18 @@ var argumentList = argList{
 			println("")
 		},
 	},
+	{Alias: []string{"--full-help", "--fhelp"},
+		Description: []string{
+			"The same as --help, but it also includes all of the extra information",
+			"as if you entered --help <command> for each argument.",
+		},
+		Params: argParameters{},
+		Action: func(params []string) {
+			for _, arg := range onInitList {
+				println(arg.String())
+			}
+		},
+	},
 	{Alias: []string{"--dir"},
 		Description: []string{
 			"Specify the directory where this tool should watch",
@@ -153,8 +165,8 @@ var argumentList = argList{
 		Params: argParameters{
 			{Name: "keep-alive", Description: []string{
 				"Accepts: true, false",
-				"Usually when a server is ran, the program wont exit because as it keeps evaluating it,",
-				"if this param is set to true, the program will still be prevented from exiting without a server active.",
+				"Usually when a server is ran, the program wont exit as it keeps evaluating it,",
+				"if this parameter is set to true, the program will still be prevented from exiting.",
 			}},
 		},
 		Action: func(params []string) {
