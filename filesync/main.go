@@ -5,6 +5,7 @@ import (
 	"filesync/constants"
 	"filesync/debug"
 	"filesync/test"
+	"filesync/watcher"
 	"fmt"
 	"os"
 	"time"
@@ -14,10 +15,13 @@ var (
 	debugMode = false
 	testMode  = false
 	noServer  = false
+	noWatcher = false
+	keepAlive = false
 )
 
 func main() {
 	parseArgs(os.Args)
+	// fmt.Printf("debugMode: %t\ntestMode: %t\nnoServer: %t\nnoWatcher: %t\nkeepAlive: %t", debugMode, testMode, noServer, noWatcher, keepAlive)
 
 	startTime := time.Now()
 	fmt.Printf("\n\n---- FileSync START %s ----\n", startTime.Format(time.TimeOnly))
@@ -31,11 +35,18 @@ func main() {
 		go debug.DebugCommandListener()
 	}
 
-	if noServer {
-		return
+	if !noWatcher {
+		watcher.Initialize()
+		go watcher.FileScanner()
 	}
 
-	communication.StartServer(constants.Port)
+	if !noServer {
+		communication.StartServer(constants.Port)
+	} else if keepAlive {
+		for {
+			time.Sleep(time.Millisecond)
+		}
+	}
 }
 
 func parseArgs(args []string) {
@@ -45,8 +56,12 @@ func parseArgs(args []string) {
 			testMode = true
 		case "--debug":
 			debugMode = true
+		case "--no-watcher":
+			noWatcher = true
 		case "--no-server":
 			noServer = true
+		case "--keep-alive":
+			keepAlive = true
 		}
 	}
 }

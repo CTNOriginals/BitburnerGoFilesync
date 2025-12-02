@@ -12,24 +12,6 @@ import (
 
 var FileStateMap MFileState = MFileState{}
 
-var FileEventHandlerMap = MFileEventHandler{
-	OnFileCreate: func(file *FileInfo) {
-		fmt.Printf("%s: OnFileCreate\n", file.Path)
-		// TODO Push the file over the websocket
-		FileStateMap[file.Path] = file
-	},
-	OnFileModify: func(file *FileInfo) {
-		fmt.Printf("%s: OnFileModify\n", file.Path)
-		// TODO Handle websocket
-		file.Info = file.GetInfo()
-	},
-	OnFileDelete: func(file *FileInfo) {
-		fmt.Printf("%s: OnFileDelete\n", file.Path)
-		// TODO Handle websocket
-		delete(FileStateMap, file.Path)
-	},
-}
-
 // Initialize all relevant files and store them
 // in a data object along with their current states.
 func Initialize() {

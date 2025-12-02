@@ -8,6 +8,7 @@ import (
 	"filesync/utils"
 	"fmt"
 
+	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 	"github.com/gorilla/websocket"
 )
 
@@ -55,17 +56,16 @@ func OnResponse(body []byte) {
 	}
 
 	var message = MessageLog[id]
+	var result = json["result"]
 
 	if _, exists := json["error"]; exists {
-		var val = json["error"]
-		fmt.Printf("communication.OnResponse: Message (%d) Received an error response:\n%v\n", id, val)
-		message.Response = val
-		return
+		result = json["error"]
+		message.IsError = true
+		fmt.Printf("\ncommunication.OnResponse: Message (%d) Received an error response:\n%v\n\n", id, result)
 	}
 
-	message.Response = json["result"]
-
-	fmt.Printf("OnResponse %d: %v\n", id, *message)
+	message.Response = result
+	fmt.Printf("OnResponse %d: {\n%v\n}\n", id, ctnstring.Indent(message.String(), 2, " "))
 
 	message.OnResponse(message)
 }

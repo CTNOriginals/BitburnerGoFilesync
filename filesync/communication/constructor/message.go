@@ -13,6 +13,7 @@ type Message struct {
 	Request    *RPC
 	Response   any
 	OnResponse OnResponseCallback
+	IsError    bool
 }
 
 func NewMessage(rpc *RPC, callback OnResponseCallback) *Message {
@@ -24,7 +25,7 @@ func NewMessage(rpc *RPC, callback OnResponseCallback) *Message {
 }
 
 func (this Message) String() string {
-	return ctnstruct.ToString(this)
+	return ctnstruct.ToString(this, "OnResponse")
 }
 
 type MMessageLog map[int]*Message
