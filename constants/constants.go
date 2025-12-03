@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+var Port = "8080"
 var WorkindDirectory, _ = os.Getwd()
 var BitburnerRoot = WorkindDirectory
 
@@ -40,7 +41,3 @@ func SetBitburnerDir(dir string) {
 
 	fmt.Printf("Set the bitburner working directory to: %s\n", dir)
 }
-
-const (
-	Port = 8080
-)

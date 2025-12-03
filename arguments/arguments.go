@@ -140,6 +140,26 @@ var argumentList = argList{
 			constants.IncludeFileExt = params
 		},
 	},
+	{Alias: []string{"--port"},
+		Description: []string{
+			"Set the port for the server to connect to.",
+			"The server will always attemptt to connect to 'localhost:PORT'.",
+		},
+		Params: argParameters{
+			{Name: "port", Description: []string{
+				"The port number.",
+				"Default: 8080",
+			}},
+		},
+		Action: func(params []string) {
+			if len(params) == 0 {
+				fmt.Print("'--port' requires at least 1 parameter.\n")
+				return
+			}
+
+			constants.Port = params[0]
+		},
+	},
 
 	{Alias: []string{"DEBUG ARGUMENTS"}},
 

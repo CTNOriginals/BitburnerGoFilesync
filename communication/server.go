@@ -16,13 +16,13 @@ var upgrader = websocket.Upgrader{
 
 var ActiveConnection *websocket.Conn
 
-func StartServer(port int) {
+func StartServer(port string) {
 	print("\n---- Starting Server ----\n")
 
 	http.HandleFunc("/", wsHandler)
-	fmt.Printf("WebSocket server started on: %d\n", port)
+	fmt.Printf("WebSocket server started on: %s\n", port)
 
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		fmt.Println("Error starting server:", err)
 	}
