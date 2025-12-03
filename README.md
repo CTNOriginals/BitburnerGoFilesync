@@ -58,7 +58,7 @@ Formatting Rules:
     you can do --help followed by the name of the argument without the '--'.
 
     Some arguments may accept a specific amount of parameters where others accept a range.
-    If an argument doesn't have its required parameters, it will say so in the console,
+    If an argument doesnt have its required parameters, it will say so in the console,
     this argument will not execute anything after that and will be ignored.
     If you pass in more parameters than an argument needs, it simply ignores the overflow.
 
@@ -91,6 +91,14 @@ Formatting Rules:
       Any number of file extensions separated with spaces.
       Example: js ts json
 
+--port:
+    Set the port for the server to connect to.
+    By default, the server will try to connect to 'localhost:8080'.
+  Parameters:
+    port:
+      The port number.
+      Default: 8080
+
 DEBUG ARGUMENTS
 
 --test:
@@ -104,6 +112,6 @@ DEBUG ARGUMENTS
   Parameters:
     keep-alive:
       Accepts: true, false
-      Usually when a server is ran, the program won't exit as it keeps evaluating it,
+      Usually when a server is ran, the program wont exit as it keeps evaluating it,
       if this parameter is set to true, the program will still be prevented from exiting.
 ```
