@@ -20,26 +20,29 @@ func StartServer(port string) {
 	print("\n---- Starting Server ----\n")
 
 	http.HandleFunc("/", wsHandler)
-	fmt.Printf("WebSocket server started on: %s\n", port)
+	fmt.Printf("server: Started on: %s\n", port)
 
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		fmt.Println("Error starting server:", err)
+		fmt.Println("server: Error starting server:", err)
 	}
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	// Upgrade the HTTP connection to a WebSocket connection
 	conn, err := upgrader.Upgrade(w, r, nil)
+
 	if err != nil {
-		fmt.Println("Error upgrading:", err)
+		fmt.Println("server: Error upgrading:", err)
 		return
 	}
 
 	defer conn.Close()
 
+	fmt.Print("server: Connected to client!\n")
+
 	if ActiveConnection != nil {
-		fmt.Printf("Overwriting existing connections with new one\n")
+		fmt.Printf("server: Overwriting existing connections with new one\n")
 	}
 
 	ActiveConnection = conn
@@ -50,11 +53,9 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		// Read message from the client
 		_, message, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Println("Error reading message:", err)
+			fmt.Println("server: Error reading message:", err)
 			break
 		}
-
-		// fmt.Printf("\n🔻 Received: %s\n\n", message)
 
 		OnResponse(message)
 	}
