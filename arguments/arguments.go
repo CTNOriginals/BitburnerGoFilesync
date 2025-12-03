@@ -143,7 +143,7 @@ var argumentList = argList{
 	{Alias: []string{"--port"},
 		Description: []string{
 			"Set the port for the server to connect to.",
-			"The server will always attemptt to connect to 'localhost:PORT'.",
+			"By default, the server will try to connect to 'localhost:8080'.",
 		},
 		Params: argParameters{
 			{Name: "port", Description: []string{
