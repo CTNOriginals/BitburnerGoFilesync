@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"runtime"
 	"strings"
 )
 
@@ -17,8 +18,14 @@ var KeepAlive = false
 var IncludeFileExt = []string{"js", "ts", "txt"}
 
 func SetBitburnerDir(dir string) {
-	//! This may not work on linux
-	if !(dir[1] == ':' && (dir[2] == '/' || dir[2] == '\\')) {
+	var isAbsolute = path.IsAbs(dir)
+
+	if runtime.GOOS == "windows" {
+		// checks if the second and third char of the path are ":/" or ":\"
+		isAbsolute = dir[1] == ':' && (dir[2] == '/' || dir[2] == '\\')
+	}
+
+	if !isAbsolute {
 		dir = fmt.Sprintf("%s/%s", WorkindDirectory, dir)
 	}
 
