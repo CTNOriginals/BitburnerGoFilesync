@@ -41,14 +41,6 @@ import (
 	"time"
 )
 
-// var (
-// 	debugMode = false
-// 	testMode  = false
-// 	noServer  = false
-// 	noWatcher = false
-// 	keepAlive = false
-// )
-
 func main() {
 	startTime := time.Now()
 	fmt.Printf("\n\n---- FileSync START %s ----\n", startTime.Format(time.TimeOnly))
@@ -56,15 +48,6 @@ func main() {
 
 	var args = os.Args
 	arguments.ParseArgs(args)
-
-	//! Comment this out if you dont have a test/test.go file with a DoTest() func in it
-	// if testMode {
-	// 	test.DoTest()
-	// }
-
-	// if debugMode {
-	// 	go debug.DebugCommandListener()
-	// }
 
 	if !constants.NoWatcher {
 		watcher.Initialize()
@@ -79,20 +62,3 @@ func main() {
 		}
 	}
 }
-
-// func parseArgs(args []string) {
-// 	for _, arg := range args {
-// 		switch arg {
-// 		case "--test":
-// 			testMode = true
-// 		case "--debug":
-// 			debugMode = true
-// 		case "--no-watcher":
-// 			noWatcher = true
-// 		case "--no-server":
-// 			noServer = true
-// 		case "--keep-alive":
-// 			keepAlive = true
-// 		}
-// 	}
-// }
