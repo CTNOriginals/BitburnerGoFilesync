@@ -1,9 +1,10 @@
 package utils
 
 import (
-	"filesync/constants"
 	"fmt"
 	"os"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )

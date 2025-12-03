@@ -1,11 +1,12 @@
 package arguments
 
 import (
-	"filesync/constants"
-	"filesync/test"
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
+	"github.com/CTNOriginals/BitburnerGoFilesync/test"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"

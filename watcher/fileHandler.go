@@ -1,11 +1,12 @@
 package watcher
 
 import (
-	"filesync/communication"
-	"filesync/communication/constructor"
-	"filesync/communication/definitions"
-	"filesync/utils"
 	"fmt"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication/constructor"
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 )
 
 var FileEventHandlerMap = MFileEventHandler{

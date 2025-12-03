@@ -1,10 +1,11 @@
 package watcher
 
 import (
-	"filesync/constants"
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 
 	ctnmap "github.com/CTNOriginals/CTNGoUtils/v2/map"
 )

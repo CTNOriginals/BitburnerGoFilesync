@@ -2,12 +2,13 @@ package debug
 
 import (
 	"bufio"
-	"filesync/communication"
-	"filesync/communication/definitions"
-	"filesync/utils"
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"

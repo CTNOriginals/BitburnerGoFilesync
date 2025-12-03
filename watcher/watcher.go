@@ -1,13 +1,14 @@
 package watcher
 
 import (
-	"filesync/constants"
-	"filesync/utils"
 	"fmt"
 	"os"
 	"slices"
 	"strings"
 	"time"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )

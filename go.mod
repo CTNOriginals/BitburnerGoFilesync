@@ -1,4 +1,4 @@
-module filesync
+module github.com/CTNOriginals/BitburnerGoFilesync
 
 go 1.25.0
 

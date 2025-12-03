@@ -3,10 +3,11 @@
 package communication
 
 import (
-	"filesync/communication/constructor"
-	"filesync/communication/definitions"
-	"filesync/utils"
 	"fmt"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication/constructor"
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 	"github.com/gorilla/websocket"

@@ -1,7 +1,7 @@
 package constructor
 
 import (
-	"filesync/communication/definitions"
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
 
 	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 )

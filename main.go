@@ -32,13 +32,14 @@
 package main
 
 import (
-	"filesync/arguments"
-	"filesync/communication"
-	"filesync/constants"
-	"filesync/watcher"
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/arguments"
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
+	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
+	"github.com/CTNOriginals/BitburnerGoFilesync/watcher"
 )
 
 func main() {

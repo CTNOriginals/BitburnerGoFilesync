@@ -1,8 +1,9 @@
 package constructor
 
 import (
-	"filesync/communication/definitions"
 	"fmt"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
 )
 
 // The "jsonrpc" field is excluded from this struct, it will be added in RPC.String().
