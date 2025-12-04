@@ -40,4 +40,6 @@ func SetBitburnerDir(dir string) {
 	dir = path.Clean(dir)
 
 	fmt.Printf("Set the bitburner working directory to: %s\n", dir)
+
+	BitburnerRoot = dir
 }
