@@ -26,6 +26,8 @@ func Initialize() {
 }
 
 func FileScanner() {
+	fmt.Printf("Scanning files in: %s\n", constants.BitburnerRoot)
+
 	for {
 		scanFiles()
 		time.Sleep(time.Millisecond * 100)
