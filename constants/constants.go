@@ -11,12 +11,14 @@ import (
 var Port = "8080"
 var WorkindDirectory, _ = os.Getwd()
 var BitburnerRoot = WorkindDirectory
+var IncludeFileExt = []string{"js", "ts", "txt"}
+
+// The time to sleep until the next file scan in miliseconds
+var FileScanDelay = 100
 
 var NoWatcher = false
 var NoServer = false
 var KeepAlive = false
-
-var IncludeFileExt = []string{"js", "ts", "txt"}
 
 func SetBitburnerDir(dir string) {
 	var isAbsolute = path.IsAbs(dir)

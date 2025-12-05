@@ -26,7 +26,7 @@ func ParseArgs(args []string) {
 	}
 
 	for i, part := range args {
-		if part[0:2] == "--" {
+		if len(part) >= 2 && part[0:2] == "--" {
 			appendStream()
 			currentKey = part
 			currentParams = currentParams[:0]
