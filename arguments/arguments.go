@@ -161,6 +161,38 @@ var argumentList = argList{
 			constants.Port = params[0]
 		},
 	},
+	{Alias: []string{"--scan-interval", "--interval"},
+		Description: []string{
+			"The amount of miliseconds the file scanner waits each loop.",
+			"By default 100, if <= 0 it will skip the sleep function entirely.",
+		},
+		Params: argParameters{
+			{Name: "interval", Description: []string{
+				"The interval in miliseconds",
+				"Default: 100",
+			}},
+		},
+		Action: func(params []string) {
+			if len(params) == 0 {
+				fmt.Println("'--scan-interval' requires at least 1 parameter.")
+				os.Exit(1)
+			}
+
+			if !ctnstring.Validate(params[0], "1234567890") {
+				fmt.Println("'--scan-interval' only accepts number characters")
+				os.Exit(1)
+			}
+
+			var num, err = strconv.ParseInt(params[0], 0, 10)
+
+			if err != nil {
+				fmt.Println("'--scan-interval'", err)
+				os.Exit(1)
+			}
+
+			constants.FileScanDelay = int(num)
+		},
+	},
 
 	{Alias: []string{"DEBUG ARGUMENTS"}},
 
