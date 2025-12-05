@@ -3,6 +3,7 @@ package arguments
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
@@ -84,7 +85,7 @@ var argumentList = argList{
 				fmt.Printf("%s: %s\n\n", alias, desc)
 			}
 
-			os.Exit(1)
+			os.Exit(0)
 		},
 	},
 	{Alias: []string{"--full-help", "--fhelp"},
@@ -98,7 +99,7 @@ var argumentList = argList{
 				println(arg.String())
 			}
 
-			os.Exit(1)
+			os.Exit(0)
 		},
 	},
 	{Alias: []string{"--dir"},
@@ -115,12 +116,12 @@ var argumentList = argList{
 		Action: func(params []string) {
 			if len(params) == 0 {
 				fmt.Print("'--dir' requires at least 1 parameter.\n")
-				return
+				os.Exit(1)
 			}
 
 			if !ctnfile.PathExists(params[0]) {
-				fmt.Printf("Directory does not exist: %s\n", params[0])
-				return
+				fmt.Printf("'--dir' directory does not exist: %s\n", params[0])
+				os.Exit(1)
 			}
 
 			constants.SetBitburnerDir(params[0])
@@ -155,7 +156,7 @@ var argumentList = argList{
 		Action: func(params []string) {
 			if len(params) == 0 {
 				fmt.Print("'--port' requires at least 1 parameter.\n")
-				return
+				os.Exit(1)
 			}
 
 			constants.Port = params[0]
@@ -203,7 +204,7 @@ var argumentList = argList{
 		Params: argParameters{},
 		Action: func(params []string) {
 			test.DoTest()
-			os.Exit(1)
+			os.Exit(0)
 		},
 	},
 	{Alias: []string{"--no-watcher"},
