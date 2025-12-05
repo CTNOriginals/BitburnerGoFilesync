@@ -3,7 +3,7 @@ dist/
 archive/
 tmp/
 bitburner/
-test/
+# test/
 build/
 .vscode/
 
