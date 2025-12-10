@@ -16,14 +16,14 @@ func ParseArgs(args []string) {
 	var currentParams []string
 
 	var appendStream = func() {
-		if currentKey == "" {
-			return
-		}
+    if currentKey == "" {
+      return
+    }
 
-		var currentStream = make([]string, len(currentParams))
-		copy(currentStream, currentParams)
-		stream = append(stream, argStream{Alias: currentKey, Params: currentParams})
-	}
+    currentStream := make([]string, len(currentParams))
+    copy(currentStream, currentParams)
+    stream = append(stream, argStream{Alias: currentKey, Params: currentStream})
+  }
 
 	for i, part := range args {
 		if len(part) >= 2 && part[0:2] == "--" {
