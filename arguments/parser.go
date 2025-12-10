@@ -22,7 +22,7 @@ func ParseArgs(args []string) {
 
 		var currentStream = make([]string, len(currentParams))
 		copy(currentStream, currentParams)
-		stream = append(stream, argStream{Alias: currentKey, Params: currentParams})
+		stream = append(stream, argStream{Alias: currentKey, Params: currentStream})
 	}
 
 	for i, part := range args {

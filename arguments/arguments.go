@@ -184,7 +184,7 @@ var argumentList = argList{
 				os.Exit(1)
 			}
 
-			var num, err = strconv.ParseInt(params[0], 0, 10)
+			var num, err = strconv.ParseInt(params[0], 0, 64)
 
 			if err != nil {
 				fmt.Println("'--scan-interval'", err)
