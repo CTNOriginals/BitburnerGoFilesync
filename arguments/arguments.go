@@ -6,8 +6,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication/constructor"
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/test"
+	"github.com/gorilla/websocket"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
@@ -192,6 +196,34 @@ var argumentList = argList{
 			}
 
 			constants.FileScanDelay = int(num)
+		},
+	},
+	{Alias: []string{"--get-definitions"},
+		Description: []string{
+			"Requests the NetscriptDefinitions.d.ts file when a connection is established.",
+			"The definitions file will be created in bitburners root directory.",
+		},
+		Params: argParameters{},
+		Action: func(params []string) {
+			var onResponse = func(message *constructor.Message) {
+				if message.IsError {
+					println(message.Response)
+					return
+				}
+
+				var content, ok = message.Response.(string)
+				if !ok {
+					fmt.Printf("'--get-definitions' expects a string response but received another type instead: %v", message.Response)
+					return
+				}
+				ctnfile.WriteFile(constants.BitburnerRoot+"/NetscriptDefinitions.d.ts", strings.Split(content, "\n"))
+			}
+
+			var onConnect = func(ws *websocket.Conn) {
+				communication.SendRequest(definitions.GetDefinitionFile, onResponse)
+			}
+
+			communication.OnConnectionCallbacks = append(communication.OnConnectionCallbacks, onConnect)
 		},
 	},
 
