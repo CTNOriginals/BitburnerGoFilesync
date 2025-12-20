@@ -65,14 +65,16 @@ func GetFileContentByPath(path string) []rune {
 func SanitizeFileContent(content []rune) []rune {
 	sanitized := []rune{}
 
-	for i, char := range content {
+	for _, char := range content {
 		switch char {
 		case '\\':
-			switch content[i+1] {
-			case 'n', 't', 'r':
-				//? Add an extra '\' to preserve the escaped string
-				sanitized = append(sanitized, '\\', char)
-			}
+			sanitized = append(sanitized, '\\', char)
+
+			// switch content[i+1] {
+			// case 'n', 't', 'r', '/':
+			// 	//? Add an extra '\' to preserve the escaped string
+			// 	sanitized = append(sanitized, '\\', char)
+			// }
 		case '\r':
 			continue
 		case '"':
