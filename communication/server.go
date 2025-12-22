@@ -7,6 +7,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+var OnConnectionCallbacks []func(ws *websocket.Conn) = []func(ws *websocket.Conn){}
+
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
@@ -47,6 +49,10 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 	ActiveConnection = conn
 	defer func() { ActiveConnection = nil }()
+
+	for _, cb := range OnConnectionCallbacks {
+		cb(conn)
+	}
 
 	// Listen for incoming messages
 	for {
