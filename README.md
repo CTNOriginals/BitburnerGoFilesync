@@ -34,8 +34,23 @@ Current automated triggers:
 
 You may skip step 2 and put the executable anywhere you like, but for the program to work you will then have to supply it with a `--dir` argument flag, more about that in **Arguments**.
 
-Alternatively if you rather not download an executable from this repository (I would not blame you for being careful) you may also clone this repository and build it yourself.<br>
-If you do clone the project instead, you will need [go](https://go.dev/doc/install) installed locally on your system to run the project.
+Alternatively if you rather not download an executable from this repository (I would not blame you for being careful) you may also clone this repository and build it yourself:
+
+## How to build
+
+### Requirements
+- [go](https://go.dev/doc/install): To be able to run the code
+
+Once you have a clone of this repository and you installed the *long list* of requirements you may run the project in any of the following ways:
+- `make run`: This will run the project without any arguments.
+    This method __does not__ allow any arguments to be passed in.
+- `go run main.go`: This is that `make run` would have done for you.
+    This method __does allow__ you to pass arguments.
+- `make build`: This will compile the project into a binary.
+    The binary will be located relative to the working directory of this project (where the main.go is) at `./build/`.
+
+For more run methods you can check out the `./Makefile` and try any of its commands under `-- Project --`.
+
 
 ## Usage
 
@@ -99,6 +114,18 @@ Formatting Rules:
       The port number.
       Default: 8080
 
+--scan-interval, --interval:
+    The amount of miliseconds the file scanner waits each loop.
+    By default 100, if <= 0 it will skip the sleep function entirely.
+  Parameters:
+    interval:
+      The interval in miliseconds
+      Default: 100
+
+--get-definitions:
+    Requests the NetscriptDefinitions.d.ts file when a connection is established.
+    The definitions file will be created in bitburners root directory.
+
 DEBUG ARGUMENTS
 
 --test:
@@ -115,3 +142,4 @@ DEBUG ARGUMENTS
       Usually when a server is ran, the program wont exit as it keeps evaluating it,
       if this parameter is set to true, the program will still be prevented from exiting.
 ```
+
