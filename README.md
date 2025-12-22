@@ -39,14 +39,14 @@ Alternatively if you rather not download an executable from this repository (I w
 ## How to build
 
 ### Requirements
-- [go](https://go.dev/doc/install): To be able to run the code
+- [golang](https://go.dev/doc/install): To be able to run the code
 
 Once you have a clone of this repository and you installed the *long list* of requirements you may run the project in any of the following ways:
-- `make run`: This will run the project without any arguments.
-    This method __does not__ allow any arguments to be passed in.
-- `go run main.go`: This is that `make run` would have done for you.
-    This method __does allow__ you to pass arguments.
-- `make build`: This will compile the project into a binary.
+- `make run`: This will run the project without any arguments.<br>
+    This method __does not__ accept arguments.
+- `go run main.go`: This is what `make run` would have done for you.<br>
+    This method __does accept__ arguments.
+- `make build`: This will compile the project into a binary.<br>
     The binary will be located relative to the working directory of this project (where the main.go is) at `./build/`.
 
 For more run methods you can check out the `./Makefile` and try any of its commands under `-- Project --`.
