@@ -15,4 +15,7 @@ func DoTest() {
 	fmt.Printf("%s: %v\n", "NoWatcher", constants.NoWatcher)
 	fmt.Printf("%s: %v\n", "NoServer", constants.NoServer)
 	fmt.Printf("%s: %v\n", "KeepAlive", constants.KeepAlive)
+
+	// var content = utils.GetFileContentByPath("proto.ts")
+	// fmt.Print(string(content))
 }

@@ -42,7 +42,7 @@ version:
 run:
 	go run ./main.go
 
-wrun: # requires wgo: https://github.com/bokwoon95/wgow
+wrun: # requires wgo: https://github.com/bokwoon95/wgo
 	wgo run ./main.go
 
 build-win:
