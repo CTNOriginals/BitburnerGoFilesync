@@ -67,6 +67,7 @@ var argumentList = argList{
 					println(def.String())
 				}
 
+				os.Exit(0)
 				return
 			}
 
