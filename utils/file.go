@@ -43,15 +43,6 @@ func ForEachFileInDirRecursive(dir string, fn func(file os.FileInfo, dir string)
 	})
 }
 
-func GetFileBytes(filePath string) []byte {
-	content, err := os.ReadFile(filePath)
-	if err != nil {
-		panic(err)
-	}
-
-	return content
-}
-
 // The path needs to be relative the the bitburner dir
 func GetFileContentByPath(path string) []byte {
 	var filePath = fmt.Sprintf("%s/%s", constants.BitburnerRoot, path)
@@ -61,7 +52,7 @@ func GetFileContentByPath(path string) []byte {
 		return []byte{}
 	}
 
-	return GetFileBytes(filePath)
+	return ctnfile.GetFileBytes(filePath)
 }
 
 // Will return the content with any string termenating character escapes.
