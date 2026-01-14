@@ -6,5 +6,6 @@ bitburner/
 # test/
 build/
 .vscode/
+.nvim
 
 *.exe
