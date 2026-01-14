@@ -44,26 +44,23 @@ func ForEachFileInDirRecursive(dir string, fn func(file os.FileInfo, dir string)
 }
 
 // The path needs to be relative the the bitburner dir
-func GetFileContentByPath(path string) []rune {
+func GetFileContentByPath(path string) []byte {
 	var filePath = fmt.Sprintf("%s/%s", constants.BitburnerRoot, path)
-	// filePath := ctnfile.ParseFilePath()
-
-	// println(filePath.String())
 
 	if !ctnfile.FileExists(filePath) {
 		fmt.Printf("utils/GetFileContentByPath: File does not exist: %s\n", filePath)
-		return []rune{}
+		return []byte{}
 	}
 
-	return ctnfile.GetFileRunes(filePath)
+	return ctnfile.GetFileBytes(filePath)
 }
 
 // Will return the content with any string termenating character escapes.
 //
 // The output of this will be able to be passed in as a json value
 // without it escaping out of its own falue field
-func SanitizeFileContent(content []rune) []rune {
-	sanitized := []rune{}
+func SanitizeFileContent(content []byte) []byte {
+	sanitized := []byte{}
 
 	for _, char := range content {
 		switch char {
