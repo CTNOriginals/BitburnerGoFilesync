@@ -3,6 +3,7 @@ package test
 import (
 	"fmt"
 
+	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 )
 
@@ -15,6 +16,9 @@ func DoTest() {
 	fmt.Printf("%s: %v\n", "NoWatcher", constants.NoWatcher)
 	fmt.Printf("%s: %v\n", "NoServer", constants.NoServer)
 	fmt.Printf("%s: %v\n", "KeepAlive", constants.KeepAlive)
+	println("")
+
+	config.Test()
 
 	// var content = utils.GetFileContentByPath("proto.ts")
 	// fmt.Print(string(content))
