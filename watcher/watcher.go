@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
+	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
@@ -20,19 +20,19 @@ var FileStateMap MFileState = MFileState{}
 func Initialize() {
 	// Register the existing files without calling the OnCreate event
 	// to prevent them from being sent over the websocket
-	for _, file := range getUnregisteredFiles(constants.BitburnerRoot) {
+	for _, file := range getUnregisteredFiles(config.Values.Directory) {
 		FileStateMap[file.Path] = file
 	}
 }
 
 func FileScanner() {
-	fmt.Printf("Scanning files in: %s\n", constants.BitburnerRoot)
+	fmt.Printf("Scanning files in: %s\n", config.Values.Directory)
 
 	for {
 		scanFiles()
 
-		if constants.FileScanDelay > 0 {
-			time.Sleep(time.Millisecond * time.Duration(constants.FileScanDelay))
+		if config.Values.FileScanInterval > 0 {
+			time.Sleep(time.Millisecond * time.Duration(config.Values.FileScanInterval))
 		}
 	}
 }
@@ -52,7 +52,7 @@ func scanFiles() {
 		}
 	}
 
-	newFiles := getUnregisteredFiles(constants.BitburnerRoot)
+	newFiles := getUnregisteredFiles(config.Values.Directory)
 
 	for _, file := range newFiles {
 		FileEventHandlerMap.Handle(file, OnFileCreate)
@@ -63,12 +63,12 @@ func scanFiles() {
 // that are not present in FileStates and returns them.
 func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	utils.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
-		if len(constants.IncludeFileExt) > 0 {
+		if len(config.Values.FilePatterns.Include) > 0 {
 			//TODO functionality for wildcard matching (*.js, *.d.ts)
 			var split = strings.Split(file.Name(), ".")
 			var ext = split[len(split)-1]
 
-			if !slices.Contains(constants.IncludeFileExt, ext) {
+			if !slices.Contains(config.Values.FilePatterns.Include, ext) {
 				return
 			}
 		}

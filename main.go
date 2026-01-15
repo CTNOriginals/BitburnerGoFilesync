@@ -38,6 +38,7 @@ import (
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/arguments"
 	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
+	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/watcher"
 )
@@ -56,7 +57,7 @@ func main() {
 	}
 
 	if !constants.NoServer {
-		communication.StartServer(constants.Port)
+		communication.StartServer(config.Values.Port)
 	} else if constants.KeepAlive {
 		for {
 			time.Sleep(time.Millisecond)

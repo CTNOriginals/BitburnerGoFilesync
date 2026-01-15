@@ -9,8 +9,10 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
 	"github.com/CTNOriginals/BitburnerGoFilesync/communication/constructor"
 	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
+	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/test"
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 	"github.com/gorilla/websocket"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
@@ -129,7 +131,7 @@ var argumentList = argList{
 				os.Exit(1)
 			}
 
-			constants.SetBitburnerDir(params[0])
+			utils.SetBitburnerDir(params[0])
 		},
 	},
 	{Alias: []string{"--include-ext", "--ext"},
@@ -144,7 +146,7 @@ var argumentList = argList{
 			}},
 		},
 		Action: func(params []string) {
-			constants.IncludeFileExt = params
+			config.Values.FilePatterns.Include = params
 		},
 	},
 	{Alias: []string{"--port"},
@@ -164,7 +166,7 @@ var argumentList = argList{
 				os.Exit(1)
 			}
 
-			constants.Port = params[0]
+			config.Values.Port = params[0]
 		},
 	},
 	{Alias: []string{"--scan-interval", "--interval"},
@@ -196,7 +198,7 @@ var argumentList = argList{
 				os.Exit(1)
 			}
 
-			constants.FileScanDelay = int(num)
+			config.Values.FileScanInterval = int(num)
 		},
 	},
 	{Alias: []string{"--get-definitions"},
@@ -217,7 +219,7 @@ var argumentList = argList{
 					fmt.Printf("'--get-definitions' expects a string response but received another type instead: %v", message.Response)
 					return
 				}
-				ctnfile.WriteFile(constants.BitburnerRoot+"/NetscriptDefinitions.d.ts", strings.Split(content, "\n"))
+				ctnfile.WriteFile(config.Values.Directory+"/NetscriptDefinitions.d.ts", strings.Split(content, "\n"))
 			}
 
 			var onConnect = func(ws *websocket.Conn) {
@@ -230,12 +232,13 @@ var argumentList = argList{
 
 	{Alias: []string{"DEBUG ARGUMENTS"}},
 
-	{Alias: []string{"--test"},
+	{Alias: []string{"--test", "--debug"},
 		Description: []string{
 			"Runs the test function if it exists",
 		},
 		Params: argParameters{},
 		Action: func(params []string) {
+			constants.Debug = true
 			test.DoTest()
 			os.Exit(0)
 		},

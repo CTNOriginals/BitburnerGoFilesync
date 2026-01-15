@@ -7,121 +7,59 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
+	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 )
 
-type ConfigFilrPatterns struct {
+type TConfigFilrPatterns struct {
 	Include []string
 	Exclude []string
 }
 
-type Config struct {
-	Port             int
+type TConfig struct {
+	Port             string
 	Directory        string
 	FileScanInterval int
-	FilePatterns     ConfigFilrPatterns
+	FilePatterns     TConfigFilrPatterns
 }
 
-var DefaultConfig = &Config{
-	Port:             8080,
+var Values = &TConfig{
+	Port:             "8080",
 	Directory:        "./",
 	FileScanInterval: 100,
-	FilePatterns: ConfigFilrPatterns{
+	FilePatterns: TConfigFilrPatterns{
 		Include: []string{"*.js", "*.ts"},
 		Exclude: []string{"*.d.ts"},
 	},
 }
 
-func Test() {
-	var content, _ = toml.Marshal(DefaultConfig)
-	fmt.Printf("%s", content)
-
-	var filePath = fmt.Sprintf("%s/%s", constants.WorkindDirectory, "config.toml")
-	if !ctnfile.FileExists(filePath) {
-		var content, _ = toml.Marshal(DefaultConfig)
-		ctnfile.WriteFile(filePath, strings.Split(string(content), "\n"))
+func log(msg string) {
+	if !constants.Debug {
+		return
 	}
 
-	toml.DecodeFile(filePath, &DefaultConfig)
-	fmt.Printf("%+v", DefaultConfig)
+	print(msg)
 }
 
-// type ConfigValue struct {
-// 	Val  any
-// 	Desc []string
-// }
-//
-// func (this ConfigValue) MarshalTOML() ([]byte, error) {
-// 	// var val = this.Val
-//
-// 	// switch v := this.Val.(type) {
-// 	// case ConfigMap:
-// 	// 	// var b []byte
-// 	// 	var vm = map[string]any{}
-// 	// 	for key, val := range v {
-// 	// 		var vb, _ = val.MarshalTOML()
-// 	// 		vm[key] = vb
-// 	// 	}
-// 	// 	this.Val = vm
-// 	// 	// return b, nil
-// 	// }
-//
-// 	return toml.Marshal(this.Val)
-// }
-//
-// type ConfigMap map[string]ConfigValue
-//
-// // func (this ConfigMap) MarshalTOML() ([]byte, error) {
-// // 	var fake = make(map[string]any)
-// //
-// // 	for key, val := range this {
-// // 		// var content, _ = val.MarshalTOML()
-// // 		fake[key] = val
-// // 	}
-// //
-// // 	var m, _ = toml.Marshal(fake)
-// // 	fmt.Printf("\n%s\n", m)
-// //
-// // 	var un any
-// // 	toml.Unmarshal(m, &un)
-// // 	fmt.Printf("%v\n", un)
-// //
-// // 	println("")
-// //
-// // 	// return toml.Marshal(fake)
-// // 	return toml.Marshal(un)
-// // }
-//
-// func (this ConfigMap) Format() []byte {
-//
-// }
-//
-// // var Config = ConfigMap{
-// var Config = ConfigMap{
-// 	"Include": ConfigValue{
-// 		Val:  []string{"*.js", "*.ts"},
-// 		Desc: []string{"Include file patterns"},
-// 	},
-// 	"FilePatterns": ConfigValue{
-// 		Val: ConfigMap{
-// 			"proto": ConfigValue{
-// 				Val:  "wah",
-// 				Desc: []string{"waaaah!"},
-// 			},
-// 			"Include": ConfigValue{
-// 				Val:  []string{"*.js", "*.ts"},
-// 				Desc: []string{"Include file patterns"},
-// 			},
-// 			"Exclude": ConfigValue{
-// 				Val:  []string{"*.d.ts"},
-// 				Desc: []string{"Exclude file patterns"},
-// 			},
-// 		},
-// 	},
-// }
-//
-// func Test() {
-// 	var marshel []byte = Config.Format()
-// 	// marshel, _ = toml.Marshal(Config)
-//
-// 	fmt.Printf("%s", string(marshel))
-// }
+func Initialize() {
+	var err error = nil
+
+	var content []byte
+	if content, err = toml.Marshal(Values); err != nil {
+		panic(fmt.Sprintf("Default config values marshal error:\n%v\n", err))
+	}
+
+	log(fmt.Sprintf("Defaults:\n%s\n", content))
+
+	if !ctnfile.FileExists(constants.ConfigFilePath) {
+		var content, _ = toml.Marshal(Values)
+		ctnfile.WriteFile(constants.ConfigFilePath, strings.Split(string(content), "\n"))
+	}
+
+	var meta toml.MetaData
+	if meta, err = toml.DecodeFile(constants.ConfigFilePath, &Values); err != nil {
+		fmt.Printf("Metadata:\n%s\n\n", ctnstruct.ToString(meta))
+		panic(fmt.Sprintf("Config decode error:\n%v\n", err))
+	}
+
+	log(fmt.Sprintf("Config file content:\n%+v", Values))
+}
