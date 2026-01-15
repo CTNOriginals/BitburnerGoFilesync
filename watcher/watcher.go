@@ -63,14 +63,8 @@ func scanFiles() {
 // that are not present in FileStates and returns them.
 func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	utils.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
-		if len(config.Values.FilePatterns.Include) > 0 {
-			//TODO functionality for wildcard matching (*.js, *.d.ts)
-			var split = strings.Split(file.Name(), ".")
-			var ext = split[len(split)-1]
-
-			if !slices.Contains(config.Values.FilePatterns.Include, ext) {
-				return
-			}
+		if !shouldIncludeFile(file.Name()) {
+			return
 		}
 
 		path := fmt.Sprintf("%s/%s", dir, file.Name())
@@ -84,4 +78,22 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	})
 
 	return newFiles
+}
+
+// Check if the file path should be included
+// according to the config values Include and Exclude patternd
+func shouldIncludeFile(file string) bool {
+	if len(config.Values.FilePatterns.Include) == 0 {
+		return true
+	}
+
+	//TODO functionality for wildcard matching (*.js, *.d.ts)
+	var split = strings.Split(file, ".")
+	var ext = split[len(split)-1]
+
+	if !slices.Contains(config.Values.FilePatterns.Include, ext) {
+		return false
+	}
+
+	return true
 }

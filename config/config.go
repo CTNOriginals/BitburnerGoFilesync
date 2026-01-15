@@ -32,14 +32,6 @@ var Values = &TConfig{
 	},
 }
 
-func log(msg string) {
-	if !constants.Debug {
-		return
-	}
-
-	print(msg)
-}
-
 func Initialize() {
 	var err error = nil
 
@@ -68,4 +60,12 @@ func Initialize() {
 
 func validateConfigValues() {
 	ValidateBitburnerDirectory(Values.Directory)
+}
+
+func log(msg string) {
+	if !constants.Debug {
+		return
+	}
+
+	print(msg)
 }
