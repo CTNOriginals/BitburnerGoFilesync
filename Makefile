@@ -37,13 +37,16 @@ version:
 	@echo "v$(CURRENT_VERSION_PATCH)"
 
 # -- Project --
-.PHONY: run wrun build-win build-linux build
+.PHONY: run wrun test build-win build-linux build
 
 run:
 	go run ./main.go
 
 wrun: # requires wgo: https://github.com/bokwoon95/wgo
 	wgo run ./main.go
+
+test:
+	wgo run ./main.go --test
 
 build-win:
 	GOOS=windows GOARCH=386 go build -o ./build/BitburnerGoFilesync.exe ./main.go
