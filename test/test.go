@@ -9,6 +9,7 @@ import (
 )
 
 func DoTest() {
+	config.Initialize()
 	println("\n")
 	fmt.Printf("%s: %v\n", "Port", config.Values.Port)
 	fmt.Printf("%s: %v\n", "WorkindDirectory", constants.WorkindDirectory)

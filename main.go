@@ -48,6 +48,8 @@ func main() {
 	fmt.Printf("\n\n---- FileSync START %s ----\n", startTime.Format(time.TimeOnly))
 	defer fmt.Printf("---- FileSync END %s ----\n", startTime.Format(time.TimeOnly))
 
+	config.Initialize()
+
 	var args = os.Args
 	arguments.ParseArgs(args)
 
