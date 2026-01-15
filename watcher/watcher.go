@@ -3,7 +3,7 @@ package watcher
 import (
 	"fmt"
 	"os"
-	"slices"
+	"regexp"
 	"strings"
 	"time"
 
@@ -63,11 +63,11 @@ func scanFiles() {
 // that are not present in FileStates and returns them.
 func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	utils.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
-		if !shouldIncludeFile(file.Name()) {
+		path := fmt.Sprintf("%s/%s", dir, file.Name())
+		if !shouldIncludeFile(path) {
 			return
 		}
 
-		path := fmt.Sprintf("%s/%s", dir, file.Name())
 		_, exists := FileStateMap[path]
 
 		if exists {
@@ -80,20 +80,39 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	return newFiles
 }
 
-// Check if the file path should be included
-// according to the config values Include and Exclude patternd
-func shouldIncludeFile(file string) bool {
-	if len(config.Values.FilePatterns.Include) == 0 {
-		return true
+func regexpMatchString(str string, pattern string) bool {
+	pattern = strings.ReplaceAll(pattern, "*", ".*")
+	var match, err = regexp.MatchString(pattern, str)
+
+	if err != nil {
+		panic(err)
 	}
 
-	//TODO functionality for wildcard matching (*.js, *.d.ts)
-	var split = strings.Split(file, ".")
-	var ext = split[len(split)-1]
+	return match
+}
 
-	if !slices.Contains(config.Values.FilePatterns.Include, ext) {
+// Check if the file path should be included
+// according to the config values Include and Exclude patternd
+func shouldIncludeFile(path string) bool {
+	for _, pattern := range config.Values.FilePatterns.Exclude {
+		if !regexpMatchString(path, pattern) {
+			continue
+		}
+
+		// fmt.Printf("Excluded (%s): %s\n", pattern, path)
 		return false
 	}
 
-	return true
+	for _, pattern := range config.Values.FilePatterns.Include {
+		pattern = strings.ReplaceAll(pattern, ".", "\\.")
+
+		if !regexpMatchString(path, pattern) {
+			continue
+		}
+
+		// fmt.Printf("Included (%s): %s\n", pattern, path)
+		return true
+	}
+
+	return len(config.Values.FilePatterns.Include) == 0
 }
