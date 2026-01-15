@@ -64,7 +64,7 @@ func scanFiles() {
 func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	utils.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
 		path := fmt.Sprintf("%s/%s", dir, file.Name())
-		if !shouldIncludeFile(path) {
+		if !ShouldIncludeFile(path) {
 			return
 		}
 
@@ -81,7 +81,10 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 }
 
 func regexpMatchString(str string, pattern string) bool {
+	pattern = strings.ReplaceAll(pattern, ".", "\\.")
 	pattern = strings.ReplaceAll(pattern, "*", ".*")
+	pattern += "$"
+
 	var match, err = regexp.MatchString(pattern, str)
 
 	if err != nil {
@@ -93,24 +96,24 @@ func regexpMatchString(str string, pattern string) bool {
 
 // Check if the file path should be included
 // according to the config values Include and Exclude patternd
-func shouldIncludeFile(path string) bool {
+func ShouldIncludeFile(path string) bool {
 	for _, pattern := range config.Values.FilePatterns.Exclude {
 		if !regexpMatchString(path, pattern) {
 			continue
 		}
 
-		// fmt.Printf("Excluded (%s): %s\n", pattern, path)
+		fmt.Printf("Excluded (%s): %s\n", pattern, path)
 		return false
 	}
 
 	for _, pattern := range config.Values.FilePatterns.Include {
-		pattern = strings.ReplaceAll(pattern, ".", "\\.")
+		// pattern = strings.ReplaceAll(pattern, ".", "\\.")
 
 		if !regexpMatchString(path, pattern) {
 			continue
 		}
 
-		// fmt.Printf("Included (%s): %s\n", pattern, path)
+		fmt.Printf("Included (%s): %s\n", pattern, path)
 		return true
 	}
 
