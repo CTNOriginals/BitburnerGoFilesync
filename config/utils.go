@@ -9,7 +9,7 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 )
 
-func SetBitburnerDir(dir string) {
+func ValidateBitburnerDirectory(dir string) {
 	var isAbsolute = path.IsAbs(dir)
 
 	if runtime.GOOS == "windows" {

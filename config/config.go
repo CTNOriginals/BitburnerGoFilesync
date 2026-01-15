@@ -61,5 +61,11 @@ func Initialize() {
 		panic(fmt.Sprintf("Config decode error:\n%v\n", err))
 	}
 
-	log(fmt.Sprintf("Config file content:\n%+v", Values))
+	log(fmt.Sprintf("Config file content:\n%+v\n", Values))
+	validateConfigValues()
+	log(fmt.Sprintf("Config Values:\n%+v\n", Values))
+}
+
+func validateConfigValues() {
+	ValidateBitburnerDirectory(Values.Directory)
 }

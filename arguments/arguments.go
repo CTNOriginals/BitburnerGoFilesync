@@ -12,7 +12,6 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/test"
-	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 	"github.com/gorilla/websocket"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
@@ -131,7 +130,7 @@ var argumentList = argList{
 				os.Exit(1)
 			}
 
-			utils.SetBitburnerDir(params[0])
+			config.ValidateBitburnerDirectory(params[0])
 		},
 	},
 	{Alias: []string{"--include-ext", "--ext"},
