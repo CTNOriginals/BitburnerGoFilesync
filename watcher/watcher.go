@@ -3,8 +3,9 @@ package watcher
 import (
 	"fmt"
 	"os"
-	"regexp"
-	"strings"
+	"path/filepath"
+	// "regexp"
+	// "strings"
 	"time"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
@@ -64,6 +65,7 @@ func scanFiles() {
 func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	utils.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
 		path := fmt.Sprintf("%s/%s", dir, file.Name())
+
 		if !ShouldIncludeFile(path) {
 			return
 		}
@@ -80,12 +82,15 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	return newFiles
 }
 
-func regexpMatchString(str string, pattern string) bool {
-	pattern = strings.ReplaceAll(pattern, ".", "\\.")
-	pattern = strings.ReplaceAll(pattern, "*", ".*")
-	pattern += "$"
+func patternMatch(str string, pattern string) bool {
+	// pattern = strings.ReplaceAll(pattern, ".", "\\.")
+	// pattern = strings.ReplaceAll(pattern, "*", ".*")
+	// pattern += "$"
 
-	var match, err = regexp.MatchString(pattern, str)
+	// var match, err = regexp.MatchString(pattern, str)
+	var match, err = filepath.Match(pattern, str)
+	// var list, _ = filepath.Glob(fmt.Sprintf("%s/**/%s", config.Values.Directory, pattern))
+	// fmt.Printf("%s\n", list)
 
 	if err != nil {
 		panic(err)
@@ -94,11 +99,20 @@ func regexpMatchString(str string, pattern string) bool {
 	return match
 }
 
+func GetPathsByGlob(pattern string) []string {
+	var paths = []string{}
+
+	paths = append(paths, utils.Expect(filepath.Glob(utils.GetAbsolutePath(pattern)))...)
+	paths = append(paths, utils.Expect(filepath.Glob(utils.GetAbsolutePath("*/**/"+pattern)))...)
+
+	return paths
+}
+
 // Check if the file path should be included
 // according to the config values Include and Exclude patternd
 func ShouldIncludeFile(path string) bool {
 	for _, pattern := range config.Values.FilePatterns.Exclude {
-		if !regexpMatchString(path, pattern) {
+		if !patternMatch(path, pattern) {
 			continue
 		}
 
@@ -109,7 +123,7 @@ func ShouldIncludeFile(path string) bool {
 	for _, pattern := range config.Values.FilePatterns.Include {
 		// pattern = strings.ReplaceAll(pattern, ".", "\\.")
 
-		if !regexpMatchString(path, pattern) {
+		if !patternMatch(path, pattern) {
 			continue
 		}
 

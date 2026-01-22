@@ -42,9 +42,13 @@ func ForEachFileInDirRecursive(dir string, fn func(file os.FileInfo, dir string)
 	})
 }
 
+func GetAbsolutePath(path string) string {
+	return fmt.Sprintf("%s/%s", config.Values.Directory, path)
+}
+
 // The path needs to be relative the the bitburner dir
 func GetFileContentByPath(path string) []byte {
-	var filePath = fmt.Sprintf("%s/%s", config.Values.Directory, path)
+	var filePath = GetAbsolutePath(path)
 
 	if !ctnfile.FileExists(filePath) {
 		fmt.Printf("utils/GetFileContentByPath: File does not exist: %s\n", filePath)
