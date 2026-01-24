@@ -64,8 +64,8 @@ run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
 wrun: ##@run Run and watch for file changes. Requires wgo: https://github.com/bokwoon95/wgo
 	wgo run ./main.go $(args)
 
-test: ##@run Run the test file (just a usual script to test new features).
-	wgo run ./main.go --test
+test: ##@run go test followed by normally running with the --test flag afterwards.
+	wgo run . --test :: wgo -file .go go test -v ./...
 
 build-win: ##@build Build for windows. Binary will be located at ./build/
 	GOOS=windows GOARCH=amd64 go build -o ./build/BitburnerGoFilesync.exe ./main.go
