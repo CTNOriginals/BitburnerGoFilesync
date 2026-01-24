@@ -82,22 +82,6 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	return newFiles
 }
 
-func patternMatch(pattern string, path string) bool {
-	var variants = []string{
-		"**/" + pattern,
-		"*/**/" + pattern,
-	}
-
-	var valid bool = utils.Expect(filepath.Match(pattern, path))
-
-	for _, variant := range variants {
-		var state = utils.Expect(filepath.Match(variant, path))
-		valid = valid || state
-	}
-
-	return valid
-}
-
 // Check if the file path should be included
 // according to the config values Include and Exclude patternd
 func shouldIncludeFile(path string) bool {
@@ -118,4 +102,20 @@ func shouldIncludeFile(path string) bool {
 	}
 
 	return len(config.Values.FilePatterns.Include) == 0
+}
+
+func patternMatch(pattern string, path string) bool {
+	var variants = []string{
+		"**/" + pattern,
+		"*/**/" + pattern,
+	}
+
+	var valid bool = utils.Expect(filepath.Match(pattern, path))
+
+	for _, variant := range variants {
+		var state = utils.Expect(filepath.Match(variant, path))
+		valid = valid || state
+	}
+
+	return valid
 }
