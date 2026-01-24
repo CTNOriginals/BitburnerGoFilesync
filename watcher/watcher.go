@@ -66,7 +66,7 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	utils.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
 		path := fmt.Sprintf("%s/%s", dir, file.Name())
 
-		if !ShouldIncludeFile(path) {
+		if !shouldIncludeFile(path) {
 			return
 		}
 
@@ -82,52 +82,38 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	return newFiles
 }
 
-func patternMatch(str string, pattern string) bool {
-	// pattern = strings.ReplaceAll(pattern, ".", "\\.")
-	// pattern = strings.ReplaceAll(pattern, "*", ".*")
-	// pattern += "$"
-
-	// var match, err = regexp.MatchString(pattern, str)
-	var match, err = filepath.Match(pattern, str)
-	// var list, _ = filepath.Glob(fmt.Sprintf("%s/**/%s", config.Values.Directory, pattern))
-	// fmt.Printf("%s\n", list)
-
-	if err != nil {
-		panic(err)
+func patternMatch(pattern string, path string) bool {
+	var variants = []string{
+		"**/" + pattern,
+		"*/**/" + pattern,
 	}
 
-	return match
-}
+	var valid bool = utils.Expect(filepath.Match(pattern, path))
 
-func GetPathsByGlob(pattern string) []string {
-	var paths = []string{}
+	for _, variant := range variants {
+		var state = utils.Expect(filepath.Match(variant, path))
+		valid = valid || state
+	}
 
-	paths = append(paths, utils.Expect(filepath.Glob(utils.GetAbsolutePath(pattern)))...)
-	paths = append(paths, utils.Expect(filepath.Glob(utils.GetAbsolutePath("*/**/"+pattern)))...)
-
-	return paths
+	return valid
 }
 
 // Check if the file path should be included
 // according to the config values Include and Exclude patternd
-func ShouldIncludeFile(path string) bool {
+func shouldIncludeFile(path string) bool {
 	for _, pattern := range config.Values.FilePatterns.Exclude {
-		if !patternMatch(path, pattern) {
+		if !patternMatch(pattern, path) {
 			continue
 		}
 
-		fmt.Printf("Excluded (%s): %s\n", pattern, path)
 		return false
 	}
 
 	for _, pattern := range config.Values.FilePatterns.Include {
-		// pattern = strings.ReplaceAll(pattern, ".", "\\.")
-
-		if !patternMatch(path, pattern) {
+		if !patternMatch(pattern, path) {
 			continue
 		}
 
-		fmt.Printf("Included (%s): %s\n", pattern, path)
 		return true
 	}
 
