@@ -65,9 +65,9 @@ wrun: ##@run Run and watch for file changes. Requires wgo: https://github.com/bo
 	wgo run ./main.go $(args)
 
 run-test: ##@run Run and watch with the --test flag. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo run . --test $(args)
+	wgo run . $(args) --test
 
-test: ##@run go test followed by normally running with the --test flag afterwards.
+test: ##@run go test and watch. Requires wgo: https://github.com/bokwoon95/wgo
 	wgo -file .go go test -v ./...
 
 build-win: ##@build Build for windows. Binary will be located at ./build/
