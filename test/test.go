@@ -8,7 +8,7 @@ import (
 )
 
 func DoTest() {
-	config.Initialize()
+	// config.Initialize()
 	println("\n")
 	fmt.Printf("%s: %v\n", "Port", config.Values.Port)
 	fmt.Printf("%s: %v\n", "WorkindDirectory", constants.WorkindDirectory)
@@ -19,4 +19,5 @@ func DoTest() {
 	fmt.Printf("%s: %v\n", "NoServer", constants.NoServer)
 	fmt.Printf("%s: %v\n", "KeepAlive", constants.KeepAlive)
 	println("")
+	// watcher.FileScanner()
 }

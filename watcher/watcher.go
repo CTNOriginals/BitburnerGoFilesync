@@ -3,13 +3,12 @@ package watcher
 import (
 	"fmt"
 	"os"
-	"path/filepath"
-	// "regexp"
-	// "strings"
+	"strings"
 	"time"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
+	"github.com/bmatcuk/doublestar/v4"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )
@@ -56,6 +55,7 @@ func scanFiles() {
 	newFiles := getUnregisteredFiles(config.Values.Directory)
 
 	for _, file := range newFiles {
+		fmt.Printf("new file: %s\n", file)
 		FileEventHandlerMap.Handle(file, OnFileCreate)
 	}
 }
@@ -64,7 +64,15 @@ func scanFiles() {
 // that are not present in FileStates and returns them.
 func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	utils.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
-		path := fmt.Sprintf("%s/%s", dir, file.Name())
+		var reldir = strings.Replace(dir, config.Values.Directory, "", 1)
+		// Relative path to bitburners root dir
+		var path string
+
+		if reldir == "" {
+			path = file.Name()
+		} else {
+			path = fmt.Sprintf("%s/%s", reldir, file.Name())
+		}
 
 		if !shouldIncludeFile(path) {
 			return
@@ -105,17 +113,15 @@ func shouldIncludeFile(path string) bool {
 }
 
 func patternMatch(pattern string, path string) bool {
-	var variants = []string{
-		"**/" + pattern,
-		"*/**/" + pattern,
+	var match bool
+	var err error
+
+	match, err = doublestar.PathMatch(pattern, path)
+
+	if err != nil {
+		fmt.Printf("Pattern match error: %v (%s > %s = %t)\n", err, pattern, path, match)
+		return false
 	}
 
-	var valid bool = utils.Expect(filepath.Match(pattern, path))
-
-	for _, variant := range variants {
-		var state = utils.Expect(filepath.Match(variant, path))
-		valid = valid || state
-	}
-
-	return valid
+	return match
 }
