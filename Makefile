@@ -56,7 +56,7 @@ version: ##@help Log the current version
 # 	@echo hello "$@"
 
 # -- Project --
-.PHONY: run wrun test build-win build-linux build
+.PHONY: run wrun run-test test build-win build-linux build
 
 run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
 	go run ./main.go $(args)
@@ -64,8 +64,11 @@ run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
 wrun: ##@run Run and watch for file changes. Requires wgo: https://github.com/bokwoon95/wgo
 	wgo run ./main.go $(args)
 
+run-test: ##@run Run and watch with the --test flag. Requires wgo: https://github.com/bokwoon95/wgo
+	wgo run . --test $(args)
+
 test: ##@run go test followed by normally running with the --test flag afterwards.
-	wgo run . --test :: wgo -file .go go test -v ./...
+	wgo -file .go go test -v ./...
 
 build-win: ##@build Build for windows. Binary will be located at ./build/
 	GOOS=windows GOARCH=amd64 go build -o ./build/BitburnerGoFilesync.exe ./main.go
