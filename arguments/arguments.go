@@ -108,6 +108,27 @@ var argumentList = argList{
 			os.Exit(0)
 		},
 	},
+	{Alias: []string{"--config"},
+		Description: []string{
+			"Define the config.toml file path.",
+			"By default, the config file is located in the same directory as the binary.",
+			"If no config file exists at the specified location, one will be created.",
+		},
+		Params: argParameters{
+			{Name: "filepath", Description: []string{
+				"The path to the config file",
+				"Default: " + constants.ConfigFilePath,
+			}},
+		},
+		Action: func(params []string) {
+			if len(params) == 0 {
+				fmt.Print("'--config' requires at least 1 parameter.\n")
+				os.Exit(1)
+			}
+
+			constants.ConfigFilePath = params[0]
+		},
+	},
 	{Alias: []string{"--dir"},
 		Description: []string{
 			"Specify the directory where this tool should watch",

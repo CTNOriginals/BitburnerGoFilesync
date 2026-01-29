@@ -48,10 +48,13 @@ func main() {
 	fmt.Printf("\n\n---- FileSync START %s ----\n", startTime.Format(time.TimeOnly))
 	defer fmt.Printf("---- FileSync END %s ----\n", startTime.Format(time.TimeOnly))
 
+	var args = os.Args
+
+	// Make sure that the config file path is the correct one before initializing the config
+	arguments.ParseSpecificArgs(args, true, "--config")
 	config.Initialize()
 
-	var args = os.Args
-	arguments.ParseArgs(args)
+	arguments.ParseSpecificArgs(args, false, "--config")
 
 	if !constants.NoWatcher {
 		watcher.Initialize()
