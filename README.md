@@ -34,30 +34,29 @@ Current automated triggers:
 
 You may skip step 2 and put the executable anywhere you like, but for the program to work you will then have to supply it with a `--dir` argument flag, more about that in **Arguments**.
 
-Alternatively if you rather not download an executable from this repository (I would not blame you for being careful) you may also clone this repository and build it yourself:
-
-## How to build
-
-### Requirements
-- [golang](https://go.dev/doc/install): To be able to run the code
-
-Once you have a clone of this repository and you installed the *long list* of requirements you may run the project in any of the following ways:
-- `make run`: This will run the project without any arguments.<br>
-    This method __does not__ accept arguments.
-- `go run main.go`: This is what `make run` would have done for you.<br>
-    This method __does accept__ arguments.
-- `make build`: This will compile the project into a binary.<br>
-    The binary will be located relative to the working directory of this project (where the main.go is) at `./build/`.
-
-For more run methods you can check out the `./Makefile` and try any of its commands under `-- Project --`.
-
+Alternatively if you rather not download an executable from this repository (I would not blame you for being careful)
+you may also clone this repository and [run/build it yourself](#how-to-build).
 
 ## Usage
 
 Once the executable is installed you are ready to get started with the game, the only thing you would still need to do is start the filesyncer via the commandline that you should have opened in step 3 of the installation guide.
 
-Simply enter `BitburnerGoFilesync.exe` (or whatever the executable is called on your system) and pass in any arguments that you like.
+Simply enter `BitburnerGoFilesync.exe` (or whatever the executable is called on your system) and pass in any arguments that you like to run it with.
 
+## How to build
+
+### Requirements
+- [golang](https://go.dev/doc/install): To be able to run the project.
+- (Optional) [wgo](https://github.com/bokwoon95/wgo): This is required for some Makefile targets.
+<br>It is a tool that also watches the project for file changes and restarts it once anything is detected.
+
+Once you have a clone of this repository and you installed the "*long list*" of requirements you can run the project in one of two ways:
+1. Use `make [target]`.
+<br>To see all possible targets and their descriptions, run `make help`.
+2. Manually type out what you want to run.
+<br>This would be something along the lines of `go run . --arg1 param --arg2 ...`.
+
+If you are looking to contribute, please read the [Contribution Guidelines](https://github.com/CTNOriginals/BitburnerGoFilesync?tab=readme-ov-file).
 
 ## Arguments
 
@@ -67,11 +66,11 @@ Formatting Rules:
     Each new argument always has to start with a double dash '--'.
     If the argument does not start with '--' it is considered a parameter
     for the most recent argument that started with '--'.
-
+    
     Each argument may have any number of parameters,
     to check what an argument may accept or require,
     you can do --help followed by the name of the argument without the '--'.
-
+    
     Some arguments may accept a specific amount of parameters where others accept a range.
     If an argument doesnt have its required parameters, it will say so in the console,
     this argument will not execute anything after that and will be ignored.
@@ -89,6 +88,15 @@ Formatting Rules:
 --full-help, --fhelp:
     The same as --help, but it also includes all of the extra information
     as if you entered --help <command> for each argument.
+
+--config:
+    Define the config.toml file path.
+    By default, the config file is located in the same directory as the binary.
+    If no config file exists at the specified location, one will be created.
+  Parameters:
+    filepath:
+      The path to the config file
+      Default: /home/ctn/code/bitburner/gofilesync/config.toml
 
 --dir:
     Specify the directory where this tool should watch
@@ -128,7 +136,7 @@ Formatting Rules:
 
 DEBUG ARGUMENTS
 
---test:
+--test, --debug:
     Runs the test function if it exists
 
 --no-watcher:
