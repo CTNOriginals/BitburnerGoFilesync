@@ -34,10 +34,12 @@ package main
 import (
 	"fmt"
 	"os"
+	"slices"
 	"time"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/arguments"
 	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
+	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/watcher"
 )
@@ -48,7 +50,14 @@ func main() {
 	defer fmt.Printf("---- FileSync END %s ----\n", startTime.Format(time.TimeOnly))
 
 	var args = os.Args
-	arguments.ParseArgs(args)
+
+	constants.Debug = slices.Contains(args, "--test") || slices.Contains(args, "--debug")
+
+	// Make sure that the config file path is the correct one before initializing the config
+	arguments.ParseSpecificArgs(args, true, "--config")
+	config.Initialize()
+
+	arguments.ParseSpecificArgs(args, false, "--config")
 
 	if !constants.NoWatcher {
 		watcher.Initialize()
@@ -56,7 +65,7 @@ func main() {
 	}
 
 	if !constants.NoServer {
-		communication.StartServer(constants.Port)
+		communication.StartServer(config.Values.Port)
 	} else if constants.KeepAlive {
 		for {
 			time.Sleep(time.Millisecond)

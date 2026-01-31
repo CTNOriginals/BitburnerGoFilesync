@@ -3,12 +3,12 @@ package watcher
 import (
 	"fmt"
 	"os"
-	"slices"
 	"strings"
 	"time"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
+	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
+	"github.com/bmatcuk/doublestar/v4"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )
@@ -20,19 +20,19 @@ var FileStateMap MFileState = MFileState{}
 func Initialize() {
 	// Register the existing files without calling the OnCreate event
 	// to prevent them from being sent over the websocket
-	for _, file := range getUnregisteredFiles(constants.BitburnerRoot) {
+	for _, file := range getUnregisteredFiles(config.Values.Directory) {
 		FileStateMap[file.Path] = file
 	}
 }
 
 func FileScanner() {
-	fmt.Printf("Scanning files in: %s\n", constants.BitburnerRoot)
+	fmt.Printf("Scanning files in: %s\n", config.Values.Directory)
 
 	for {
 		scanFiles()
 
-		if constants.FileScanDelay > 0 {
-			time.Sleep(time.Millisecond * time.Duration(constants.FileScanDelay))
+		if config.Values.FileScanInterval > 0 {
+			time.Sleep(time.Millisecond * time.Duration(config.Values.FileScanInterval))
 		}
 	}
 }
@@ -52,9 +52,10 @@ func scanFiles() {
 		}
 	}
 
-	newFiles := getUnregisteredFiles(constants.BitburnerRoot)
+	newFiles := getUnregisteredFiles(config.Values.Directory)
 
 	for _, file := range newFiles {
+		fmt.Printf("new file: %s\n", file)
 		FileEventHandlerMap.Handle(file, OnFileCreate)
 	}
 }
@@ -63,17 +64,20 @@ func scanFiles() {
 // that are not present in FileStates and returns them.
 func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	utils.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
-		if len(constants.IncludeFileExt) > 0 {
-			//TODO functionality for wildcard matching (*.js, *.d.ts)
-			var split = strings.Split(file.Name(), ".")
-			var ext = split[len(split)-1]
+		var reldir = strings.Replace(dir, config.Values.Directory, "", 1)
+		// Relative path to bitburners root dir
+		var path string
 
-			if !slices.Contains(constants.IncludeFileExt, ext) {
-				return
-			}
+		if reldir == "" {
+			path = file.Name()
+		} else {
+			path = fmt.Sprintf("%s/%s", reldir, file.Name())
 		}
 
-		path := fmt.Sprintf("%s/%s", dir, file.Name())
+		if !shouldIncludeFile(path) {
+			return
+		}
+
 		_, exists := FileStateMap[path]
 
 		if exists {
@@ -84,4 +88,40 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	})
 
 	return newFiles
+}
+
+// Check if the file path should be included
+// according to the config values Include and Exclude patternd
+func shouldIncludeFile(path string) bool {
+	for _, pattern := range config.Values.FilePatterns.Exclude {
+		if !patternMatch(pattern, path) {
+			continue
+		}
+
+		return false
+	}
+
+	for _, pattern := range config.Values.FilePatterns.Include {
+		if !patternMatch(pattern, path) {
+			continue
+		}
+
+		return true
+	}
+
+	return len(config.Values.FilePatterns.Include) == 0
+}
+
+func patternMatch(pattern string, path string) bool {
+	var match bool
+	var err error
+
+	match, err = doublestar.PathMatch(pattern, path)
+
+	if err != nil {
+		fmt.Printf("Pattern match error: %v (%s > %s = %t)\n", err, pattern, path, match)
+		return false
+	}
+
+	return match
 }

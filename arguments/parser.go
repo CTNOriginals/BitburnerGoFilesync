@@ -1,10 +1,41 @@
 package arguments
 
-import "fmt"
+import (
+	"fmt"
+	"slices"
+)
 
 type argStream struct {
 	Alias  string
 	Params []string
+}
+
+// Parse specific args removes any args and their params
+// from args if they are not included in list
+// or if include is false, the args in list will be remove from args instead.
+func ParseSpecificArgs(args []string, include bool, list ...string) {
+	if len(list) == 0 {
+		if !include {
+			ParseArgs(args)
+		}
+
+		return
+	}
+
+	var validArgs = []string{}
+	var validArg = false
+
+	for _, part := range args {
+		if len(part) >= 2 && part[0:2] == "--" {
+			validArg = include == slices.Contains(list, part)
+		}
+
+		if validArg {
+			validArgs = append(validArgs, part)
+		}
+	}
+
+	ParseArgs(validArgs)
 }
 
 func ParseArgs(args []string) {

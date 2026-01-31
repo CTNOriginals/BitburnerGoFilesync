@@ -9,6 +9,7 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
 	"github.com/CTNOriginals/BitburnerGoFilesync/communication/constructor"
 	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
+	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/test"
 	"github.com/gorilla/websocket"
@@ -107,6 +108,27 @@ var argumentList = argList{
 			os.Exit(0)
 		},
 	},
+	{Alias: []string{"--config"},
+		Description: []string{
+			"Define the config.toml file path.",
+			"By default, the config file is located in the same directory as the binary.",
+			"If no config file exists at the specified location, one will be created.",
+		},
+		Params: argParameters{
+			{Name: "filepath", Description: []string{
+				"The path to the config file",
+				"Default: " + constants.ConfigFilePath,
+			}},
+		},
+		Action: func(params []string) {
+			if len(params) == 0 {
+				fmt.Print("'--config' requires at least 1 parameter.\n")
+				os.Exit(1)
+			}
+
+			constants.ConfigFilePath = params[0]
+		},
+	},
 	{Alias: []string{"--dir"},
 		Description: []string{
 			"Specify the directory where this tool should watch",
@@ -129,7 +151,7 @@ var argumentList = argList{
 				os.Exit(1)
 			}
 
-			constants.SetBitburnerDir(params[0])
+			config.ValidateBitburnerDirectory(params[0])
 		},
 	},
 	{Alias: []string{"--include-ext", "--ext"},
@@ -144,7 +166,7 @@ var argumentList = argList{
 			}},
 		},
 		Action: func(params []string) {
-			constants.IncludeFileExt = params
+			config.Values.FilePatterns.Include = params
 		},
 	},
 	{Alias: []string{"--port"},
@@ -164,7 +186,7 @@ var argumentList = argList{
 				os.Exit(1)
 			}
 
-			constants.Port = params[0]
+			config.Values.Port = params[0]
 		},
 	},
 	{Alias: []string{"--scan-interval", "--interval"},
@@ -196,7 +218,7 @@ var argumentList = argList{
 				os.Exit(1)
 			}
 
-			constants.FileScanDelay = int(num)
+			config.Values.FileScanInterval = int(num)
 		},
 	},
 	{Alias: []string{"--get-definitions"},
@@ -217,7 +239,7 @@ var argumentList = argList{
 					fmt.Printf("'--get-definitions' expects a string response but received another type instead: %v", message.Response)
 					return
 				}
-				ctnfile.WriteFile(constants.BitburnerRoot+"/NetscriptDefinitions.d.ts", strings.Split(content, "\n"))
+				ctnfile.WriteFile(config.Values.Directory+"/NetscriptDefinitions.d.ts", strings.Split(content, "\n"))
 			}
 
 			var onConnect = func(ws *websocket.Conn) {
@@ -230,12 +252,13 @@ var argumentList = argList{
 
 	{Alias: []string{"DEBUG ARGUMENTS"}},
 
-	{Alias: []string{"--test"},
+	{Alias: []string{"--test", "--debug"},
 		Description: []string{
 			"Runs the test function if it exists",
 		},
 		Params: argParameters{},
 		Action: func(params []string) {
+			constants.Debug = true
 			test.DoTest()
 			os.Exit(0)
 		},

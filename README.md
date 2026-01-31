@@ -30,34 +30,58 @@ Current automated triggers:
     - linux: `BitburnerGoFilesync`
 2. Put the executable in same directory where you keep all your bitburner scripts
 3. Open a commandline in the directory you put the executable in
-4. Move on to **Usage**
+4. Move on to [Usage](#usage)
 
-You may skip step 2 and put the executable anywhere you like, but for the program to work you will then have to supply it with a `--dir` argument flag, more about that in **Arguments**.
+You may skip step 2 and put the executable anywhere you like, but for the program target the correct files,
+<br>you may need to specify youre preferred file path in the [config](#config),
+<br>or pass in the `--dir` argument, more about that in [Arguments](#arguments).
 
-Alternatively if you rather not download an executable from this repository (I would not blame you for being careful) you may also clone this repository and build it yourself:
-
-## How to build
-
-### Requirements
-- [golang](https://go.dev/doc/install): To be able to run the code
-
-Once you have a clone of this repository and you installed the *long list* of requirements you may run the project in any of the following ways:
-- `make run`: This will run the project without any arguments.<br>
-    This method __does not__ accept arguments.
-- `go run main.go`: This is what `make run` would have done for you.<br>
-    This method __does accept__ arguments.
-- `make build`: This will compile the project into a binary.<br>
-    The binary will be located relative to the working directory of this project (where the main.go is) at `./build/`.
-
-For more run methods you can check out the `./Makefile` and try any of its commands under `-- Project --`.
-
+Alternatively if you rather not download an executable from this repository (I would not blame you for being careful)
+you may also clone this repository and [run/build it yourself](#how-to-build).
 
 ## Usage
 
 Once the executable is installed you are ready to get started with the game, the only thing you would still need to do is start the filesyncer via the commandline that you should have opened in step 3 of the installation guide.
 
-Simply enter `BitburnerGoFilesync.exe` (or whatever the executable is called on your system) and pass in any arguments that you like.
+Simply enter `BitburnerGoFilesync.exe` (or whatever the executable is called on your system) and pass in any arguments that you like to run it with.
 
+## Config
+
+A config file will be created for you once you run the tool for the first time.
+
+The file will be located in the same directory that you ran the tool in, you can change that with the `--config` argument (use `--help config` for more info).
+
+The config file by default will be named `config.toml` and the initial content will be all possible fields for the config with their default values assigned to them.
+
+### Config Fields
+
+**Legend**:
+- `[field]`: Group Section Header. This row's default column will instead be empty or hold relevant info.
+- `- field`: Section child field.
+
+| Field | Description | Default |
+|:-----|:------------|:-------:|
+| Port | Set the port for the server to connect to. | `"8080"` |
+| Directory | Specify the directory where this tool should watch for file changes to sync up with bitburner. | `"./"` |
+| FileScanInterval | The amount of miliseconds the file scanner waits each loop. | `100` |
+| [FilePatterns] | Holds include and exclude file pattern matching fields which allow you to define which files to sync and which not to. | [Pattern matching rules](https://github.com/bmatcuk/doublestar?tab=readme-ov-file#patterns) |
+| - Include | Which files should be included. | `["**/*.js", "**/*.ts"]` |
+| - Exclude | Which files to ignore. This is checked before the include patterns.  | `["**/*.d.ts"]` |
+
+## How to build
+
+### Requirements
+- [golang](https://go.dev/doc/install): To be able to run the project.
+- (Optional) [wgo](https://github.com/bokwoon95/wgo): This is required for some Makefile targets.
+<br>It is a tool that also watches the project for file changes and restarts it once anything is detected.
+
+Once you have a clone of this repository and you installed the "*long list*" of requirements you can run the project in one of two ways:
+1. Use `make [target]`.
+<br>To see all possible targets and their descriptions, run `make help`.
+2. Manually type out what you want to run.
+<br>This would be something along the lines of `go run . --arg1 param --arg2 ...`.
+
+If you are looking to contribute, please read the [Contribution Guidelines](https://github.com/CTNOriginals/BitburnerGoFilesync?tab=readme-ov-file).
 
 ## Arguments
 
@@ -67,11 +91,11 @@ Formatting Rules:
     Each new argument always has to start with a double dash '--'.
     If the argument does not start with '--' it is considered a parameter
     for the most recent argument that started with '--'.
-
+    
     Each argument may have any number of parameters,
     to check what an argument may accept or require,
     you can do --help followed by the name of the argument without the '--'.
-
+    
     Some arguments may accept a specific amount of parameters where others accept a range.
     If an argument doesnt have its required parameters, it will say so in the console,
     this argument will not execute anything after that and will be ignored.
@@ -89,6 +113,15 @@ Formatting Rules:
 --full-help, --fhelp:
     The same as --help, but it also includes all of the extra information
     as if you entered --help <command> for each argument.
+
+--config:
+    Define the config.toml file path.
+    By default, the config file is located in the same directory as the binary.
+    If no config file exists at the specified location, one will be created.
+  Parameters:
+    filepath:
+      The path to the config file
+      Default: /home/ctn/code/bitburner/gofilesync/config.toml
 
 --dir:
     Specify the directory where this tool should watch
@@ -128,7 +161,7 @@ Formatting Rules:
 
 DEBUG ARGUMENTS
 
---test:
+--test, --debug:
     Runs the test function if it exists
 
 --no-watcher:

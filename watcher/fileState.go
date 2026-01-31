@@ -5,8 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
-
+	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	ctnmap "github.com/CTNOriginals/CTNGoUtils/v2/map"
 )
 
@@ -34,7 +33,7 @@ func (this FileInfo) GetInfo() os.FileInfo {
 
 // Returns the path relative to the bitburner directory
 func (this FileInfo) RelativePath() string {
-	var split = strings.Split(this.Path, constants.BitburnerRoot+"/")
+	var split = strings.Split(this.Path, config.Values.Directory+"/")
 	return split[len(split)-1]
 }
 

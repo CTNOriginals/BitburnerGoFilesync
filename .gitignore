@@ -7,5 +7,6 @@ bitburner/
 build/
 .vscode/
 .nvim
+*.toml
 
 *.exe
