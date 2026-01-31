@@ -55,6 +55,16 @@ version: ##@help Log the current version
 # proto: ##@help For prototyping makefile functionality
 # 	@echo hello "$@"
 
+# -- Git --
+.PHONY: git-graph adog
+
+git-graph: ##@git Log decorated graph
+	git log --all --decorate --oneline --graph
+	# git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all
+
+adog:
+	$(MAKE) git-graph
+
 # -- Project --
 .PHONY: run wrun debug test build-win build-linux build
 
