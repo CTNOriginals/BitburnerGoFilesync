@@ -7,7 +7,6 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
-	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 )
 
 type TConfigFilrPatterns struct {
@@ -37,7 +36,7 @@ func Initialize() {
 
 	var content []byte
 	if content, err = toml.Marshal(Values); err != nil {
-		panic(fmt.Sprintf("Default config values marshal error:\n%v\n", err))
+		panic(fmt.Sprintf("Default config values, marshal error:\n%v\n", err))
 	}
 
 	log(fmt.Sprintf("Defaults:\n%s\n", content))
@@ -47,10 +46,8 @@ func Initialize() {
 		ctnfile.WriteFile(constants.ConfigFilePath, strings.Split(string(content), "\n"))
 	}
 
-	var meta toml.MetaData
-	if meta, err = toml.DecodeFile(constants.ConfigFilePath, &Values); err != nil {
-		fmt.Printf("Metadata:\n%s\n\n", ctnstruct.ToString(meta))
-		panic(fmt.Sprintf("Config decode error:\n%v\n", err))
+	if _, err = toml.DecodeFile(constants.ConfigFilePath, &Values); err != nil {
+		panic(fmt.Sprintf("Config decode error:\n%v", err))
 	}
 
 	log(fmt.Sprintf("Config file content:\n%+v\n", Values))

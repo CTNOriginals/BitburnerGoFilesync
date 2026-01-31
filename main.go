@@ -34,6 +34,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"slices"
 	"time"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/arguments"
@@ -49,6 +50,8 @@ func main() {
 	defer fmt.Printf("---- FileSync END %s ----\n", startTime.Format(time.TimeOnly))
 
 	var args = os.Args
+
+	constants.Debug = slices.Contains(args, "--test") || slices.Contains(args, "--debug")
 
 	// Make sure that the config file path is the correct one before initializing the config
 	arguments.ParseSpecificArgs(args, true, "--config")
