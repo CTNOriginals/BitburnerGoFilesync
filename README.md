@@ -30,9 +30,11 @@ Current automated triggers:
     - linux: `BitburnerGoFilesync`
 2. Put the executable in same directory where you keep all your bitburner scripts
 3. Open a commandline in the directory you put the executable in
-4. Move on to **Usage**
+4. Move on to [Usage](#usage)
 
-You may skip step 2 and put the executable anywhere you like, but for the program to work you will then have to supply it with a `--dir` argument flag, more about that in **Arguments**.
+You may skip step 2 and put the executable anywhere you like, but for the program target the correct files,
+<br>you may need to specify youre preferred file path in the [config](#config),
+<br>or pass in the `--dir` argument, more about that in [Arguments](#arguments).
 
 Alternatively if you rather not download an executable from this repository (I would not blame you for being careful)
 you may also clone this repository and [run/build it yourself](#how-to-build).
@@ -42,6 +44,29 @@ you may also clone this repository and [run/build it yourself](#how-to-build).
 Once the executable is installed you are ready to get started with the game, the only thing you would still need to do is start the filesyncer via the commandline that you should have opened in step 3 of the installation guide.
 
 Simply enter `BitburnerGoFilesync.exe` (or whatever the executable is called on your system) and pass in any arguments that you like to run it with.
+
+## Config
+
+A config file will be created for you once you run the tool for the first time.
+
+The file will be located in the same directory that you ran the tool in, you can change that with the `--config` argument (use `--help config` for more info).
+
+The config file by default will be named `config.toml` and the initial content will be all possible fields for the config with their default values assigned to them.
+
+### Config Fields
+
+**Legend**:
+- `[field]`: Group Section Header. This row's default column will instead be empty or hold relevant info.
+- `- field`: Section child field.
+
+| Field | Description | Default |
+|:-----|:------------|:-------:|
+| Port | Set the port for the server to connect to. | `"8080"` |
+| Directory | Specify the directory where this tool should watch for file changes to sync up with bitburner. | `"./"` |
+| FileScanInterval | The amount of miliseconds the file scanner waits each loop. | `100` |
+| [FilePatterns] | Holds include and exclude file pattern matching fields which allow you to define which files to sync and which not to. | [Pattern matching rules](https://github.com/bmatcuk/doublestar?tab=readme-ov-file#patterns) |
+| - Include | Which files should be included. | `["**/*.js", "**/*.ts"]` |
+| - Exclude | Which files to ignore. This is checked before the include patterns.  | `["**/*.d.ts"]` |
 
 ## How to build
 
