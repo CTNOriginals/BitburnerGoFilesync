@@ -83,9 +83,9 @@ build: ##@build Build for both windows and linux. Binary will be located at ./bu
 # -- Release --
 .PHONY: version-update patch minor major
 
-# version-update: 
-# 	git tag "v$(VERS)"
-# 	git push --tags
+version-update: 
+	git tag "v$(VERS)"
+	git push --tags
 
 patch: ##@versioning Release a patch (vx.x.+commits)
 	$(MAKE) version-update VERS=$(MAJOR).$(MINOR).$(NEXT_PATCH)
