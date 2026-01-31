@@ -62,9 +62,6 @@ git-graph: ##@git Log decorated graph
 	git log --all --decorate --oneline --graph
 	# git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all
 
-adog:
-	$(MAKE) git-graph
-
 # -- Project --
 .PHONY: run wrun debug test build-win build-linux build
 
@@ -91,17 +88,16 @@ build: ##@build Build for both windows and linux. Binary will be located at ./bu
 	$(MAKE) build-linux
 
 # -- Release --
-.PHONY: version-update patch minor major
+.PHONY: tag patch minor major
 
-version-update: 
-	git tag "v$(VERS)"
+tag: ##@versioning Push tags
 	git push --tags
 
-patch: ##@versioning Release a patch (vx.x.+commits)
-	$(MAKE) version-update VERS=$(MAJOR).$(MINOR).$(NEXT_PATCH)
+patch: ##@versioning Create and add a patch tag (vx.x.+commits)
+	git tag "v$(MAJOR).$(MINOR).$(NEXT_PATCH)"
 
-minor: ##@versioning Release a minor (vx.+1.x)
-	$(MAKE) version-update VERS=$(MAJOR).$(NEXT_MINOR).0
+minor: ##@versioning Create and add a minor tag (vx.+1.x)
+	git tag "v$(MAJOR).$(NEXT_MINOR).0"
 
-major: ##@versioning Release a major (v+1.x.x)
-	$(MAKE) version-update VERS=$(NEXT_MAJOR).0.0
+major: ##@versioning Create and add a major tag (v+1.x.x)
+	git tag "v$(NEXT_MAJOR).0.0"
