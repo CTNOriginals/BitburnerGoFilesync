@@ -56,7 +56,7 @@ version: ##@help Log the current version
 # 	@echo hello "$@"
 
 # -- Project --
-.PHONY: run wrun run-test test build-win build-linux build
+.PHONY: run wrun debug test build-win build-linux build
 
 run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
 	go run ./main.go $(args)
@@ -64,7 +64,7 @@ run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
 wrun: ##@run Run and watch for file changes. Requires wgo: https://github.com/bokwoon95/wgo
 	wgo run ./main.go $(args)
 
-run-test: ##@run Run and watch with the --test flag. Requires wgo: https://github.com/bokwoon95/wgo
+debug: ##@run Run and watch with the --test flag. Requires wgo: https://github.com/bokwoon95/wgo
 	wgo run . $(args) --test
 
 test: ##@run go test and watch. Requires wgo: https://github.com/bokwoon95/wgo
