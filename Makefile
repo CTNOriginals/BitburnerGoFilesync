@@ -63,7 +63,7 @@ git-graph: ##@git Log decorated graph
 	# git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all
 
 # -- Project --
-.PHONY: run wrun debug test build-win build-linux build
+.PHONY: run wrun debug debug-stdin test build-win build-linux build
 
 run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
 	go run ./main.go $(args)
@@ -73,6 +73,9 @@ wrun: ##@run Run and watch for file changes. Requires wgo: https://github.com/bo
 
 debug: ##@run Run and watch with the --test flag. Requires wgo: https://github.com/bokwoon95/wgo
 	wgo run . $(args) --test
+
+debug-stdin: ##@run Same as debug, but with -stdin passed into wgo to allow command inputs during runtime.
+	wgo run -stdin . $(args) --test
 
 test: ##@run go test and watch. Requires wgo: https://github.com/bokwoon95/wgo
 	wgo -file .go go test -v ./...
