@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 	ctnmap "github.com/CTNOriginals/CTNGoUtils/v2/map"
 )
 
@@ -21,7 +22,7 @@ func (this FileInfo) String() string {
 
 // Gets the current os.FileInfo, not the info stored in this.info
 func (this FileInfo) GetInfo() os.FileInfo {
-	file, err := os.Stat(this.Path)
+	file, err := os.Stat(utils.GetAbsolutePath(this.Path))
 
 	if err != nil {
 		fmt.Printf("watchet/GetInfo os.Stat: %v\n", err)

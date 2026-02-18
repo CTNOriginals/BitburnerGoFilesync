@@ -42,7 +42,9 @@ func FileScanner() {
 // the event will be added to the state.
 func scanFiles() {
 	for path, state := range FileStateMap {
-		if !ctnfile.FileExists(path) {
+		var fullPath = utils.GetAbsolutePath(path)
+
+		if !ctnfile.FileExists(fullPath) {
 			FileEventHandlerMap.Handle(state, OnFileDelete)
 			continue
 		}
@@ -72,6 +74,13 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 			path = file.Name()
 		} else {
 			path = fmt.Sprintf("%s/%s", reldir, file.Name())
+
+			// Remove the first '/' if it is present.
+			// This ensures a little more consistency
+			// revative to the paths that are at the root level.
+			if path[0] == '/' {
+				path = path[1:]
+			}
 		}
 
 		if !shouldIncludeFile(path) {
