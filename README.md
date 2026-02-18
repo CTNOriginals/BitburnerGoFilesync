@@ -26,8 +26,9 @@ Current automated triggers:
 ## How to install
 
 1. Download the [latest release](https://github.com/CTNOriginals/BitburnerGoFilesync/releases) file
-    - windows: `BitburnerGoFilesync.exe`
-    - linux: `BitburnerGoFilesync`
+    - windows: `BitburnerGoFilesync_win.exe`
+    - linux: `BitburnerGoFilesync_linux`
+    - mac: `BitburnerGoFilesync_mac`
 2. Put the executable in same directory where you keep all your bitburner scripts
 3. Open a commandline in the directory you put the executable in
 4. Move on to [Usage](#usage)
