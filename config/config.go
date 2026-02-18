@@ -60,7 +60,7 @@ func validateConfigValues() {
 }
 
 func log(msg string) {
-	if !constants.Debug {
+	if !constants.Debug || !constants.LogConfig {
 		return
 	}
 
