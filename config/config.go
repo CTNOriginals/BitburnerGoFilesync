@@ -24,10 +24,10 @@ type TConfig struct {
 var Values = &TConfig{
 	Port:             "8080",
 	Directory:        "./",
-	FileScanInterval: 100,
+	FileScanInterval: 1000,
 	FilePatterns: TConfigFilrPatterns{
-		Include: []string{"**/*.js", "**/*.ts"},
-		Exclude: []string{"**/*.d.ts"},
+		Include: []string{"*.js", "*.ts"},
+		Exclude: []string{"*.d.ts"},
 	},
 }
 
@@ -60,7 +60,7 @@ func validateConfigValues() {
 }
 
 func log(msg string) {
-	if !constants.Debug {
+	if !constants.Debug || !constants.LogConfig {
 		return
 	}
 
