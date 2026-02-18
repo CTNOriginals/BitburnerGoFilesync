@@ -24,7 +24,7 @@ func (this FileInfo) GetInfo() os.FileInfo {
 	file, err := os.Stat(this.Path)
 
 	if err != nil {
-		println(err)
+		fmt.Printf("watchet/GetInfo os.Stat: %v\n", err)
 		return this.Info
 	}
 
