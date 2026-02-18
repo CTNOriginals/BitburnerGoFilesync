@@ -65,17 +65,19 @@ git-graph: ##@git Log decorated graph
 # -- Project --
 .PHONY: run wrun debug test build-win build-linux build
 
+WGO_INCLUDE := -file .go -file .toml
+
 run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
 	go run ./main.go $(args)
 
 wrun: ##@run Run and watch for file changes. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo run ./main.go $(args)
+	wgo $(WGO_INCLUDE) go run ./main.go $(args)
 
 debug: ##@run Run and watch with the --test flag. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo run . $(args) --test
+	wgo $(WGO_INCLUDE) go run . $(args) --test
 
 test: ##@run go test and watch. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo -file .go go test -v ./...
+	wgo $(WGO_INCLUDE) go test -v ./...
 
 build-win: ##@build Build for windows. Binary will be located at ./build/
 	GOOS=windows GOARCH=amd64 go build -o ./build/BitburnerGoFilesync.exe ./main.go
