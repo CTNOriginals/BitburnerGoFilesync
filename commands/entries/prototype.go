@@ -6,19 +6,19 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/commands"
 )
 
-var def = commands.Definition{
+var proto = commands.Definition{
 	Triggers: []string{"prototype", "proto"},
 	Description: []string{
 		"A prototype command used for testing",
 	},
 
-	Execution: execute,
+	Execution: proto_execute,
 }
 
 func init() {
-	commands.CommandList = append(commands.CommandList, &def)
+	commands.CommandList = append(commands.CommandList, &proto)
 }
 
-func execute() {
+func proto_execute() {
 	fmt.Printf("proto waah!\n")
 }
