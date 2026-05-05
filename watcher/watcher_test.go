@@ -33,12 +33,12 @@ func TestPatternMatching(t *testing.T) {
 			testFilePattern("foo/bar/dir/index.d.ts", true)
 		})
 
-		Convey("Include **/*.ts Exclude **/*.d.ts", func() {
+		Convey("Include *.ts Exclude *.d.ts", func() {
 			config.Values.FilePatterns.Include = []string{
-				"**/*.ts",
+				"*.ts",
 			}
 			config.Values.FilePatterns.Exclude = []string{
-				"**/*.d.ts",
+				"*.d.ts",
 			}
 
 			Convey("Should return true", func() {
@@ -53,11 +53,33 @@ func TestPatternMatching(t *testing.T) {
 			})
 		})
 
+		Convey("Include **/*.ts Exclude **/*.d.ts", func() {
+			config.Values.FilePatterns.Include = []string{
+				"**/*.ts",
+			}
+			config.Values.FilePatterns.Exclude = []string{
+				"**/*.d.ts",
+			}
+
+			Convey("Should return true", func() {
+				testFilePattern("dir/index.ts", true)
+				testFilePattern("foo/bar/dir/index.ts", true)
+			})
+			Convey("Should return false", func() {
+				testFilePattern("index.ts", false)
+				testFilePattern("index.d.ts", false)
+				testFilePattern("dir/index.d.ts", false)
+				testFilePattern("foo/bar/dir/index.d.ts", false)
+			})
+		})
+
 		Convey("Include **/foo/** Exclude **/foo/bar/**", func() {
 			config.Values.FilePatterns.Include = []string{
+				"foo/**",
 				"**/foo/**",
 			}
 			config.Values.FilePatterns.Exclude = []string{
+				"foo/bar/**",
 				"**/foo/bar/**",
 			}
 

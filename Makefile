@@ -63,32 +63,38 @@ git-graph: ##@git Log decorated graph
 	# git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all
 
 # -- Project --
-.PHONY: run wrun debug debug-stdin test build-win build-linux build
+.PHONY: run wrun debug test debug-stdin build-win build-linux build-mac build
+
+WGO_INCLUDE := -file .go -file .toml
 
 run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
 	go run ./main.go $(args)
 
 wrun: ##@run Run and watch for file changes. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo run ./main.go $(args)
+	wgo $(WGO_INCLUDE) go run ./main.go $(args)
 
 debug: ##@run Run and watch with the --test flag. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo run . $(args) --test
+	wgo $(WGO_INCLUDE) go run . $(args) --test
 
 debug-stdin: ##@run Same as debug, but with -stdin passed into wgo to allow command inputs during runtime.
 	wgo run -stdin . $(args) --test
 
 test: ##@run go test and watch. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo -file .go go test -v ./...
+	wgo $(WGO_INCLUDE) go test -v ./...
 
 build-win: ##@build Build for windows. Binary will be located at ./build/
-	GOOS=windows GOARCH=amd64 go build -o ./build/BitburnerGoFilesync.exe ./main.go
+	GOOS=windows GOARCH=amd64 go build -o ./build/BitburnerGoFilesync_win.exe ./main.go
 
 build-linux: ##@build Build for linux. Binary will be located at ./build/
-	GOOS=linux GOARCH=amd64 go build -o ./build/BitburnerGoFilesync ./main.go
+	GOOS=linux GOARCH=amd64 go build -o ./build/BitburnerGoFilesync_linux ./main.go
+
+build-mac: ##@build Build for linux. Binary will be located at ./build/
+	GOOS=darwin GOARCH=amd64 go build -o ./build/BitburnerGoFilesync_mac ./main.go
 
 build: ##@build Build for both windows and linux. Binary will be located at ./build/
 	$(MAKE) build-win
 	$(MAKE) build-linux
+	$(MAKE) build-mac
 
 # -- Release --
 .PHONY: tag patch minor major
