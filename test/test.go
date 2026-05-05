@@ -1,6 +1,8 @@
 package test
 
 import (
+	"fmt"
+
 	"github.com/CTNOriginals/BitburnerGoFilesync/commands"
 	// "github.com/CTNOriginals/BitburnerGoFilesync/config"
 	// "github.com/CTNOriginals/BitburnerGoFilesync/constants"
@@ -20,6 +22,10 @@ func DoTest() {
 	// fmt.Printf("%s: %v\n", "KeepAlive", constants.KeepAlive)
 	// println("")
 	// watcher.FileScanner()
+
+	for _, cmd := range commands.CommandList {
+		fmt.Printf("%s\n", cmd)
+	}
 
 	commands.CommandWatcher()
 }

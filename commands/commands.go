@@ -11,14 +11,12 @@ import (
 var CommandList []*Definition = make([]*Definition, 0)
 
 func CommandWatcher() {
-	fmt.Printf("commands: %v\n", CommandList)
+	// fmt.Printf("commands: %v\n", CommandList)
 	fmt.Printf("User Input: ")
 
 	var scanner = bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		var cmd = strings.TrimSpace(scanner.Text())
-
-		fmt.Printf("Received: %s\n", cmd)
 
 		var def = GetCommandByTrigger(cmd)
 
