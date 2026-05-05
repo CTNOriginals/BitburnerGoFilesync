@@ -9,10 +9,11 @@ import (
 )
 
 var CommandList []*Definition = make([]*Definition, 0)
+var promtSymbol = "\033[34m\033[1m»\033[0m "
 
 func CommandWatcher() {
 	// fmt.Printf("commands: %v\n", CommandList)
-	fmt.Printf("User Input: ")
+	fmt.Print(promtSymbol)
 
 	var scanner = bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
@@ -28,7 +29,7 @@ func CommandWatcher() {
 		def.Execution()
 
 	endscan:
-		fmt.Printf("User Input: ")
+		fmt.Print(promtSymbol)
 	}
 }
 
