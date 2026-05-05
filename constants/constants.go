@@ -15,5 +15,3 @@ var NoWatcher = false
 var NoServer = false
 
 var KeepAlive = false
-
-var LogConfig = false
