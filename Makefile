@@ -53,7 +53,7 @@ version: ##@help Log the current version
 	@echo "v$(CURRENT_VERSION_PATCH)"
 
 # proto: ##@help For prototyping makefile functionality
-# 	@echo hello "$@"
+# 	@echo hello $1
 
 # -- Git --
 .PHONY: git-graph adog
@@ -62,25 +62,25 @@ git-graph: ##@git Log decorated graph
 	git log --all --decorate --oneline --graph
 	# git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all
 
-# -- Project --
-.PHONY: run wrun debug test debug-stdin build-win build-linux build-mac build
+# -- Run --
+.PHONY: run wrun debug test
 
 WGO_INCLUDE := -file .go -file .toml
 
 run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
 	go run ./main.go $(args)
 
-wrun: ##@run Run and watch for file changes. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo $(WGO_INCLUDE) go run ./main.go $(args)
+debug: ##@run Run with the --test flag.
+	go run . $(args) --test
 
-debug: ##@run Run and watch with the --test flag. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo $(WGO_INCLUDE) go run . $(args) --test
+test: ##@run go test.
+	go test -v ./...
 
-debug-stdin: ##@run Same as debug, but with -stdin passed into wgo to allow command inputs during runtime.
-	wgo run -stdin . $(args) --test
+wrun: ##@run Run a make target and restart on file change. make wrun target=[TARGET]. Requires wgo: https://github.com/bokwoon95/wgo
+	wgo $(WGO_INCLUDE) $(MAKE) $(target)  
 
-test: ##@run go test and watch. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo $(WGO_INCLUDE) go test -v ./...
+# -- Build --
+.PHONY: build-win build-linux build-mac build
 
 build-win: ##@build Build for windows. Binary will be located at ./build/
 	GOOS=windows GOARCH=amd64 go build -o ./build/BitburnerGoFilesync_win.exe ./main.go
