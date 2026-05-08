@@ -28,4 +28,5 @@ func DoTest() {
 	}
 
 	commands.CommandWatcher()
+	// readlineDemo()
 }
