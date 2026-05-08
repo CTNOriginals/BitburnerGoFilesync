@@ -7,6 +7,8 @@ import (
 	"slices"
 	"strings"
 
+	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
+	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 	"github.com/chzyer/readline"
 )
 
@@ -37,8 +39,10 @@ func CommandWatcher() {
 
 	defer cli.Close()
 
-	// idk yet what this does
 	log.SetOutput(cli.Stderr())
+
+	fmt.Printf("options: {\n%s\n}\n", optToString(options, 1))
+
 	usage(cli.Stderr(), options)
 
 	for {
@@ -79,23 +83,6 @@ func CommandWatcher() {
 			fmt.Printf("Unknown command: %s\n", prefix)
 		}
 	}
-
-	// var scanner = bufio.NewScanner(os.Stdin)
-	// for scanner.Scan() {
-	// 	var cmd = strings.TrimSpace(scanner.Text())
-	//
-	// 	var def = GetCommandByTrigger(cmd)
-	//
-	// 	if def == nil {
-	// 		fmt.Printf("Unknown command: %s\n", cmd)
-	// 		goto endscan
-	// 	}
-	//
-	// 	def.Execution()
-	//
-	// endscan:
-	// 	fmt.Print(promtSymbol)
-	// }
 }
 
 func buildOptions() *readline.PrefixCompleter {
@@ -105,10 +92,26 @@ func buildOptions() *readline.PrefixCompleter {
 	var options = make([]readline.PrefixCompleterInterface, len(CommandList))
 
 	for i, def := range CommandList {
-		options[i] = readline.PcItem(def.Triggers[0], def.Options)
+
+		options[i] = readline.PcItem(def.Triggers[0], def.Options.Children...)
 	}
 
 	return readline.NewPrefixCompleter(options...)
+}
+
+func optToString(opt readline.PrefixCompleterInterface, depth int) string {
+	var str = ctnstruct.ToString(opt, "Name", "Children")
+	var children = make([]string, len(opt.GetChildren()))
+
+	for i, child := range opt.GetChildren() {
+		children[i] = fmt.Sprintf("%s: {\n%s\n}", string(child.GetName()), optToString(child, depth+1))
+	}
+
+	if len(children) > 0 {
+		str += fmt.Sprintf("\nChildren: [\n%s\n]", ctnstring.Indent(strings.Join(children, ",\n"), depth+1, " "))
+	}
+
+	return ctnstring.Indent(str, depth, " ")
 }
 
 func GetCommandByTrigger(trigger string) *Definition {
