@@ -84,7 +84,7 @@ git-graph: ##@git Log decorated graph
 	# git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all
 
 # -- Run --
-.PHONY: run wrun debug test
+.PHONY: run debug test wrun
 
 WGO_INCLUDE := -file .go -file .toml
 
@@ -92,13 +92,13 @@ run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
 	go run ./main.go $(args)
 
 debug: ##@run Run with the --test flag.
-	go run . $(args) --test
+	go run . $(args) --test 
 
 test: ##@run go test.
 	go test -v ./...
 
-wrun: ##@run Run a make target and restart on file change. make wrun target=[TARGET]. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo $(WGO_INCLUDE) $(MAKE) $(target)  
+wrun: ##@run Run a make target and restart on file change. make wrun <wgoargs="args..."> target=[TARGET]. Requires wgo: https://github.com/bokwoon95/wgo
+	wgo $(WGO_INCLUDE) $(wgoargs) $(MAKE) $(target)
 
 # -- Build --
 .PHONY: build-win build-linux build-mac build
