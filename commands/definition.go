@@ -3,6 +3,8 @@ package commands
 import (
 	"fmt"
 	"strings"
+
+	"github.com/chzyer/readline"
 )
 
 type Definition struct {
@@ -10,7 +12,9 @@ type Definition struct {
 	Triggers    []string
 	Description []string
 
-	Execution func()
+	Options *readline.PrefixCompleter
+
+	Execution func(args ...string)
 }
 
 func (this Definition) String() string {
@@ -26,4 +30,19 @@ func (this Definition) String() string {
 	str.WriteString(strings.Join(this.Description, "\n  "))
 
 	return str.String()
+}
+
+func (this Definition) IsTrigger(compare string) bool {
+	compare = strings.TrimSpace(compare)
+	compare = strings.ToLower(compare)
+
+	for _, trigger := range this.Triggers {
+		trigger = strings.ToLower(trigger)
+
+		if compare == trigger {
+			return true
+		}
+	}
+
+	return false
 }

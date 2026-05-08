@@ -6,6 +6,7 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/commands"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
+	"github.com/chzyer/readline"
 )
 
 var conf = commands.Definition{
@@ -14,14 +15,17 @@ var conf = commands.Definition{
 		"List all config fields along with their current values.",
 	},
 
+	Options: readline.NewPrefixCompleter(
+		readline.PcItem("list"),
+		readline.PcItem("set",
+			readline.PcItemDynamic(config_getField),
+		),
+	),
+
 	Execution: config_execute,
 }
 
-func init() {
-	commands.CommandList = append(commands.CommandList, &conf)
-}
-
-func config_execute() {
+func config_execute(args ...string) {
 	fmt.Printf("%s: %v\n", "Port", config.Values.Port)
 	fmt.Printf("%s: %v\n", "WorkindDirectory", constants.WorkindDirectory)
 	fmt.Printf("%s: %v\n", "WorkindDirectory", constants.ConfigFilePath)
@@ -31,4 +35,14 @@ func config_execute() {
 	fmt.Printf("%s: %v\n", "NoWatcher", constants.NoWatcher)
 	fmt.Printf("%s: %v\n", "NoServer", constants.NoServer)
 	fmt.Printf("%s: %v\n", "KeepAlive", constants.KeepAlive)
+}
+
+func config_getField(line string) []string {
+	fmt.Printf("\nconfig set getField: %s\n", line)
+
+	return []string{}
+}
+
+func init() {
+	commands.CommandList = append(commands.CommandList, &conf)
 }
