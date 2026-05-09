@@ -1,6 +1,12 @@
 package commands
 
-import "github.com/chzyer/readline"
+import (
+	"fmt"
+	"strings"
+
+	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
+	"github.com/chzyer/readline"
+)
 
 type Option struct {
 	Name        string
@@ -8,11 +14,11 @@ type Option struct {
 
 	Callback readline.DynamicCompleteFunc
 
-	Children []Option
+	Children OptionList
 }
 
 func (this Option) IsDynamic() bool {
-	return this.Callback == nil
+	return this.Callback != nil
 }
 
 func (this Option) Build() *readline.PrefixCompleter {
@@ -28,4 +34,28 @@ func (this Option) Build() *readline.PrefixCompleter {
 	}
 
 	return &opt
+}
+
+func (this Option) String() string {
+	var str strings.Builder
+	var prefix = "-"
+
+	if this.IsDynamic() {
+		prefix = "@"
+	}
+
+	fmt.Fprintf(
+		&str,
+		"%s %s: %s",
+		prefix,
+		this.Name,
+		strings.Join(this.Description, "\n"),
+	)
+
+	if len(this.Children) > 0 {
+		str.WriteString("\n")
+		str.WriteString(ctnstring.Indent(this.Children.String(), 1, "  "))
+	}
+
+	return str.String()
 }

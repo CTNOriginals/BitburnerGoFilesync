@@ -11,17 +11,19 @@ import (
 var conf = commands.Definition{
 	Triggers: []string{"config", "conf", "info", "settings", "options"},
 	Description: []string{
-		"List all config fields along with their current values.",
+		"Config interface, with multiple functions:",
+		"1. view the config",
+		"2. edit config values",
 	},
 
-	Options: []commands.Option{
+	Options: commands.OptionList{
 		{Name: "list",
 			Description: []string{"Lists all config fields and values."},
 		},
 		{Name: "set",
 			Description: []string{"Lists all config fields and values."},
 
-			Children: []commands.Option{
+			Children: commands.OptionList{
 				{Name: "field",
 					Description: []string{"The config field to set."},
 					Callback:    config_getField,

@@ -13,7 +13,7 @@ var proto = commands.Definition{
 		"A prototype command used for testing",
 	},
 
-	Options: []commands.Option{
+	Options: commands.OptionList{
 		{Name: "wah",
 			Description: []string{"yells at you waah!"},
 		},
