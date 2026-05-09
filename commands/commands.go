@@ -7,8 +7,6 @@ import (
 	"slices"
 	"strings"
 
-	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
-	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 	"github.com/chzyer/readline"
 )
 
@@ -38,12 +36,6 @@ func CommandWatcher() {
 	defer cli.Close()
 
 	log.SetOutput(cli.Stderr())
-
-	fmt.Printf("options: %s\n", optToString(options, 1))
-	// fmt.Printf("FileItem: %s\n", optToString(ReadLine_FileItem, 0))
-	// fmt.Printf("File Completion (managers/): %v\n", ReadLine_FileItem.Callback("prototype managers/"))
-
-	usage(cli.Stderr(), options)
 
 	for {
 		var line, err = cli.Readline()
@@ -96,42 +88,6 @@ func buildOptions() *readline.PrefixCompleter {
 	}
 
 	return readline.NewPrefixCompleter(options...)
-}
-
-func optToString(opt readline.PrefixCompleterInterface, depth int) string {
-	var lines = []string{}
-
-	var keys = ctnstruct.Keys(opt)
-	var vals = ctnstruct.Values(opt)
-
-	var callback string = fmt.Sprintf("%v", vals[slices.Index(keys, "Callback")])
-
-	if callback != "<nil>" {
-		return fmt.Sprintf("Callback: %v", callback)
-	}
-
-	var children = make([]string, len(opt.GetChildren()))
-	for i, child := range opt.GetChildren() {
-		var name = string(child.GetName())
-		if name == "" {
-			name = "Dynamic"
-		}
-		children[i] = fmt.Sprintf("%s: %s", name, optToString(child, depth+1))
-	}
-
-	if len(children) > 0 {
-		lines = append(lines, fmt.Sprintf("[\n%s\n]", ctnstring.Indent(strings.Join(children, ",\n"), depth+1, " ")))
-	}
-
-	if len(lines) == 0 {
-		return "{ }"
-	} else if len(lines) == 1 {
-		return lines[0]
-	}
-
-	var str = ctnstring.Indent(strings.Join(lines, "\n"), depth, " ")
-
-	return fmt.Sprintf("{\n%s\n}", str)
 }
 
 func GetCommandByTrigger(trigger string) *Definition {
