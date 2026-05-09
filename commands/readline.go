@@ -1,9 +1,7 @@
 package commands
 
 import (
-	"fmt"
 	"os"
-	"strings"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/chzyer/readline"
@@ -11,13 +9,16 @@ import (
 
 func listFiles(filePath *string) func(string) []string {
 	return func(line string) []string {
-		var parts = strings.Split(line, " ")
-		fmt.Printf("\n%s/%s\n", *filePath, parts[len(parts)-1])
-		names := make([]string, 0)
-		files, _ := os.ReadDir(*filePath)
-		for _, f := range files {
-			names = append(names, f.Name())
+		// var parts = strings.Split(line, " ")
+		var names = make([]string, 0)
+		var files, _ = os.ReadDir(*filePath)
+
+		// fmt.Printf("\n%s/%s\n", *filePath, parts[len(parts)-1])
+
+		for _, file := range files {
+			names = append(names, file.Name())
 		}
+
 		return names
 	}
 }
