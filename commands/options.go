@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"strings"
 
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
@@ -38,28 +37,28 @@ func (this Option) Build() *readline.PrefixCompleter {
 
 func (this Option) String() string {
 	var str strings.Builder
-	var prefix = "-"
+
+	str.WriteString("-")
 
 	if this.IsDynamic() {
-		prefix = "@"
+		str.WriteRune('@')
+	} else {
+		str.WriteRune(' ')
 	}
 
-	fmt.Fprintf(
-		&str, "%s %s",
-		prefix, this.Name,
-	)
+	str.WriteString(this.Name)
 
 	var width = str.Len()
 
 	if len(this.Description) > 0 {
 		str.WriteString(": ")
-		width += 2
 		str.WriteString(this.Description[0])
 	}
 
 	if len(this.Description) > 1 {
-		var desc = strings.Join(this.Description[1:], "\n")
 		str.WriteString("\n")
+		var desc = strings.Join(this.Description[1:], "\n")
+		desc = ctnstring.Indent(desc, 1, "| ")
 		str.WriteString(ctnstring.Indent(desc, width, " "))
 	}
 
