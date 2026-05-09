@@ -6,7 +6,6 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/commands"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
-	"github.com/chzyer/readline"
 )
 
 var conf = commands.Definition{
@@ -15,13 +14,25 @@ var conf = commands.Definition{
 		"List all config fields along with their current values.",
 	},
 
-	Options: readline.NewPrefixCompleter(
-		readline.PcItem("list"),
-		readline.PcItem("set",
-			readline.PcItemDynamic(config_getField),
-		),
-	),
+	Options: []commands.Option{
+		{Name: "list",
+			Description: []string{"Lists all config fields and values."},
+		},
+		{Name: "set",
+			Description: []string{"Lists all config fields and values."},
 
+			Children: []commands.Option{
+				{Name: "field",
+					Description: []string{"The config field to set."},
+					Callback:    config_getField,
+				},
+				{Name: "value",
+					Description: []string{"The value to set."},
+					Callback:    config_getField,
+				},
+			},
+		},
+	},
 	Execution: config_execute,
 }
 

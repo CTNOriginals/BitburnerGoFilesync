@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/commands"
-	"github.com/chzyer/readline"
+	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 )
 
 var proto = commands.Definition{
@@ -13,10 +13,15 @@ var proto = commands.Definition{
 		"A prototype command used for testing",
 	},
 
-	Options: readline.NewPrefixCompleter(
-		readline.PcItem("wah"),
-		commands.ReadLine_FileItem,
-	),
+	Options: []commands.Option{
+		{Name: "wah",
+			Description: []string{"yells at you waah!"},
+		},
+		{Name: "file",
+			Description: []string{"A file path for something."},
+			Callback:    commands.Readline_FileComplete(&config.Values.Directory),
+		},
+	},
 
 	Execution: proto_execute,
 }

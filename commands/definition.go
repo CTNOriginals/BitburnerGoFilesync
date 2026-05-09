@@ -12,7 +12,7 @@ type Definition struct {
 	Triggers    []string
 	Description []string
 
-	Options *readline.PrefixCompleter
+	Options []Option
 
 	Execution func(args ...string)
 }
@@ -45,4 +45,14 @@ func (this Definition) IsTrigger(compare string) bool {
 	}
 
 	return false
+}
+
+func (this Definition) BuildOptions() *readline.PrefixCompleter {
+	var options = make([]readline.PrefixCompleterInterface, len(this.Options))
+
+	for i, opt := range this.Options {
+		options[i] = opt.Build()
+	}
+
+	return readline.NewPrefixCompleter(options...)
 }

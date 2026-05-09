@@ -7,7 +7,7 @@ import (
 	"github.com/chzyer/readline"
 )
 
-func listFiles(filePath *string) func(string) []string {
+func Readline_FileComplete(filePath *string) func(string) []string {
 	return func(line string) []string {
 		// var parts = strings.Split(line, " ")
 		var names = make([]string, 0)
@@ -23,4 +23,4 @@ func listFiles(filePath *string) func(string) []string {
 	}
 }
 
-var ReadLine_FileItem = readline.PcItemDynamic(listFiles(&config.Values.Directory))
+var ReadLine_FileItem = readline.PcItemDynamic(Readline_FileComplete(&config.Values.Directory))

@@ -86,14 +86,10 @@ func CommandWatcher() {
 }
 
 func buildOptions() *readline.PrefixCompleter {
-	// var options = readline.PrefixCompleter{
-	// 	Children: make([]readline.PrefixCompleterInterface, 0),
-	// }
 	var options = make([]readline.PrefixCompleterInterface, len(CommandList))
 
 	for i, def := range CommandList {
-
-		options[i] = readline.PcItem(def.Triggers[0], def.Options.Children...)
+		options[i] = readline.PcItem(def.Triggers[0], def.BuildOptions())
 	}
 
 	return readline.NewPrefixCompleter(options...)
