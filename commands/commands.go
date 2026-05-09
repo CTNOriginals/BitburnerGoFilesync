@@ -40,7 +40,8 @@ func CommandWatcher() {
 	log.SetOutput(cli.Stderr())
 
 	fmt.Printf("options: %s\n", optToString(options, 1))
-	fmt.Printf("FileItem: %s\n", optToString(ReadLine_FileItem, 0))
+	// fmt.Printf("FileItem: %s\n", optToString(ReadLine_FileItem, 0))
+	// fmt.Printf("File Completion (managers/): %v\n", ReadLine_FileItem.Callback("prototype managers/"))
 
 	usage(cli.Stderr(), options)
 
@@ -112,7 +113,11 @@ func optToString(opt readline.PrefixCompleterInterface, depth int) string {
 
 	var children = make([]string, len(opt.GetChildren()))
 	for i, child := range opt.GetChildren() {
-		children[i] = fmt.Sprintf("%s: %s", string(child.GetName()), optToString(child, depth+1))
+		var name = string(child.GetName())
+		if name == "" {
+			name = "Dynamic"
+		}
+		children[i] = fmt.Sprintf("%s: %s", name, optToString(child, depth+1))
 	}
 
 	if len(children) > 0 {
