@@ -1,8 +1,22 @@
 package commands
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/chzyer/readline"
+)
 
 type OptionList []Option
+
+func (this OptionList) Build() []readline.PrefixCompleterInterface {
+	var options = make([]readline.PrefixCompleterInterface, len(this))
+
+	for i, opt := range this {
+		options[i] = opt.Build()
+	}
+
+	return options
+}
 
 func (this OptionList) String() string {
 	var str strings.Builder

@@ -15,7 +15,7 @@ var proto = commands.Definition{
 
 	Options: commands.OptionList{
 		{Name: "wah",
-			Description: []string{"yells at you waah!"},
+			Description: []string{},
 		},
 		{Name: "file",
 			Description: []string{"A file path for something."},

@@ -45,12 +45,23 @@ func (this Option) String() string {
 	}
 
 	fmt.Fprintf(
-		&str,
-		"%s %s: %s",
-		prefix,
-		this.Name,
-		strings.Join(this.Description, "\n"),
+		&str, "%s %s",
+		prefix, this.Name,
 	)
+
+	var width = str.Len()
+
+	if len(this.Description) > 0 {
+		str.WriteString(": ")
+		width += 2
+		str.WriteString(this.Description[0])
+	}
+
+	if len(this.Description) > 1 {
+		var desc = strings.Join(this.Description[1:], "\n")
+		str.WriteString("\n")
+		str.WriteString(ctnstring.Indent(desc, width, " "))
+	}
 
 	if len(this.Children) > 0 {
 		str.WriteString("\n")

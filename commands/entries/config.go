@@ -21,16 +21,22 @@ var conf = commands.Definition{
 			Description: []string{"Lists all config fields and values."},
 		},
 		{Name: "set",
-			Description: []string{"Lists all config fields and values."},
+			Description: []string{
+				"Set a config fields value.",
+				"If the new value should be remembered, pass --save.",
+				"some more args here...",
+			},
 
 			Children: commands.OptionList{
 				{Name: "field",
 					Description: []string{"The config field to set."},
 					Callback:    config_getField,
-				},
-				{Name: "value",
-					Description: []string{"The value to set."},
-					Callback:    config_getField,
+					Children: commands.OptionList{
+						{Name: "value",
+							Description: []string{"The value to set."},
+							Callback:    config_getField,
+						},
+					},
 				},
 			},
 		},

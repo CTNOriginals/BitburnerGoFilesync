@@ -89,7 +89,10 @@ func buildOptions() *readline.PrefixCompleter {
 	var options = make([]readline.PrefixCompleterInterface, len(CommandList))
 
 	for i, def := range CommandList {
-		options[i] = readline.PcItem(def.Triggers[0], def.BuildOptions())
+		var opts = def.BuildOptions()
+		opts.Name = []rune(def.Triggers[0])
+
+		options[i] = opts
 	}
 
 	return readline.NewPrefixCompleter(options...)

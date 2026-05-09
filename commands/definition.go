@@ -34,13 +34,7 @@ func (this Definition) IsTrigger(compare string) bool {
 }
 
 func (this Definition) BuildOptions() *readline.PrefixCompleter {
-	var options = make([]readline.PrefixCompleterInterface, len(this.Options))
-
-	for i, opt := range this.Options {
-		options[i] = opt.Build()
-	}
-
-	return readline.NewPrefixCompleter(options...)
+	return readline.NewPrefixCompleter(this.Options.Build()...)
 }
 
 func (this Definition) String() string {
