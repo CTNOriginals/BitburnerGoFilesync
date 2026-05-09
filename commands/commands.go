@@ -21,8 +21,6 @@ func usage(writer io.Writer, options *readline.PrefixCompleter) {
 }
 
 func CommandWatcher() {
-	// fmt.Printf("commands: %v\n", CommandList)
-
 	var options = buildOptions()
 
 	var cli, err = readline.NewEx(&readline.Config{
@@ -41,7 +39,8 @@ func CommandWatcher() {
 
 	log.SetOutput(cli.Stderr())
 
-	fmt.Printf("options: {\n%s\n}\n", optToString(options, 1))
+	fmt.Printf("options: %s\n", optToString(options, 1))
+	fmt.Printf("FileItem: %s\n", optToString(ReadLine_FileItem, 0))
 
 	usage(cli.Stderr(), options)
 
@@ -100,18 +99,35 @@ func buildOptions() *readline.PrefixCompleter {
 }
 
 func optToString(opt readline.PrefixCompleterInterface, depth int) string {
-	var str = ctnstruct.ToString(opt, "Name", "Children")
-	var children = make([]string, len(opt.GetChildren()))
+	var lines = []string{}
 
+	var keys = ctnstruct.Keys(opt)
+	var vals = ctnstruct.Values(opt)
+
+	var callback string = fmt.Sprintf("%v", vals[slices.Index(keys, "Callback")])
+
+	if callback != "<nil>" {
+		return fmt.Sprintf("Callback: %v", callback)
+	}
+
+	var children = make([]string, len(opt.GetChildren()))
 	for i, child := range opt.GetChildren() {
-		children[i] = fmt.Sprintf("%s: {\n%s\n}", string(child.GetName()), optToString(child, depth+1))
+		children[i] = fmt.Sprintf("%s: %s", string(child.GetName()), optToString(child, depth+1))
 	}
 
 	if len(children) > 0 {
-		str += fmt.Sprintf("\nChildren: [\n%s\n]", ctnstring.Indent(strings.Join(children, ",\n"), depth+1, " "))
+		lines = append(lines, fmt.Sprintf("[\n%s\n]", ctnstring.Indent(strings.Join(children, ",\n"), depth+1, " ")))
 	}
 
-	return ctnstring.Indent(str, depth, " ")
+	if len(lines) == 0 {
+		return "{ }"
+	} else if len(lines) == 1 {
+		return lines[0]
+	}
+
+	var str = ctnstring.Indent(strings.Join(lines, "\n"), depth, " ")
+
+	return fmt.Sprintf("{\n%s\n}", str)
 }
 
 func GetCommandByTrigger(trigger string) *Definition {

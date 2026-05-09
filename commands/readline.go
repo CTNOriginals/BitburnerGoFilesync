@@ -1,16 +1,21 @@
 package commands
 
 import (
+	"fmt"
 	"os"
+	"strings"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
+	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/chzyer/readline"
 )
 
-func listFiles(path string) func(string) []string {
+func listFiles(filePath string) func(string) []string {
+	fmt.Printf("listFiles Create: %s\n", filePath)
 	return func(line string) []string {
+		var parts = strings.Split(line, " ")
+		fmt.Printf("\n%s%s\n", filePath, parts[len(parts)-1])
 		names := make([]string, 0)
-		files, _ := os.ReadDir(path)
+		files, _ := os.ReadDir(filePath)
 		for _, f := range files {
 			names = append(names, f.Name())
 		}
@@ -18,4 +23,4 @@ func listFiles(path string) func(string) []string {
 	}
 }
 
-var ReadLine_FileItem = readline.PcItemDynamic(listFiles(constants.WorkindDirectory))
+var ReadLine_FileItem = readline.PcItemDynamic(listFiles(config.Values.Directory))

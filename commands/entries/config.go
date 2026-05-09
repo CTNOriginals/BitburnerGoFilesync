@@ -28,7 +28,7 @@ var conf = commands.Definition{
 func config_execute(args ...string) {
 	fmt.Printf("%s: %v\n", "Port", config.Values.Port)
 	fmt.Printf("%s: %v\n", "WorkindDirectory", constants.WorkindDirectory)
-	fmt.Printf("%s: %v\n", "WorkindDirectory", constants.ConfigFilePath)
+	fmt.Printf("%s: %v\n", "ConfigDirectory", constants.ConfigFilePath)
 	fmt.Printf("%s: %v\n", "BitburnerRoot", config.Values.Directory)
 	fmt.Printf("%s: %v\n", "IncludeFileExt", config.Values.FilePatterns.Include)
 	fmt.Printf("%s: %v\n", "FileScanDelay", config.Values.FilePatterns.Exclude)
