@@ -9,13 +9,12 @@ import (
 	"github.com/chzyer/readline"
 )
 
-func listFiles(filePath string) func(string) []string {
-	fmt.Printf("listFiles Create: %s\n", filePath)
+func listFiles(filePath *string) func(string) []string {
 	return func(line string) []string {
 		var parts = strings.Split(line, " ")
-		fmt.Printf("\n%s%s\n", filePath, parts[len(parts)-1])
+		fmt.Printf("\n%s/%s\n", *filePath, parts[len(parts)-1])
 		names := make([]string, 0)
-		files, _ := os.ReadDir(filePath)
+		files, _ := os.ReadDir(*filePath)
 		for _, f := range files {
 			names = append(names, f.Name())
 		}
@@ -23,4 +22,4 @@ func listFiles(filePath string) func(string) []string {
 	}
 }
 
-var ReadLine_FileItem = readline.PcItemDynamic(listFiles(config.Values.Directory))
+var ReadLine_FileItem = readline.PcItemDynamic(listFiles(&config.Values.Directory))
