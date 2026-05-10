@@ -3,12 +3,12 @@ package cmdconfig
 import (
 	"fmt"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
+	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 )
 
-var conf = cli.Definition{
+var def = commands.Definition{
 	Triggers: []string{"config", "conf", "info", "settings", "options"},
 	Description: []string{
 		"Config interface, with multiple functions:",
@@ -16,7 +16,7 @@ var conf = cli.Definition{
 		"2. edit config values",
 	},
 
-	Options: cli.OptionList{
+	Options: commands.OptionList{
 		{Name: "list",
 			Description: []string{"Lists all config fields and values."},
 		},
@@ -27,24 +27,24 @@ var conf = cli.Definition{
 				"some more args here...",
 			},
 
-			Children: cli.OptionList{
+			Children: commands.OptionList{
 				{Name: "field",
 					Description: []string{"The config field to set."},
-					Callback:    config_getField,
-					Children: cli.OptionList{
+					Callback:    getField,
+					Children: commands.OptionList{
 						{Name: "value",
 							Description: []string{"The value to set."},
-							Callback:    config_getField,
+							Callback:    getField,
 						},
 					},
 				},
 			},
 		},
 	},
-	Execution: config_execute,
+	Execution: execute,
 }
 
-func config_execute(args ...string) {
+func execute(args ...string) {
 	fmt.Printf("%s: %v\n", "Port", config.Values.Port)
 	fmt.Printf("%s: %v\n", "WorkindDirectory", constants.WorkindDirectory)
 	fmt.Printf("%s: %v\n", "ConfigDirectory", constants.ConfigFilePath)
@@ -56,12 +56,12 @@ func config_execute(args ...string) {
 	fmt.Printf("%s: %v\n", "KeepAlive", constants.KeepAlive)
 }
 
-func config_getField(line string) []string {
+func getField(line string) []string {
 	fmt.Printf("\nconfig set getField: %s\n", line)
 
 	return []string{}
 }
 
 func init() {
-	cli.CommandList = append(cli.CommandList, &conf)
+	commands.List = append(commands.List, &def)
 }

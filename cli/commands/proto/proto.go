@@ -4,16 +4,17 @@ import (
 	"fmt"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
+	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 )
 
-var proto = cli.Definition{
+var def = commands.Definition{
 	Triggers: []string{"prototype", "proto"},
 	Description: []string{
 		"A prototype command used for testing",
 	},
 
-	Options: cli.OptionList{
+	Options: commands.OptionList{
 		{Name: "wah",
 			Description: []string{},
 		},
@@ -23,13 +24,13 @@ var proto = cli.Definition{
 		},
 	},
 
-	Execution: proto_execute,
+	Execution: execute,
 }
 
-func proto_execute(args ...string) {
+func execute(args ...string) {
 	fmt.Printf("proto waah!\n%v\n", args)
 }
 
 func init() {
-	cli.CommandList = append(cli.CommandList, &proto)
+	commands.List = append(commands.List, &def)
 }
