@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"slices"
 	"strings"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
@@ -50,11 +49,6 @@ func CommandWatcher() {
 		var prefix = parts[0]
 		var args = parts[1:]
 		var found = false
-
-		if slices.Contains([]string{"help", "?"}, prefix) {
-			fmt.Printf("%s\n", commands.List.String())
-			continue
-		}
 
 		for _, def := range commands.List {
 			if !def.IsTrigger(prefix) {

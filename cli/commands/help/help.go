@@ -35,8 +35,13 @@ var def = commands.Definition{
 }
 
 func dynamic_getCommands(line string) []string {
-	// TODO:
-	return []string{}
+	var triggers = make([]string, len(commands.List))
+
+	for i, def := range commands.List {
+		triggers[i] = def.Triggers[0]
+	}
+
+	return triggers
 }
 
 func execute(args ...string) {
