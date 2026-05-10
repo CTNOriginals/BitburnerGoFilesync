@@ -19,8 +19,8 @@ var def = commands.Definition{
 			Description: []string{},
 		},
 		{Name: "file",
-			Description: []string{"A file path for something."},
-			Callback:    cli.Readline_FileComplete(&config.Values.Directory),
+			Description:  []string{"A file path for something."},
+			AutoComplete: cli.Readline_FileComplete(&config.Values.Directory),
 		},
 	},
 

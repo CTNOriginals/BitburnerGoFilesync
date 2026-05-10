@@ -29,12 +29,12 @@ var def = commands.Definition{
 
 			Children: commands.OptionList{
 				{Name: "field",
-					Description: []string{"The config field to set."},
-					Callback:    getField,
+					Description:  []string{"The config field to set."},
+					AutoComplete: getField,
 					Children: commands.OptionList{
 						{Name: "value",
-							Description: []string{"The value to set."},
-							Callback:    getField,
+							Description:  []string{"The value to set."},
+							AutoComplete: getField,
 						},
 					},
 				},

@@ -11,20 +11,20 @@ type Option struct {
 	Name        string
 	Description []string
 
-	Callback readline.DynamicCompleteFunc
+	AutoComplete readline.DynamicCompleteFunc
 
 	Children OptionList
 }
 
-func (this Option) IsDynamic() bool {
-	return this.Callback != nil
+func (this Option) HasAutoComplete() bool {
+	return this.AutoComplete != nil
 }
 
 func (this Option) Build() *readline.PrefixCompleter {
 	var opt = readline.PrefixCompleter{
 		Name:     []rune(this.Name),
-		Dynamic:  this.IsDynamic(),
-		Callback: this.Callback,
+		Dynamic:  this.HasAutoComplete(),
+		Callback: this.AutoComplete,
 		Children: make([]readline.PrefixCompleterInterface, len(this.Children)),
 	}
 
@@ -40,7 +40,7 @@ func (this Option) String() string {
 
 	str.WriteString("-")
 
-	if this.IsDynamic() {
+	if this.HasAutoComplete() {
 		str.WriteRune('@')
 	} else {
 		str.WriteRune(' ')

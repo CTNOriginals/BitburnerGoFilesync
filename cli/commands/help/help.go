@@ -27,7 +27,7 @@ var def = commands.Definition{
 				"Print one commands info exclusively",
 				"and potentially with more info.",
 			},
-			Callback: dynamic_getCommands,
+			AutoComplete: dynamic_getCommands,
 		},
 	},
 
