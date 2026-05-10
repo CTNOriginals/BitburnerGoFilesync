@@ -12,6 +12,7 @@ type Option struct {
 	Description []string
 
 	AutoComplete readline.DynamicCompleteFunc
+	// Execution func() //TODO: merge functionality into definitions so that opotions are the same
 
 	Children OptionList
 }
