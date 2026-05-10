@@ -13,13 +13,8 @@ import (
 
 var promtSymbol = "\033[34m\033[1m»\033[0m "
 
-func usage(writer io.Writer, options *readline.PrefixCompleter) {
-	io.WriteString(writer, "commands:\n")
-	io.WriteString(writer, options.Tree("    "))
-}
-
 func CommandWatcher() {
-	var options = buildOptions()
+	var options = commands.List.Build()
 
 	var cli, err = readline.NewEx(&readline.Config{
 		Prompt:       promtSymbol,
@@ -75,27 +70,4 @@ func CommandWatcher() {
 			fmt.Printf("Unknown command: %s\n", prefix)
 		}
 	}
-}
-
-func buildOptions() *readline.PrefixCompleter {
-	var options = make([]readline.PrefixCompleterInterface, len(commands.List))
-
-	for i, def := range commands.List {
-		var opts = def.BuildOptions()
-		opts.Name = []rune(def.Triggers[0])
-
-		options[i] = opts
-	}
-
-	return readline.NewPrefixCompleter(options...)
-}
-
-func GetCommandByTrigger(trigger string) *commands.Definition {
-	for _, def := range commands.List {
-		if slices.Contains(def.Triggers, trigger) {
-			return def
-		}
-	}
-
-	return nil
 }
