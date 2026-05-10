@@ -7,10 +7,11 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
 	"github.com/chzyer/readline"
 )
 
-var CommandList []*Definition = make([]*Definition, 0)
+var CommandList []*commands.Definition = make([]*commands.Definition, 0)
 var promtSymbol = "\033[34m\033[1m»\033[0m "
 
 func usage(writer io.Writer, options *readline.PrefixCompleter) {
@@ -90,7 +91,7 @@ func buildOptions() *readline.PrefixCompleter {
 	return readline.NewPrefixCompleter(options...)
 }
 
-func GetCommandByTrigger(trigger string) *Definition {
+func GetCommandByTrigger(trigger string) *commands.Definition {
 	for _, def := range CommandList {
 		if slices.Contains(def.Triggers, trigger) {
 			return def
