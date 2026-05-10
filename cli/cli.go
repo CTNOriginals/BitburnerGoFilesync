@@ -11,7 +11,6 @@ import (
 	"github.com/chzyer/readline"
 )
 
-var CommandList []*commands.Definition = make([]*commands.Definition, 0)
 var promtSymbol = "\033[34m\033[1m»\033[0m "
 
 func usage(writer io.Writer, options *readline.PrefixCompleter) {
@@ -58,11 +57,11 @@ func CommandWatcher() {
 		var found = false
 
 		if slices.Contains([]string{"help", "?"}, prefix) {
-			usage(cli.Stderr(), options)
+			fmt.Printf("%s\n", commands.List.String())
 			continue
 		}
 
-		for _, def := range CommandList {
+		for _, def := range commands.List {
 			if !def.IsTrigger(prefix) {
 				continue
 			}
@@ -79,9 +78,9 @@ func CommandWatcher() {
 }
 
 func buildOptions() *readline.PrefixCompleter {
-	var options = make([]readline.PrefixCompleterInterface, len(CommandList))
+	var options = make([]readline.PrefixCompleterInterface, len(commands.List))
 
-	for i, def := range CommandList {
+	for i, def := range commands.List {
 		var opts = def.BuildOptions()
 		opts.Name = []rune(def.Triggers[0])
 
@@ -92,7 +91,7 @@ func buildOptions() *readline.PrefixCompleter {
 }
 
 func GetCommandByTrigger(trigger string) *commands.Definition {
-	for _, def := range CommandList {
+	for _, def := range commands.List {
 		if slices.Contains(def.Triggers, trigger) {
 			return def
 		}
