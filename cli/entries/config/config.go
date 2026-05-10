@@ -3,12 +3,12 @@ package cmdconfig
 import (
 	"fmt"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/commands"
+	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 )
 
-var conf = commands.Definition{
+var conf = cli.Definition{
 	Triggers: []string{"config", "conf", "info", "settings", "options"},
 	Description: []string{
 		"Config interface, with multiple functions:",
@@ -16,7 +16,7 @@ var conf = commands.Definition{
 		"2. edit config values",
 	},
 
-	Options: commands.OptionList{
+	Options: cli.OptionList{
 		{Name: "list",
 			Description: []string{"Lists all config fields and values."},
 		},
@@ -27,11 +27,11 @@ var conf = commands.Definition{
 				"some more args here...",
 			},
 
-			Children: commands.OptionList{
+			Children: cli.OptionList{
 				{Name: "field",
 					Description: []string{"The config field to set."},
 					Callback:    config_getField,
-					Children: commands.OptionList{
+					Children: cli.OptionList{
 						{Name: "value",
 							Description: []string{"The value to set."},
 							Callback:    config_getField,
@@ -63,5 +63,5 @@ func config_getField(line string) []string {
 }
 
 func init() {
-	commands.CommandList = append(commands.CommandList, &conf)
+	cli.CommandList = append(cli.CommandList, &conf)
 }

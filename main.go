@@ -42,9 +42,6 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/watcher"
-
-	// import the definitions so that their init() is called
-	_ "github.com/CTNOriginals/BitburnerGoFilesync/commands/entries"
 )
 
 func main() {

@@ -3,23 +3,23 @@ package cmdproto
 import (
 	"fmt"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/commands"
+	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 )
 
-var proto = commands.Definition{
+var proto = cli.Definition{
 	Triggers: []string{"prototype", "proto"},
 	Description: []string{
 		"A prototype command used for testing",
 	},
 
-	Options: commands.OptionList{
+	Options: cli.OptionList{
 		{Name: "wah",
 			Description: []string{},
 		},
 		{Name: "file",
 			Description: []string{"A file path for something."},
-			Callback:    commands.Readline_FileComplete(&config.Values.Directory),
+			Callback:    cli.Readline_FileComplete(&config.Values.Directory),
 		},
 	},
 
@@ -31,5 +31,5 @@ func proto_execute(args ...string) {
 }
 
 func init() {
-	commands.CommandList = append(commands.CommandList, &proto)
+	cli.CommandList = append(cli.CommandList, &proto)
 }
