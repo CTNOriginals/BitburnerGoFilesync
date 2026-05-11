@@ -7,7 +7,7 @@ import (
 )
 
 var def = commands.Definition{
-	Triggers: []string{"help", "h", "?"},
+	Name: "help",
 	Description: []string{
 		"Print a list of all possible commands",
 		"along with their descriptions.",
@@ -38,7 +38,7 @@ func dynamic_getCommands(line string) []string {
 	var triggers = make([]string, len(commands.List))
 
 	for i, def := range commands.List {
-		triggers[i] = def.Triggers[0]
+		triggers[i] = def.Name
 	}
 
 	return triggers

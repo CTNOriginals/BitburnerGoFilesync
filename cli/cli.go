@@ -51,7 +51,7 @@ func CommandWatcher() {
 		var found = false
 
 		for _, def := range commands.List {
-			if !def.IsTrigger(prefix) {
+			if def.Name != prefix {
 				continue
 			}
 

@@ -9,7 +9,7 @@ import (
 )
 
 var def = commands.Definition{
-	Triggers: []string{"prototype", "proto"},
+	Name: "prototype",
 	Description: []string{
 		"A prototype command used for testing",
 	},

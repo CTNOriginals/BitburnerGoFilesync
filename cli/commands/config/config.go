@@ -9,7 +9,7 @@ import (
 )
 
 var def = commands.Definition{
-	Triggers: []string{"config", "conf", "info", "settings", "options"},
+	Name: "config",
 	Description: []string{
 		"Config interface, with multiple functions:",
 		"1. view the config",

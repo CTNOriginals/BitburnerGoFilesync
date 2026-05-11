@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"slices"
 	"strings"
 
 	"github.com/chzyer/readline"
@@ -11,7 +10,7 @@ type TList []*Definition
 
 func (this TList) GetCommandByTrigger(trigger string) *Definition {
 	for _, def := range this {
-		if slices.Contains(def.Triggers, trigger) {
+		if def.Name == trigger {
 			return def
 		}
 	}
@@ -24,7 +23,7 @@ func (this TList) Build() *readline.PrefixCompleter {
 
 	for i, def := range this {
 		var opts = def.BuildOptions()
-		opts.Name = []rune(def.Triggers[0])
+		opts.Name = []rune(def.Name)
 
 		options[i] = opts
 	}

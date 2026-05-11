@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"strings"
 
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
@@ -10,27 +9,12 @@ import (
 
 type Definition struct {
 	// The strings that will activate this command
-	Triggers    []string
+	Name        string
 	Description []string
 
 	Options OptionList
 
 	Execution func(args ...string)
-}
-
-func (this Definition) IsTrigger(compare string) bool {
-	compare = strings.TrimSpace(compare)
-	compare = strings.ToLower(compare)
-
-	for _, trigger := range this.Triggers {
-		trigger = strings.ToLower(trigger)
-
-		if compare == trigger {
-			return true
-		}
-	}
-
-	return false
 }
 
 func (this Definition) BuildOptions() *readline.PrefixCompleter {
@@ -40,11 +24,7 @@ func (this Definition) BuildOptions() *readline.PrefixCompleter {
 func (this Definition) String() string {
 	var str = strings.Builder{}
 
-	str.WriteString(this.Triggers[0])
-
-	if len(this.Triggers) > 1 {
-		str.WriteString(fmt.Sprintf(" (%s)", strings.Join(this.Triggers[1:], ", ")))
-	}
+	str.WriteString(this.Name)
 
 	str.WriteString(":\n  ")
 	str.WriteString(strings.Join(this.Description, "\n  "))
