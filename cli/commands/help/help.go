@@ -2,6 +2,7 @@ package cmdhelp
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
 )
@@ -28,6 +29,9 @@ var def = commands.Definition{
 				"and potentially with more info.",
 			},
 			AutoComplete: dynamic_getCommands,
+			Validator: func(input string) bool {
+				return slices.Contains(commands.List.GetNamesRecursive(), input)
+			},
 		},
 	},
 

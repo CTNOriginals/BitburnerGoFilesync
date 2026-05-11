@@ -19,6 +19,26 @@ func (this TList) GetDefinitionByName(name string) *Definition {
 	return nil
 }
 
+func (this TList) GetNames() []string {
+	var names = make([]string, len(this))
+
+	for i, def := range this {
+		names[i] = def.Name
+	}
+
+	return names
+}
+
+func (this TList) GetNamesRecursive() []string {
+	var names = this.GetNames()
+
+	for _, def := range this {
+		names = append(names, def.Options.GetNamesRecursive()...)
+	}
+
+	return names
+}
+
 func (this TList) Build() *readline.PrefixCompleter {
 	var build = make([]readline.PrefixCompleterInterface, len(this))
 
