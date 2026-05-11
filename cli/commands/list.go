@@ -8,9 +8,9 @@ import (
 
 type TList []*Definition
 
-func (this TList) GetCommandByTrigger(trigger string) *Definition {
+func (this TList) GetDefinitionByName(name string) *Definition {
 	for _, def := range this {
-		if def.Name == trigger {
+		if def.Name == name {
 			return def
 		}
 	}
