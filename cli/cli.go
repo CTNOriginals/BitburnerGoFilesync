@@ -46,22 +46,13 @@ func CommandWatcher() {
 
 		line = strings.TrimSpace(line)
 		var parts = strings.Split(line, " ")
-		var prefix = parts[0]
-		var args = parts[1:]
-		var found = false
+		var inputs, inputErr = commands.List.ParseInput(parts, nil)
 
-		for _, def := range commands.List {
-			if def.Name != prefix {
-				continue
-			}
-
-			found = true
-			def.Execution(args...)
-			break
+		if inputErr != nil {
+			fmt.Printf("Input error: %s\n", inputErr)
+			continue
 		}
 
-		if !found {
-			fmt.Printf("Unknown command: %s\n", prefix)
-		}
+		inputs.Execute()
 	}
 }
