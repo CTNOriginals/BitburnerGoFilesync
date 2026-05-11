@@ -14,7 +14,7 @@ var def = commands.Definition{
 		"A prototype command used for testing",
 	},
 
-	Options: commands.OptionList{
+	Options: commands.TList{
 		{Name: "wah",
 			Description: []string{},
 		},

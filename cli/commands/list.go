@@ -19,16 +19,13 @@ func (this TList) GetCommandByTrigger(trigger string) *Definition {
 }
 
 func (this TList) Build() *readline.PrefixCompleter {
-	var options = make([]readline.PrefixCompleterInterface, len(this))
+	var build = make([]readline.PrefixCompleterInterface, len(this))
 
 	for i, def := range this {
-		var opts = def.BuildOptions()
-		opts.Name = []rune(def.Name)
-
-		options[i] = opts
+		build[i] = def.Build()
 	}
 
-	return readline.NewPrefixCompleter(options...)
+	return readline.NewPrefixCompleter(build...)
 }
 
 func (this TList) String() string {

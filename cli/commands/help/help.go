@@ -15,7 +15,7 @@ var def = commands.Definition{
 		"for more info on just that command.",
 	},
 
-	Options: commands.OptionList{
+	Options: commands.TList{
 		{Name: "full",
 			Description: []string{
 				"Print all of the enformation about each command",

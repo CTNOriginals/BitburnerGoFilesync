@@ -16,7 +16,7 @@ var def = commands.Definition{
 		"2. edit config values",
 	},
 
-	Options: commands.OptionList{
+	Options: commands.TList{
 		{Name: "list",
 			Description: []string{"Lists all config fields and values."},
 		},
@@ -27,11 +27,11 @@ var def = commands.Definition{
 				"some more args here...",
 			},
 
-			Children: commands.OptionList{
+			Options: commands.TList{
 				{Name: "field",
 					Description:  []string{"The config field to set."},
 					AutoComplete: getField,
-					Children: commands.OptionList{
+					Options: commands.TList{
 						{Name: "value",
 							Description:  []string{"The value to set."},
 							AutoComplete: getField,
