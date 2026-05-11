@@ -29,23 +29,46 @@ func (this TList) Build() *readline.PrefixCompleter {
 	return readline.NewPrefixCompleter(build...)
 }
 
-func (this TList) ParseInput(line []string, parent *Input) (TInputList, error) {
-	var input = line[0]
+// Runs the input through each definitions validator until one returns true
+func (this TList) TryGetValidatedDefinition(input string) *Definition {
+	for _, def := range this {
+		if def.Validator == nil || !def.Validator(input) {
+			continue
+		}
+
+		return def
+	}
+
+	return nil
+}
+
+func (this TList) ParseInput(input string, args ...string) (TInputList, error) {
 	var def = this.GetDefinitionByName(input)
 
 	if def == nil {
-		return nil, fmt.Errorf("Unknown input: %s\n", input)
+		def = this.TryGetValidatedDefinition(input)
+
+		if def == nil {
+			return nil, fmt.Errorf("Unknown input: %s\n", input)
+		}
 	}
 
-	var parsed = TInputList{&Input{
+	var inputList = TInputList{&Input{
 		Def:   def,
 		Value: input,
 	}}
 
-	if len(line) > 1 {
+	if len(args) > 0 {
+		var argList, err = def.Options.ParseInput(args[0], args[1:]...)
+
+		if err != nil {
+			return nil, err
+		}
+
+		inputList = append(inputList, argList...)
 	}
 
-	return parsed, nil
+	return inputList, nil
 }
 
 func (this TList) String() string {

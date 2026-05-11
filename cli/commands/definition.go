@@ -12,10 +12,11 @@ type Definition struct {
 	Name        string
 	Description []string
 
-	AutoComplete readline.DynamicCompleteFunc
-	Options      TList
+	Options TList
 
-	Execution func(args ...string)
+	AutoComplete readline.DynamicCompleteFunc
+	Validator    func(input string) bool
+	Execution    func(args ...string)
 }
 
 func (this Definition) HasAutoComplete() bool {

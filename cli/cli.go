@@ -51,7 +51,7 @@ func CommandWatcher() {
 func ParseInput(line string) error {
 	line = strings.TrimSpace(line)
 	var parts = strings.Split(line, " ")
-	var inputs, inputErr = commands.List.ParseInput(parts, nil)
+	var inputs, inputErr = commands.List.ParseInput(parts[0], parts[1:]...)
 
 	if inputErr != nil {
 		return inputErr
