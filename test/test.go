@@ -23,8 +23,30 @@ func DoTest() {
 	// fmt.Printf("%s: %v\n", "KeepAlive", constants.KeepAlive)
 	// println("")
 	// watcher.FileScanner()
+	TestCli()
+}
 
+func TestCli() {
 	fmt.Printf("%s\n", commands.List)
+
+	var commandTests = []string{
+		"help",
+		"help config",
+		"help full",
+		"prototype wah \"foo bar\"",
+		"config list",
+		"config set port 1234",
+	}
+
+	for _, line := range commandTests {
+		fmt.Printf(">> %s\n", line)
+
+		var err = cli.ParseInput(line)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
+	}
+
 	cli.CommandWatcher()
 	// readlineDemo()
 }

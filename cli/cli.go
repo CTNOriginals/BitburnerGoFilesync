@@ -10,14 +10,10 @@ import (
 	"github.com/chzyer/readline"
 )
 
-var promtSymbol = "\033[34m\033[1m»\033[0m "
-
 func CommandWatcher() {
-	var options = commands.List.Build()
-
 	var cli, err = readline.NewEx(&readline.Config{
-		Prompt:       promtSymbol,
-		AutoComplete: options,
+		Prompt:       "\033[34m\033[1m»\033[0m ",
+		AutoComplete: commands.List.Build(),
 		// HistoryFile:       "/tmp/readline.tmp", // TODO: support other os's
 		HistorySearchFold:   true,
 		ForceUseInteractive: true,
@@ -44,15 +40,24 @@ func CommandWatcher() {
 			break
 		}
 
-		line = strings.TrimSpace(line)
-		var parts = strings.Split(line, " ")
-		var inputs, inputErr = commands.List.ParseInput(parts, nil)
-
+		var inputErr = ParseInput(line)
 		if inputErr != nil {
-			fmt.Printf("Input error: %s\n", inputErr)
+			fmt.Printf("%s\n", inputErr)
 			continue
 		}
-
-		inputs.Execute()
 	}
+}
+
+func ParseInput(line string) error {
+	line = strings.TrimSpace(line)
+	var parts = strings.Split(line, " ")
+	var inputs, inputErr = commands.List.ParseInput(parts, nil)
+
+	if inputErr != nil {
+		return inputErr
+	}
+
+	inputs.Execute()
+
+	return nil
 }
