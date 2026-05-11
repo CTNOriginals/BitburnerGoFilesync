@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
@@ -29,6 +30,9 @@ func DoTest() {
 func TestCli() {
 	fmt.Printf("%s\n", commands.List)
 
+	// cliSegments()
+	fmt.Printf("\n-- Command Tests --\n")
+
 	var commandTests = []string{
 		"help",
 		"help config",
@@ -49,4 +53,29 @@ func TestCli() {
 
 	cli.CommandWatcher()
 	// readlineDemo()
+}
+
+func cliSegments() {
+	fmt.Printf("\n-- Segment Tests --\n")
+
+	var tests = []string{
+		"config set \"foo bar\" baz",
+		"\"foo 'baz' bar\" goo 'drap bah'",
+		"\"foo 'baz",
+		"something 'like a dog' or cat'",
+		"some weird='edge ca'se` that i hope` ne've`r happens",
+		"goo foo='bar ins\\'t baz' but is",
+	}
+
+	for _, line := range tests {
+		fmt.Printf(">> %s\n", line)
+
+		var segments, err = cli.GetInputSegments(line)
+
+		if err == nil {
+			fmt.Printf("%s\n", strings.Join(segments, "\n"))
+		} else {
+			fmt.Printf("%v\n", err)
+		}
+	}
 }
