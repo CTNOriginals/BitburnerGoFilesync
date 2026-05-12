@@ -13,16 +13,17 @@ type FnExecution func(args TInputList, self int)
 var autocompleteVoid readline.DynamicCompleteFunc = func(s string) []string { return nil }
 
 // Definition contains all of the info that can build and execute a command
-//
-// Special cases:
-//
-//	Validator != nil
-//	  this Definition's Name will not show up as an autocomplete prefix
 type Definition struct {
 	Name        string
 	Description []string
 
 	Options TList
+
+	// Wether to expect a value instead of the Name of the command
+	// same as adding a validator that always returns true.
+	// This will also prevent the Name from showing up as an autocompleted suggestion.
+	// This field does not need to be set if the Validator is defined.
+	ExpectValue bool
 
 	AutoComplete readline.DynamicCompleteFunc
 	Validator    FnValidator
@@ -41,9 +42,7 @@ func (this Definition) Build() *readline.PrefixCompleter {
 		Children: make([]readline.PrefixCompleterInterface, len(this.Options)),
 	}
 
-	// this Description's Name should not show up
-	// as a autocompleted prefix if it expects a value
-	if !this.HasAutoComplete() && this.Validator != nil {
+	if !this.HasAutoComplete() && this.ExpectValue {
 		build.Dynamic = true
 		build.Callback = autocompleteVoid
 	}

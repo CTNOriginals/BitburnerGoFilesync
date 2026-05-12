@@ -35,6 +35,7 @@ var def = commands.Definition{
 					Options: commands.TList{
 						{Name: "value",
 							Description: []string{"The value to set."},
+							ExpectValue: true,
 						},
 					},
 				},
