@@ -7,16 +7,18 @@ import (
 	"github.com/chzyer/readline"
 )
 
+type FnValidator func(input string) bool
+type FnExecution func(args TInputList, self int)
+
 type Definition struct {
-	// The strings that will activate this command
 	Name        string
 	Description []string
 
 	Options TList
 
 	AutoComplete readline.DynamicCompleteFunc
-	Validator    func(input string) bool
-	Execution    func(args TInputList)
+	Validator    FnValidator
+	Execution    FnExecution
 }
 
 func (this Definition) HasAutoComplete() bool {

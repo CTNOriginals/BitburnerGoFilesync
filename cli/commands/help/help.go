@@ -28,28 +28,24 @@ var def = commands.Definition{
 				"Print one commands info exclusively",
 				"and potentially with more info.",
 			},
-			AutoComplete: dynamic_getCommands,
+			AutoComplete: func(line string) []string {
+				var triggers = make([]string, len(commands.List))
+
+				for i, def := range commands.List {
+					triggers[i] = def.Name
+				}
+
+				return triggers
+			},
 			Validator: func(input string) bool {
 				return slices.Contains(commands.List.GetNamesRecursive(), input)
 			},
 		},
 	},
 
-	Execution: execute,
-}
-
-func dynamic_getCommands(line string) []string {
-	var triggers = make([]string, len(commands.List))
-
-	for i, def := range commands.List {
-		triggers[i] = def.Name
-	}
-
-	return triggers
-}
-
-func execute(args commands.TInputList) {
-	fmt.Printf("%s\n", commands.List)
+	Execution: func(args commands.TInputList, self int) {
+		fmt.Printf("%s\n", commands.List)
+	},
 }
 
 func init() {
