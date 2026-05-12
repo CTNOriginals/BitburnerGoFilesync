@@ -56,7 +56,7 @@ var def = commands.Definition{
 	Execution: execute,
 }
 
-func execute(args ...string) {
+func execute(args commands.TInputList) {
 	fmt.Printf("proto waah!\n%v\n", args)
 }
 

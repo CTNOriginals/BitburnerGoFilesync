@@ -16,7 +16,7 @@ type Definition struct {
 
 	AutoComplete readline.DynamicCompleteFunc
 	Validator    func(input string) bool
-	Execution    func(args ...string)
+	Execution    func(args TInputList)
 }
 
 func (this Definition) HasAutoComplete() bool {

@@ -48,7 +48,7 @@ func dynamic_getCommands(line string) []string {
 	return triggers
 }
 
-func execute(args ...string) {
+func execute(args commands.TInputList) {
 	fmt.Printf("%s\n", commands.List)
 }
 

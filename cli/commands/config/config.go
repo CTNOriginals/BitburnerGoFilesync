@@ -44,7 +44,7 @@ var def = commands.Definition{
 	Execution: execute,
 }
 
-func execute(args ...string) {
+func execute(args commands.TInputList) {
 	fmt.Printf("%s: %v\n", "Port", config.Values.Port)
 	fmt.Printf("%s: %v\n", "WorkindDirectory", constants.WorkindDirectory)
 	fmt.Printf("%s: %v\n", "ConfigDirectory", constants.ConfigFilePath)
