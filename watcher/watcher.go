@@ -25,6 +25,20 @@ func Initialize() {
 	}
 
 	fmt.Printf("File State Map: %s\n", FileStateMap.String())
+
+	utils.ForEachFileInDir(config.Values.Directory, func(file os.FileInfo) {
+		fmt.Printf("%s: %s\n", file.Mode().String(), file.Name())
+	})
+
+	println("")
+
+	utils.ForEachFileInDirRecursive(config.Values.Directory, func(file os.FileInfo, dir string) {
+		if strings.Contains(dir, ".git") {
+			return
+		}
+
+		fmt.Printf("%s: %s/%s\n", file.Mode().String(), dir, file.Name())
+	})
 }
 
 func FileScanner() {
@@ -58,7 +72,7 @@ func scanFiles() {
 	}
 
 	newFiles := getUnregisteredFiles(config.Values.Directory)
-	fmt.Printf("File State Map: %s\n", FileStateMap.String())
+	// fmt.Printf("File State Map: %s\n", FileStateMap.String())
 
 	for _, file := range newFiles {
 		fmt.Printf("new file: %s\n", file)
