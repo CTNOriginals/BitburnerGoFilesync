@@ -10,6 +10,14 @@ import (
 type FnValidator func(input string) bool
 type FnExecution func(args TInputList, self int)
 
+var autocompleteVoid readline.DynamicCompleteFunc = func(s string) []string { return nil }
+
+// Definition contains all of the info that can build and execute a command
+//
+// Special cases:
+//
+//	Validator != nil
+//	  this Definition's Name will not show up as an autocomplete prefix
 type Definition struct {
 	Name        string
 	Description []string
@@ -31,6 +39,13 @@ func (this Definition) Build() *readline.PrefixCompleter {
 		Dynamic:  this.HasAutoComplete(),
 		Callback: this.AutoComplete,
 		Children: make([]readline.PrefixCompleterInterface, len(this.Options)),
+	}
+
+	// this Description's Name should not show up
+	// as a autocompleted prefix if it expects a value
+	if !this.HasAutoComplete() && this.Validator != nil {
+		build.Dynamic = true
+		build.Callback = autocompleteVoid
 	}
 
 	for i, opt := range this.Options {
