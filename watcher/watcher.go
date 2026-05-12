@@ -49,10 +49,14 @@ func scanFiles() {
 			continue
 		}
 
+		fmt.Printf("%s: %d\n", fullPath, state.GetInfo().ModTime().Compare(state.Info.ModTime()))
+
 		if state.GetInfo().ModTime().Compare(state.Info.ModTime()) == 1 {
 			FileEventHandlerMap.Handle(state, OnFileModify)
 		}
+
 	}
+	println("\n")
 
 	newFiles := getUnregisteredFiles(config.Values.Directory)
 
