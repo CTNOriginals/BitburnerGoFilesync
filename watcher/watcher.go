@@ -114,6 +114,8 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 		newFiles = append(newFiles, &FileInfo{Path: path, Info: file})
 	})
 
+	println("")
+
 	return newFiles
 }
 
@@ -148,6 +150,10 @@ func patternMatch(pattern string, path string) bool {
 	if err != nil {
 		fmt.Printf("Pattern match error: %v (%s > %s = %t)\n", err, pattern, path, match)
 		return false
+	}
+
+	if !strings.Contains(path, ".git") {
+		fmt.Printf("%t: %s - %s\n", match, pattern, path)
 	}
 
 	return match
