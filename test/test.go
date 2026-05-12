@@ -37,7 +37,9 @@ func TestCli() {
 		"help",
 		"help config",
 		"help full",
-		"prototype wah \"foo bar\"",
+		"prototype \"foo bar\"",
+		"prototype 1242e+8",
+		"prototype logging/index.ts",
 		"config list",
 		"config set port 1234",
 	}
