@@ -6,6 +6,7 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
+	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 )
 
 var def = commands.Definition{
@@ -33,8 +34,7 @@ var def = commands.Definition{
 					AutoComplete: getField,
 					Options: commands.TList{
 						{Name: "value",
-							Description:  []string{"The value to set."},
-							AutoComplete: getField,
+							Description: []string{"The value to set."},
 						},
 					},
 				},
@@ -55,9 +55,7 @@ var def = commands.Definition{
 }
 
 func getField(line string) []string {
-	fmt.Printf("\nconfig set getField: %s\n", line)
-
-	return []string{}
+	return ctnstruct.Keys(config.Values)
 }
 
 func init() {

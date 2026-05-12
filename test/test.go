@@ -40,8 +40,8 @@ func TestCli() {
 		"prototype \"foo bar\"",
 		"prototype 1242e+8",
 		"prototype logging/index.ts",
+		"config set Port 1234",
 		"config list",
-		"config set port 1234",
 	}
 
 	for _, line := range commandTests {

@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/chzyer/readline"
@@ -60,9 +61,11 @@ func (this TList) TryGetValidatedDefinition(input string) *Definition {
 	}
 
 	// if no defined validator succeded,
-	// the input will be given to the first command that has no validator if any.
+	// check if any autocomplete suggested this input
 	for _, def := range this {
-		if def.Validator == nil {
+		// BUG: this may produce inconsistency if
+		// the autocomplete func uses any of the preceding line of inputs
+		if def.HasAutoComplete() && slices.Contains(def.AutoComplete(""), input) {
 			return def
 		}
 	}
