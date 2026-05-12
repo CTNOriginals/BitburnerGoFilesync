@@ -8,7 +8,16 @@ import (
 type TInputList []*Input
 
 func (this TInputList) Execute() {
-	fmt.Printf("%s\n", this)
+	for i := len(this) - 1; i >= 0; i-- {
+		var input = this[i]
+
+		if input.Def.Execution == nil {
+			continue
+		}
+
+		input.Def.Execution(this, i)
+		break
+	}
 }
 
 func (this TInputList) String() string {

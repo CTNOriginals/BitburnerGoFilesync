@@ -51,6 +51,8 @@ func TestCli() {
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		}
+
+		println("")
 	}
 
 	cli.CommandWatcher()
