@@ -54,16 +54,8 @@ func (this Definition) Build() *readline.PrefixCompleter {
 	return &build
 }
 
-func (this Definition) String() string {
+func (this Definition) stringHead() string {
 	var str strings.Builder
-
-	str.WriteString("-")
-
-	if this.HasAutoComplete() {
-		str.WriteRune('@')
-	} else {
-		str.WriteRune(' ')
-	}
 
 	str.WriteString(this.Name)
 
@@ -80,6 +72,35 @@ func (this Definition) String() string {
 		desc = ctnstring.Indent(desc, 1, "| ")
 		str.WriteString(ctnstring.Indent(desc, width, " "))
 	}
+
+	return str.String()
+}
+
+func (this Definition) String() string {
+	var str strings.Builder
+
+	str.WriteString(this.stringHead())
+
+	// for _, opt := range this.Options {
+	// 	str.WriteString("\n")
+	// 	str.WriteString(ctnstring.Indent(opt.stringHead(), 2, " "))
+	// }
+
+	return str.String()
+}
+
+func (this Definition) StringRecurse() string {
+	var str strings.Builder
+
+	str.WriteString("-")
+
+	if this.HasAutoComplete() {
+		str.WriteRune('@')
+	} else {
+		str.WriteRune(' ')
+	}
+
+	str.WriteString(this.stringHead())
 
 	if len(this.Options) > 0 {
 		str.WriteString("\n")

@@ -105,7 +105,7 @@ func (this TList) ParseInput(input string, args ...string) (TInputList, error) {
 	return inputList, nil
 }
 
-func (this TList) String() string {
+func (this TList) string(recurse bool) string {
 	var str strings.Builder
 
 	for _, def := range this {
@@ -113,8 +113,19 @@ func (this TList) String() string {
 			str.WriteRune('\n')
 		}
 
-		str.WriteString(def.String())
+		if recurse {
+			str.WriteString(def.StringRecurse())
+		} else {
+			str.WriteString(def.String())
+		}
 	}
 
 	return str.String()
+}
+
+func (this TList) String() string {
+	return this.string(false)
+}
+func (this TList) StringRecurse() string {
+	return this.string(true)
 }
