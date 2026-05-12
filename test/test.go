@@ -31,29 +31,7 @@ func TestCli() {
 	fmt.Printf("%s\n", commands.List)
 
 	// cliSegments()
-	fmt.Printf("\n-- Command Tests --\n")
-
-	var commandTests = []string{
-		"help",
-		"help config",
-		"help full",
-		"prototype \"foo bar\"",
-		"prototype 1242e+8",
-		"prototype logging/index.ts",
-		"config set Port 1234",
-		"config list",
-	}
-
-	for _, line := range commandTests {
-		fmt.Printf(">> %s\n", line)
-
-		var err = cli.ParseInput(line)
-		if err != nil {
-			fmt.Printf("%v\n", err)
-		}
-
-		println("")
-	}
+	// cliCommands()
 
 	cli.CommandWatcher()
 	// readlineDemo()
@@ -81,5 +59,31 @@ func cliSegments() {
 		} else {
 			fmt.Printf("%v\n", err)
 		}
+	}
+}
+
+func cliCommands() {
+	fmt.Printf("\n-- Command Tests --\n")
+
+	var commandTests = []string{
+		"help",
+		"help config",
+		"help full",
+		"prototype \"foo bar\"",
+		"prototype 1242e+8",
+		"prototype logging/index.ts",
+		"config set Port 1234",
+		"config list",
+	}
+
+	for _, line := range commandTests {
+		fmt.Printf(">> %s\n", line)
+
+		var err = cli.ParseInput(line)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
+
+		println("")
 	}
 }
