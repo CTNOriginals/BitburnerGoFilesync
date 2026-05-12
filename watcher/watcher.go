@@ -24,21 +24,21 @@ func Initialize() {
 		FileStateMap[file.Path] = file
 	}
 
-	// fmt.Printf("File State Map: %s\n", FileStateMap.String())
+	fmt.Printf("File State Map: %s\n", FileStateMap.String())
 
-	// utils.ForEachFileInDir(config.Values.Directory, func(file os.FileInfo) {
-	// 	fmt.Printf("%s: %s\n", file.Mode().String(), file.Name())
-	// })
+	utils.ForEachFileInDir(config.Values.Directory, func(file os.FileInfo) {
+		fmt.Printf("%s: %s\n", file.Mode().String(), file.Name())
+	})
 
-	// println("")
+	println("")
 
-	// utils.ForEachFileInDirRecursive(config.Values.Directory, func(file os.FileInfo, dir string) {
-	// 	if strings.Contains(dir, ".git") {
-	// 		return
-	// 	}
+	utils.ForEachFileInDirRecursive(config.Values.Directory, func(file os.FileInfo, dir string) {
+		if strings.Contains(dir, ".git") {
+			return
+		}
 
-	// 	fmt.Printf("%s: %s/%s\n", file.Mode().String(), dir, file.Name())
-	// })
+		fmt.Printf("%s: %s/%s\n", file.Mode().String(), dir, file.Name())
+	})
 }
 
 func FileScanner() {
@@ -88,43 +88,30 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 		// Relative path to bitburners root dir
 		var path string
 
-		print("\n1")
-
 		if reldir == "" {
-			print("2")
 			path = file.Name()
 		} else {
-			print("3")
 			path = fmt.Sprintf("%s/%s", reldir, file.Name())
 
 			// Remove the first '/' if it is present.
 			// This ensures a little more consistency
 			// revative to the paths that are at the root level.
 			if path[0] == '/' {
-				print("4")
 				path = path[1:]
 			}
 		}
 
-		print("5")
-		fmt.Printf("\n%s/%s\n", dir, file.Name())
-
 		if !shouldIncludeFile(path) {
-			print("6")
 			return
 		}
 
-		print("7")
 		_, exists := FileStateMap[path]
 
 		if exists {
-			print("8")
 			return
 		}
-		print("9")
 
 		newFiles = append(newFiles, &FileInfo{Path: path, Info: file})
-		println("\n")
 	})
 
 	return newFiles
