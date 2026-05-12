@@ -59,6 +59,14 @@ func (this TList) TryGetValidatedDefinition(input string) *Definition {
 		return def
 	}
 
+	// if no defined validator succeded,
+	// the input will be given to the first command that has no validator if any.
+	for _, def := range this {
+		if def.Validator == nil {
+			return def
+		}
+	}
+
 	return nil
 }
 
