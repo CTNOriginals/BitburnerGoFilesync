@@ -10,6 +10,12 @@ import (
 
 type TList []*Definition
 
+func (this *TList) Push(def *Definition) {
+	def.ValidateSelf()
+
+	*this = append(*this, def)
+}
+
 func (this TList) GetDefinitionByName(name string) *Definition {
 	for _, def := range this {
 		if def.Name == name {
@@ -105,10 +111,15 @@ func (this TList) ParseInput(input string, args ...string) (TInputList, error) {
 	return inputList, nil
 }
 
-func (this TList) string(recurse bool) string {
+func (this TList) string(recurse bool, filter ...string) string {
 	var str strings.Builder
 
 	for _, def := range this {
+		if def.Hidden ||
+			(len(filter) > 0 && !slices.Contains(filter, def.Name)) {
+			continue
+		}
+
 		if str.Len() > 0 {
 			str.WriteRune('\n')
 		}
@@ -126,6 +137,6 @@ func (this TList) string(recurse bool) string {
 func (this TList) String() string {
 	return this.string(false)
 }
-func (this TList) StringRecurse() string {
-	return this.string(true)
+func (this TList) StringRecurse(filter ...string) string {
+	return this.string(true, filter...)
 }

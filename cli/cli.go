@@ -110,6 +110,7 @@ func ParseInput(line string) error {
 		return inputErr
 	}
 
+	// fmt.Printf("%s\n", inputs)
 	inputs.Execute()
 
 	return nil

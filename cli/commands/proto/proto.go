@@ -59,5 +59,5 @@ var def = commands.Definition{
 }
 
 func init() {
-	commands.List = append(commands.List, &def)
+	commands.List.Push(&def)
 }

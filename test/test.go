@@ -28,10 +28,11 @@ func DoTest() {
 }
 
 func TestCli() {
-	fmt.Printf("%s\n", commands.List)
+	fmt.Printf("%s\n", commands.List.StringRecurse())
 
 	// cliSegments()
 	// cliCommands()
+	cliHelp()
 
 	cli.CommandWatcher()
 	// readlineDemo()
@@ -62,21 +63,8 @@ func cliSegments() {
 	}
 }
 
-func cliCommands() {
-	fmt.Printf("\n-- Command Tests --\n")
-
-	var commandTests = []string{
-		"help",
-		"help config",
-		"help full",
-		"prototype \"foo bar\"",
-		"prototype 1242e+8",
-		"prototype logging/index.ts",
-		"config set Port 1234",
-		"config list",
-	}
-
-	for _, line := range commandTests {
+func cliTester(commands []string) {
+	for _, line := range commands {
 		fmt.Printf(">> %s\n", line)
 
 		var err = cli.ParseInput(line)
@@ -86,4 +74,32 @@ func cliCommands() {
 
 		println("")
 	}
+}
+
+func cliCommands() {
+	fmt.Printf("\n-- Command Tests --\n")
+
+	cliTester([]string{
+		"help",
+		"help config",
+		"help full",
+		"prototype \"foo bar\"",
+		"prototype 1242e+8",
+		"prototype logging/index.ts",
+		"config set Port 1234",
+		"config list",
+	})
+}
+
+func cliHelp() {
+	fmt.Printf("\n-- Help Tests --\n")
+
+	cliTester([]string{
+		"prototype help",
+		"prototype num help",
+		"prototype 'foo bar' help",
+		"prototype logging/index.ts help",
+		"config set help",
+		"config set Port 1234 help",
+	})
 }

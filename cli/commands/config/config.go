@@ -60,5 +60,5 @@ func getField(line string) []string {
 }
 
 func init() {
-	commands.List = append(commands.List, &def)
+	commands.List.Push(&def)
 }

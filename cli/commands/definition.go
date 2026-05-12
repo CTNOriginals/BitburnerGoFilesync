@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"slices"
 	"strings"
 
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
@@ -25,9 +26,26 @@ type Definition struct {
 	// This field does not need to be set if the Validator is defined.
 	ExpectValue bool
 
+	// Prevent this Definition from being included in any string
+	Hidden bool
+
 	AutoComplete readline.DynamicCompleteFunc
 	Validator    FnValidator
 	Execution    FnExecution
+}
+
+func (this *Definition) ValidateSelf() {
+	for _, opt := range this.Options {
+		opt.ValidateSelf()
+	}
+
+	if this.Name == HelperSubCommand.Name {
+		return
+	}
+
+	if this.Options.GetDefinitionByName(HelperSubCommand.Name) == nil {
+		this.Options.Push(HelperSubCommand)
+	}
 }
 
 func (this Definition) HasAutoComplete() bool {
@@ -89,22 +107,27 @@ func (this Definition) String() string {
 	return str.String()
 }
 
-func (this Definition) StringRecurse() string {
+func (this Definition) StringRecurse(filter ...string) string {
 	var str strings.Builder
 
-	str.WriteString("-")
+	// str.WriteString("-")
+	//
+	// if this.HasAutoComplete() {
+	// 	str.WriteRune('@')
+	// } else {
+	// 	str.WriteRune(' ')
+	// }
 
-	if this.HasAutoComplete() {
-		str.WriteRune('@')
-	} else {
-		str.WriteRune(' ')
+	if len(filter) > 0 && !slices.Contains(filter, this.Name) {
+		return str.String()
 	}
 
 	str.WriteString(this.stringHead())
 
-	if len(this.Options) > 0 {
+	var optionString = this.Options.StringRecurse(filter...)
+	if len(optionString) > 0 {
 		str.WriteString("\n")
-		str.WriteString(ctnstring.Indent(this.Options.String(), 1, "  "))
+		str.WriteString(ctnstring.Indent(optionString, 1, "  "))
 	}
 
 	return str.String()
