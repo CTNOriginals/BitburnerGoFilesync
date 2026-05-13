@@ -15,7 +15,6 @@ func TestCli() {
 	// cliHelp()
 
 	CommandWatcher()
-	// readlineDemo()
 }
 
 func cliSegments() {

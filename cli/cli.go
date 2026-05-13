@@ -13,9 +13,8 @@ import (
 
 func CommandWatcher() {
 	var cli, err = readline.NewEx(&readline.Config{
-		Prompt:       "\033[34m\033[1m»\033[0m ",
-		AutoComplete: commands.List.Build(),
-		// HistoryFile:       "/tmp/readline.tmp", // TODO: support other os's
+		Prompt:              "\033[34m\033[1m»\033[0m ",
+		AutoComplete:        commands.List.Build(),
 		HistorySearchFold:   true,
 		ForceUseInteractive: true,
 	})
@@ -110,7 +109,6 @@ func ParseInput(line string) error {
 		return inputErr
 	}
 
-	// fmt.Printf("%s\n", inputs)
 	inputs.Execute()
 
 	return nil

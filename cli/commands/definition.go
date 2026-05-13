@@ -101,24 +101,11 @@ func (this Definition) String() string {
 
 	str.WriteString(this.stringHead())
 
-	// for _, opt := range this.Options {
-	// 	str.WriteString("\n")
-	// 	str.WriteString(ctnstring.Indent(opt.stringHead(), 2, " "))
-	// }
-
 	return str.String()
 }
 
 func (this Definition) StringRecurse(filter ...string) string {
 	var str strings.Builder
-
-	// str.WriteString("-")
-	//
-	// if this.HasAutoComplete() {
-	// 	str.WriteRune('@')
-	// } else {
-	// 	str.WriteRune(' ')
-	// }
 
 	if len(filter) > 0 && !slices.Contains(filter, this.Name) {
 		return str.String()

@@ -46,8 +46,7 @@ var def = commands.Definition{
 			Description: []string{"any number"},
 			Validator: func(input string) bool {
 				var _, floaterr = strconv.ParseFloat(input, 64)
-				// var _, interr = strconv.ParseInt(input, 10, 64)
-				return floaterr == nil // || interr == nil
+				return floaterr == nil
 			},
 		},
 	},

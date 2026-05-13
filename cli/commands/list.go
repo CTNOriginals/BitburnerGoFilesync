@@ -84,11 +84,9 @@ func (this TList) ParseInput(input string, args ...string) (TInputList, error) {
 	var def = this.GetDefinitionByName(input)
 
 	if def == nil {
-		// fmt.Printf("%v > %s (%v): def nil\n", this.GetNames(), input, args)
 		def = this.TryGetValidatedDefinition(input)
 
 		if def == nil {
-			// fmt.Printf("%s (%v): def nil\n", input, args)
 			return nil, fmt.Errorf("Unknown input: %s\n", input)
 		}
 	}
