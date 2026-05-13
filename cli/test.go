@@ -3,12 +3,10 @@ package cli
 import (
 	"fmt"
 	"strings"
-
-	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
 )
 
 func TestCli() {
-	fmt.Printf("%s\n", commands.List.StringRecurse())
+	// fmt.Printf("%s\n", commands.List.String())
 
 	// cliSegments()
 	// cliCommands()

@@ -33,7 +33,7 @@ var HelperSubCommand = &Definition{
 	},
 }
 
-func FileComplete(filePath *string) func(string) []string {
+func GetFilePathAutoComplete(root *string) func(string) []string {
 	return func(line string) []string {
 		// var parts = strings.Split(line, " ")
 		var names = make([]string, 0)

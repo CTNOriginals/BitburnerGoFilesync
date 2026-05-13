@@ -24,7 +24,7 @@ var def = commands.Definition{
 		},
 		{Name: "file",
 			Description:  []string{"A file path for something."},
-			AutoComplete: commands.FileComplete(&config.Values.Directory),
+			AutoComplete: commands.GetFilePathAutoComplete(&config.Values.Directory),
 			Validator: func(input string) bool {
 				return (path.IsAbs(input) && ctnfile.FileExists(input)) ||
 					ctnfile.FileExists(utils.GetAbsolutePath(input))
