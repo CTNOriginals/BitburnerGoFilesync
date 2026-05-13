@@ -30,6 +30,9 @@ var HelperSubCommand = &Definition{
 			filter[i] = arg.Def.Name
 		}
 
+		// list all posibilities downwards
+		filter = append(filter, args[len(args)-2].Def.Options.GetNamesRecursive()...)
+
 		fmt.Printf("%s\n", args[0].Def.StringRecurse(filter...))
 	},
 }
