@@ -119,11 +119,7 @@ func (this Definition) stringHead() string {
 }
 
 func (this Definition) String() string {
-	var str strings.Builder
-
-	str.WriteString(this.stringHead())
-
-	return str.String()
+	return this.stringHead()
 }
 
 func (this Definition) StringRecurse(filter ...string) string {
@@ -133,12 +129,42 @@ func (this Definition) StringRecurse(filter ...string) string {
 		return str.String()
 	}
 
-	str.WriteString(this.stringHead())
+	var lines = strings.Split(this.stringHead(), "\n")
+	str.WriteString(lines[0])
 
 	var optionString = this.Options.StringRecurse(filter...)
 	if len(optionString) > 0 {
+		optionString = ctnstring.Indent(optionString, 2, " ")
+		lines = append(lines, strings.Split(optionString, "\n")...)
+	}
+
+	var chars = []rune("┃┣┗")
+	var optionCount = len(this.Options) - 1
+
+	for i := 1; i < len(lines); i++ {
 		str.WriteString("\n")
-		str.WriteString(ctnstring.Indent(optionString, 1, "  "))
+
+		if optionCount <= 0 {
+			str.WriteString(lines[i])
+			continue
+		}
+
+		var line = []rune(lines[i])
+		var char = chars[0]
+
+		if !strings.ContainsRune(string(chars)+" ", line[2]) {
+			if optionCount > 1 {
+				char = chars[1]
+			} else {
+				char = chars[2]
+			}
+
+			line[1] = '╸'
+			optionCount -= 1
+		}
+
+		line[0] = char
+		str.WriteString(string(line))
 	}
 
 	return str.String()
