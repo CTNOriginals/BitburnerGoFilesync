@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 
@@ -74,12 +75,9 @@ func (this Definition) Build() readline.PrefixCompleterInterface {
 	return build
 }
 
-func (this Definition) stringHead() string {
+func (this Definition) stringDescription() string {
 	var str strings.Builder
-
-	str.WriteString(this.Name)
-
-	var width = str.Len()
+	var width = len(this.Name)
 
 	if len(this.Description) > 0 {
 		str.WriteString(": ")
@@ -88,10 +86,34 @@ func (this Definition) stringHead() string {
 
 	if len(this.Description) > 1 {
 		str.WriteString("\n")
-		var desc = strings.Join(this.Description[1:], "\n")
-		desc = ctnstring.Indent(desc, 1, "| ")
-		str.WriteString(ctnstring.Indent(desc, width, " "))
+		var mid = strings.Join(this.Description[1:len(this.Description)-1], "\n")
+		var bot = this.Description[len(this.Description)-1]
+
+		mid = ctnstring.Indent(mid, 1, "├ ")
+		bot = ctnstring.Indent(bot, 1, "└ ")
+
+		var desc = ""
+		if len(this.Description) > 2 {
+			desc = fmt.Sprintf("%s\n%s", mid, bot)
+		} else {
+			desc = fmt.Sprintf("%s", bot)
+		}
+
+		desc = ctnstring.Indent(desc, width, " ")
+
+		str.WriteString(desc)
 	}
+
+	return str.String()
+}
+
+func (this Definition) stringHead() string {
+	var str strings.Builder
+
+	str.WriteString(this.Name)
+
+	var desc = this.stringDescription()
+	str.WriteString(desc)
 
 	return str.String()
 }

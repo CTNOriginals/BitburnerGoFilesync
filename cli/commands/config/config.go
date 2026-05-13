@@ -25,7 +25,6 @@ var def = commands.Definition{
 			Description: []string{
 				"Set a config fields value.",
 				"If the new value should be remembered, pass --save.",
-				"some more args here...",
 			},
 
 			Options: commands.TList{
