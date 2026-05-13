@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -35,14 +36,45 @@ var HelperSubCommand = &Definition{
 
 func GetFilePathAutoComplete(root *string) func(string) []string {
 	return func(line string) []string {
-		// var parts = strings.Split(line, " ")
-		var names = make([]string, 0)
-		var files, _ = os.ReadDir(*filePath)
+		var parts = strings.Split(line, " ")
+		var partial = parts[len(parts)-1]
 
-		// fmt.Printf("\n%s/%s\n", *filePath, parts[len(parts)-1])
+		var searchDir string
+		var dirPrefix string
 
-		for _, file := range files {
-			names = append(names, file.Name())
+		if strings.HasPrefix(partial, "/") {
+			var idx = strings.LastIndex(partial, "/")
+			if idx >= 0 {
+				searchDir = partial[:idx]
+				dirPrefix = partial[:idx+1]
+			}
+			if searchDir == "" {
+				searchDir = "/"
+			}
+		} else {
+			var idx = strings.LastIndex(partial, "/")
+			if idx >= 0 {
+				searchDir = filepath.Join(*root, partial[:idx])
+				dirPrefix = partial[:idx+1]
+			} else {
+				searchDir = *root
+				dirPrefix = ""
+			}
+		}
+
+		var entries, err = os.ReadDir(searchDir)
+		if err != nil {
+			return nil
+		}
+
+		var names = make([]string, 0, len(entries))
+		for _, entry := range entries {
+			var name = entry.Name()
+			if entry.IsDir() {
+				names = append(names, dirPrefix+name+"/")
+			} else {
+				names = append(names, dirPrefix+name)
+			}
 		}
 
 		return names
