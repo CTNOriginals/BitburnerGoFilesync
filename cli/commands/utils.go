@@ -10,6 +10,9 @@ var HelperSubCommand = &Definition{
 	Description: []string{"Print the info about all commands and options infront of this."},
 	Hidden:      true,
 
+	AutoComplete: func(s string) []string {
+		return nil
+	},
 	Validator: func(input string) bool {
 		input = strings.TrimSpace(input)
 		return input == "help"
