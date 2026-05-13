@@ -2,7 +2,6 @@ package cmdhelp
 
 import (
 	"fmt"
-	"slices"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
 )
@@ -12,39 +11,18 @@ var def = commands.Definition{
 	Description: []string{
 		"Print a list of all possible commands",
 		"along with their descriptions.",
-		"Follow it with the name of any specific command",
-		"for more info on just that command.",
+		"For more detailed info on any command",
+		"type out what ever command and any options",
+		"and append 'help' at the end of it to print the",
+		"info specific to those commands and options.",
+		// TODO: add more clear instructions on how commands are used
+		// make those instructions seperate from this help command.
 	},
 
-	Options: commands.TList{
-		{Name: "full",
-			Description: []string{
-				"Print all of the enformation about each command",
-				"instead of only the name and description.",
-			},
-		},
-		{Name: "command",
-			Description: []string{
-				"Print one commands info exclusively",
-				"and potentially with more info.",
-			},
-			AutoComplete: func(line string) []string {
-				var triggers = make([]string, len(commands.List))
-
-				for i, def := range commands.List {
-					triggers[i] = def.Name
-				}
-
-				return triggers
-			},
-			Validator: func(input string) bool {
-				return slices.Contains(commands.List.GetNamesRecursive(), input)
-			},
-		},
-	},
+	Options: commands.TList{},
 
 	Execution: func(args commands.TInputList, self int) {
-		fmt.Printf("%s\n", commands.List)
+		fmt.Printf("%s\n", commands.List.StringRecurse())
 	},
 }
 
