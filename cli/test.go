@@ -12,9 +12,9 @@ func TestCli() {
 
 	// cliSegments()
 	// cliCommands()
-	cliHelp()
+	// cliHelp()
 
-	go CommandWatcher()
+	CommandWatcher()
 	// readlineDemo()
 }
 
