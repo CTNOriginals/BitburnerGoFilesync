@@ -75,7 +75,7 @@ func (this Definition) Build() readline.PrefixCompleterInterface {
 	return build
 }
 
-func (this Definition) stringDescription() string {
+func (this Definition) StringDescription() string {
 	var str strings.Builder
 	var width = len(this.Name)
 
@@ -107,19 +107,15 @@ func (this Definition) stringDescription() string {
 	return str.String()
 }
 
-func (this Definition) stringHead() string {
+func (this Definition) String() string {
 	var str strings.Builder
 
 	str.WriteString(this.Name)
 
-	var desc = this.stringDescription()
+	var desc = this.StringDescription()
 	str.WriteString(desc)
 
 	return str.String()
-}
-
-func (this Definition) String() string {
-	return this.stringHead()
 }
 
 func (this Definition) StringRecurse(filter ...string) string {
@@ -129,7 +125,7 @@ func (this Definition) StringRecurse(filter ...string) string {
 		return str.String()
 	}
 
-	var lines = strings.Split(this.stringHead(), "\n")
+	var lines = strings.Split(this.String(), "\n")
 	str.WriteString(lines[0])
 
 	var optionString = this.Options.StringRecurse(filter...)
