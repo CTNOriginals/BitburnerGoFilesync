@@ -52,12 +52,14 @@ func (this Definition) HasAutoComplete() bool {
 	return this.AutoComplete != nil
 }
 
-func (this Definition) Build() *readline.PrefixCompleter {
-	var build = readline.PrefixCompleter{
-		Name:     []rune(this.Name),
-		Dynamic:  this.HasAutoComplete(),
-		Callback: this.AutoComplete,
-		Children: make([]readline.PrefixCompleterInterface, len(this.Options)),
+func (this Definition) Build() readline.PrefixCompleterInterface {
+	var build = &Custom_PrefixCompleter{
+		PrefixCompleter: readline.PrefixCompleter{
+			Name:     []rune(this.Name),
+			Dynamic:  this.HasAutoComplete(),
+			Callback: this.AutoComplete,
+			Children: make([]readline.PrefixCompleterInterface, len(this.Options)),
+		},
 	}
 
 	if !this.HasAutoComplete() && this.ExpectValue {
@@ -69,7 +71,7 @@ func (this Definition) Build() *readline.PrefixCompleter {
 		build.Children[i] = opt.Build()
 	}
 
-	return &build
+	return build
 }
 
 func (this Definition) stringHead() string {
