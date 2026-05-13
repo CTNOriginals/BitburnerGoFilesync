@@ -39,27 +39,21 @@ func GetFilePathAutoComplete(root *string) func(string) []string {
 		var parts = strings.Split(line, " ")
 		var partial = parts[len(parts)-1]
 
-		var searchDir string
-		var dirPrefix string
+		var dir, prefix string
+		if idx := strings.LastIndex(partial, "/"); idx >= 0 {
+			dir = partial[:idx]
+			prefix = partial[:idx+1]
+		}
 
-		if strings.HasPrefix(partial, "/") {
-			var idx = strings.LastIndex(partial, "/")
-			if idx >= 0 {
-				searchDir = partial[:idx]
-				dirPrefix = partial[:idx+1]
-			}
+		var searchDir = *root
+		switch {
+		case strings.HasPrefix(partial, "/"):
+			searchDir = dir
 			if searchDir == "" {
 				searchDir = "/"
 			}
-		} else {
-			var idx = strings.LastIndex(partial, "/")
-			if idx >= 0 {
-				searchDir = filepath.Join(*root, partial[:idx])
-				dirPrefix = partial[:idx+1]
-			} else {
-				searchDir = *root
-				dirPrefix = ""
-			}
+		case dir != "":
+			searchDir = filepath.Join(*root, dir)
 		}
 
 		var entries, err = os.ReadDir(searchDir)
@@ -68,13 +62,12 @@ func GetFilePathAutoComplete(root *string) func(string) []string {
 		}
 
 		var names = make([]string, 0, len(entries))
-		for _, entry := range entries {
-			var name = entry.Name()
-			if entry.IsDir() {
-				names = append(names, dirPrefix+name+"/")
-			} else {
-				names = append(names, dirPrefix+name)
+		for _, e := range entries {
+			var name = e.Name()
+			if e.IsDir() {
+				name += "/"
 			}
+			names = append(names, prefix+name)
 		}
 
 		return names
