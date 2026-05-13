@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
@@ -25,7 +24,7 @@ var def = commands.Definition{
 		},
 		{Name: "file",
 			Description:  []string{"A file path for something."},
-			AutoComplete: cli.Readline_FileComplete(&config.Values.Directory),
+			AutoComplete: commands.FileComplete(&config.Values.Directory),
 			Validator: func(input string) bool {
 				return (path.IsAbs(input) && ctnfile.FileExists(input)) ||
 					ctnfile.FileExists(utils.GetAbsolutePath(input))
