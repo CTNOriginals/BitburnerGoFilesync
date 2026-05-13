@@ -89,7 +89,7 @@ git-graph: ##@git Log decorated graph
 WGO_INCLUDE := -file .go -file .toml
 
 run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
-	go run ./main.go $(args)
+	go run . $(args)
 
 debug: ##@run Run with the --test flag.
 	go run . $(args) --test 
