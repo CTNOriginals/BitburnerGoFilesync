@@ -8,7 +8,12 @@ import (
 )
 
 func TestCli() {
-	fmt.Printf("%s\n", commands.List.StringRecurse())
+	// fmt.Printf("%s\n", commands.List.StringRecurse())
+	var tree = commands.List.ToTreeObjectList()
+	tree.Clean()
+	fmt.Printf("%s\n\n", tree.String())
+	fmt.Printf("%s\n", commands.List.StringTree())
+	// fmt.Printf("%s\n", tree.Generate(nil))
 
 	// cliSegments()
 	// cliCommands()

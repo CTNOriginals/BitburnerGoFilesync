@@ -138,3 +138,14 @@ func (this Definition) StringRecurse(filter ...string) string {
 
 	return str.String()
 }
+
+func (this Definition) ToTreeObject() *utils.TreeObject {
+	if this.Hidden {
+		return nil
+	}
+
+	return &utils.TreeObject{
+		Content:  this,
+		Children: this.Options.ToTreeObjectList(),
+	}
+}

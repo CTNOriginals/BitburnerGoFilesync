@@ -5,6 +5,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 	"github.com/chzyer/readline"
 )
 
@@ -137,4 +138,27 @@ func (this TList) String() string {
 }
 func (this TList) StringRecurse(filter ...string) string {
 	return this.string(true, filter...)
+}
+
+func (this TList) ToTreeObjectList() utils.TreeObjectList {
+	var list = make(utils.TreeObjectList, len(this))
+
+	for i, def := range this {
+		if def.Hidden {
+			continue
+		}
+
+		list[i] = def.ToTreeObject()
+	}
+
+	return list
+}
+
+func (this TList) StringTree() string {
+	var sections = this.ToTreeObjectList().Generate(&utils.TreeObjectFormatOptions{
+		// IndentCount:  2,
+		// IndentString: " ",
+	})
+
+	return strings.Join(sections, "\n")
 }
