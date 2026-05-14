@@ -7,6 +7,26 @@ import (
 	"strings"
 )
 
+type TTreeSymbol rune
+
+const (
+	TreeLine       TTreeSymbol = '┃'
+	TreeSplit      TTreeSymbol = '┣'
+	TreeCorner     TTreeSymbol = '┗'
+	TreeDash       TTreeSymbol = '╸'
+	TreeThinLine   TTreeSymbol = '│'
+	TreeThinSplit  TTreeSymbol = '├'
+	TreeThinCorner TTreeSymbol = '└'
+	TreeThinDash   TTreeSymbol = '╴'
+)
+
+func TreeSymbolList() []TTreeSymbol {
+	return []TTreeSymbol{
+		TreeLine, TreeSplit, TreeCorner,
+		TreeThinLine, TreeThinSplit, TreeThinCorner,
+	}
+}
+
 var HelperSubCommand = &Definition{
 	Name:        "help",
 	Description: []string{"Print the info about all commands and options infront of this."},

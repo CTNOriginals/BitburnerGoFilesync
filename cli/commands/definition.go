@@ -89,8 +89,8 @@ func (this Definition) StringDescription() string {
 		var mid = strings.Join(this.Description[1:len(this.Description)-1], "\n")
 		var bot = this.Description[len(this.Description)-1]
 
-		mid = ctnstring.Indent(mid, 1, "├ ")
-		bot = ctnstring.Indent(bot, 1, "└ ")
+		mid = ctnstring.Indent(mid, 1, fmt.Sprintf("%s ", string(TreeThinSplit)))
+		bot = ctnstring.Indent(bot, 1, fmt.Sprintf("%s ", string(TreeThinCorner)))
 
 		var desc = ""
 		if len(this.Description) > 2 {
@@ -134,7 +134,6 @@ func (this Definition) StringRecurse(filter ...string) string {
 		lines = append(lines, strings.Split(optionString, "\n")...)
 	}
 
-	var chars = []rune("┃┣┗")
 	var optionCount = len(this.Options) - 1
 
 	for i := 1; i < len(lines); i++ {
@@ -146,20 +145,20 @@ func (this Definition) StringRecurse(filter ...string) string {
 		}
 
 		var line = []rune(lines[i])
-		var char = chars[0]
+		var char = TreeLine
 
-		if !strings.ContainsRune(string(chars)+" ", line[2]) {
+		if !strings.ContainsRune(string(TreeSymbolList())+" ", line[2]) {
 			if optionCount > 1 {
-				char = chars[1]
+				char = TreeSplit
 			} else {
-				char = chars[2]
+				char = TreeCorner
 			}
 
-			line[1] = '╸'
+			line[1] = rune(TreeDash)
 			optionCount -= 1
 		}
 
-		line[0] = char
+		line[0] = rune(char)
 		str.WriteString(string(line))
 	}
 
