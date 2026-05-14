@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"fmt"
 	"slices"
 	"strings"
 
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 	"github.com/chzyer/readline"
 )
@@ -85,19 +85,15 @@ func (this Definition) StringDescription() string {
 	}
 
 	if len(this.Description) > 1 {
-		str.WriteString("\n")
-		var mid = strings.Join(this.Description[1:len(this.Description)-1], "\n")
-		var bot = this.Description[len(this.Description)-1]
+		var desc = strings.Join(this.Description, "\n")
 
-		mid = ctnstring.Indent(mid, 1, fmt.Sprintf("%s ", string(TreeThinSplit)))
-		bot = ctnstring.Indent(bot, 1, fmt.Sprintf("%s ", string(TreeThinCorner)))
-
-		var desc = ""
-		if len(this.Description) > 2 {
-			desc = fmt.Sprintf("%s\n%s", mid, bot)
-		} else {
-			desc = fmt.Sprintf("%s", bot)
-		}
+		desc = ctnstring.Indent(desc, 2, " ")
+		desc = utils.FormatStringAsTree(&strings.Builder{}, utils.TreeFormatOptions{
+			IndentCount: 2,
+			Whitespace:  []rune(" "),
+			MaxDepth:    len(this.Description) - 1,
+			Thin:        true,
+		}, strings.Split(desc, "\n")...)
 
 		desc = ctnstring.Indent(desc, width, " ")
 
@@ -134,33 +130,11 @@ func (this Definition) StringRecurse(filter ...string) string {
 		lines = append(lines, strings.Split(optionString, "\n")...)
 	}
 
-	var optionCount = len(this.Options) - 1
-
-	for i := 1; i < len(lines); i++ {
-		str.WriteString("\n")
-
-		if optionCount <= 0 {
-			str.WriteString(lines[i])
-			continue
-		}
-
-		var line = []rune(lines[i])
-		var char = TreeLine
-
-		if !strings.ContainsRune(string(TreeSymbolList())+" ", line[2]) {
-			if optionCount > 1 {
-				char = TreeSplit
-			} else {
-				char = TreeCorner
-			}
-
-			line[1] = rune(TreeDash)
-			optionCount -= 1
-		}
-
-		line[0] = rune(char)
-		str.WriteString(string(line))
-	}
+	utils.FormatStringAsTree(&str, utils.TreeFormatOptions{
+		IndentCount: 2,
+		Whitespace:  []rune(" "),
+		MaxDepth:    len(this.Options) - 1,
+	}, lines...)
 
 	return str.String()
 }
