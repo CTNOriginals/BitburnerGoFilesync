@@ -11,7 +11,7 @@ func TestCli() {
 	fmt.Printf("%s\n", commands.List.StringRecurse())
 
 	// cliSegments()
-	cliCommands()
+	// cliCommands()
 	// cliHelp()
 
 	CommandWatcher()
