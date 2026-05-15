@@ -8,7 +8,9 @@ import (
 )
 
 func TestCli() {
-	fmt.Printf("%s\n", commands.List.StringRecurse())
+	// fmt.Printf("%s\n", commands.List.StringRecurse())
+	var input, _ = commands.List.ParseInput("help")
+	input.Execute()
 
 	// cliSegments()
 	// cliCommands()
