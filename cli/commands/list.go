@@ -69,10 +69,13 @@ func (this TList) TryGetValidatedDefinition(input string) *Definition {
 	// if no defined validator succeded,
 	// check if any autocomplete suggested this input
 	for _, def := range this {
-		if def.ExpectValue ||
-			// BUG: this may produce inconsistency if the autocomplete
-			// function uses any of the preceding line of inputs
-			(def.HasAutoComplete() && slices.Contains(def.AutoComplete(""), input)) {
+		if def.ExpectValue {
+			return def
+		}
+
+		// BUG: this may produce inconsistency if the autocomplete
+		// function uses any of the preceding line of inputs
+		if def.HasAutoComplete() && slices.Contains(def.AutoComplete(input), input) {
 			return def
 		}
 	}
