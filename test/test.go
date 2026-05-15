@@ -6,4 +6,5 @@ import (
 
 func DoTest() {
 	cli.TestCli()
+	// readlineDemo()
 }

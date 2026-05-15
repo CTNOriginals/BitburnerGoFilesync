@@ -63,9 +63,16 @@ func (this Definition) Build() readline.PrefixCompleterInterface {
 		},
 	}
 
-	if !this.HasAutoComplete() && this.ExpectValue {
-		build.Dynamic = true
-		build.Callback = autocompleteVoid
+	if !this.HasAutoComplete() {
+		if this.ExpectValue {
+			// NOTE: Prevent the Name from showing up as an autocomplete option
+			build.Dynamic = true
+			build.Callback = autocompleteVoid
+		} else {
+			// NOTE: This causes the name to be autocompleted with a space at the end.
+			// It serves as a QoL feature so that the user can keep typing right after completion.
+			build.Name = append(build.Name, ' ')
+		}
 	}
 
 	for i, opt := range this.Options {
