@@ -20,12 +20,16 @@ func CommandWatcher() {
 	})
 
 	if err != nil {
-		panic(fmt.Sprintf("Commands readline error:\n%v", err))
+		log.Panicf("Commands readline error:\n%v", err)
 	}
 
-	defer cli.Close()
-
+	var logWriter = log.Writer()
 	log.SetOutput(cli.Stderr())
+
+	defer func() {
+		cli.Close()
+		log.SetOutput(logWriter)
+	}()
 
 	for {
 		var line, err = cli.Readline()
