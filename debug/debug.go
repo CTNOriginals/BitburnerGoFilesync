@@ -2,7 +2,7 @@ package debug
 
 import (
 	"bufio"
-	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -41,28 +41,28 @@ func DebugCommandListener() {
 
 				msg.WriteString(string(method) + " ")
 			}
-			println(msg.String())
+			log.Println(msg.String())
 			continue
 		case "--test":
 			for method, params := range DefaultParameters {
 				var msg = communication.SendRequest(method, nil, params...)
-				println(msg.String())
+			log.Println(msg.String())
 			}
 			continue
 		case "--log":
 			for id, msg := range communication.MessageLog {
-				fmt.Printf("%d: {\n%s\n}\n", id, ctnstring.Indent(ctnstruct.ToString(*msg), 2, " "))
+				log.Printf("%d: {\n%s\n}\n", id, ctnstring.Indent(ctnstruct.ToString(*msg), 2, " "))
 			}
 			continue
 		}
 
 		if communication.ActiveConnection == nil {
-			fmt.Println("No active connection")
+			log.Println("No active connection")
 			continue
 		}
 
 		if _, exists := definitions.RPCDefinitions[definitions.Method(cmd)]; !exists {
-			fmt.Printf("Invalid method name: %s\nSending raw input instead.\n", cmd)
+			log.Printf("Invalid method name: %s\nSending raw input instead.\n", cmd)
 			continue
 		}
 
@@ -70,7 +70,7 @@ func DebugCommandListener() {
 		defaultParameters, defaultExists := DefaultParameters[def.Method]
 
 		if !defaultExists {
-			fmt.Printf("This method does not have default parameters defined")
+			log.Printf("This method does not have default parameters defined")
 			continue
 		}
 

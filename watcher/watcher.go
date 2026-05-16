@@ -2,6 +2,7 @@ package watcher
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -26,7 +27,7 @@ func Initialize() {
 }
 
 func FileScanner() {
-	fmt.Printf("Scanning files in: %s\n", config.Values.Directory)
+	log.Printf("Scanning files in: %s\n", config.Values.Directory)
 
 	for {
 		scanFiles()
@@ -57,7 +58,7 @@ func scanFiles() {
 	newFiles := getUnregisteredFiles(config.Values.Directory)
 
 	for _, file := range newFiles {
-		fmt.Printf("new file: %s\n", file)
+		log.Printf("new file: %s\n", file)
 		FileEventHandlerMap.Handle(file, OnFileCreate)
 	}
 }
@@ -128,7 +129,7 @@ func patternMatch(pattern string, path string) bool {
 	match, err = doublestar.PathMatch(pattern, path)
 
 	if err != nil {
-		fmt.Printf("Pattern match error: %v (%s > %s = %t)\n", err, pattern, path, match)
+		log.Printf("Pattern match error: %v (%s > %s = %t)\n", err, pattern, path, match)
 		return false
 	}
 

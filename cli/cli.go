@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"log"
 	"slices"
@@ -20,12 +20,16 @@ func CommandWatcher() {
 	})
 
 	if err != nil {
-		panic(fmt.Sprintf("Commands readline error:\n%v", err))
+		log.Panicf("Commands readline error:\n%v", err)
 	}
 
-	defer cli.Close()
-
+	var logWriter = log.Writer()
 	log.SetOutput(cli.Stderr())
+
+	defer func() {
+		cli.Close()
+		log.SetOutput(logWriter)
+	}()
 
 	for {
 		var line, err = cli.Readline()
@@ -42,7 +46,7 @@ func CommandWatcher() {
 
 		var inputErr = ParseInput(line)
 		if inputErr != nil {
-			fmt.Printf("%s\n", inputErr)
+			log.Printf("%s\n", inputErr)
 			continue
 		}
 	}
@@ -89,7 +93,7 @@ func GetInputSegments(input string) ([]string, error) {
 	}
 
 	if index != len(parts) {
-		return nil, fmt.Errorf("Unable to parse input segments due to unmatched quote\n")
+		return nil, errors.New("Unable to parse input segments due to unmatched quote\n")
 	}
 
 	return segments, nil

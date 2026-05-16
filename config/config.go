@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -36,10 +37,10 @@ func Initialize() {
 
 	var content []byte
 	if content, err = toml.Marshal(Values); err != nil {
-		panic(fmt.Sprintf("Default config values, marshal error:\n%v\n", err))
+		log.Panicf("Default config values, marshal error:\n%v\n", err)
 	}
 
-	log(fmt.Sprintf("Defaults:\n%s\n", content))
+	logConfig(fmt.Sprintf("Defaults:\n%s\n", content))
 
 	if !ctnfile.FileExists(constants.ConfigFilePath) {
 		var content, _ = toml.Marshal(Values)
@@ -47,22 +48,22 @@ func Initialize() {
 	}
 
 	if _, err = toml.DecodeFile(constants.ConfigFilePath, &Values); err != nil {
-		panic(fmt.Sprintf("Config decode error:\n%v", err))
+		log.Panicf("Config decode error:\n%v", err)
 	}
 
-	log(fmt.Sprintf("Config file content:\n%+v\n", Values))
+	logConfig(fmt.Sprintf("Config file content:\n%+v\n", Values))
 	validateConfigValues()
-	log(fmt.Sprintf("Config Values:\n%+v\n", Values))
+	logConfig(fmt.Sprintf("Config Values:\n%+v\n", Values))
 }
 
 func validateConfigValues() {
 	ValidateBitburnerDirectory(Values.Directory)
 }
 
-func log(msg string) {
+func logConfig(msg string) {
 	if !constants.Debug || !constants.LogConfig {
 		return
 	}
 
-	print(msg)
+	log.Print(msg)
 }

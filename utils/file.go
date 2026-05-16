@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
@@ -14,14 +15,14 @@ import (
 func ForEachFileInDir(dir string, fn func(file os.FileInfo)) {
 	files, err := os.ReadDir(dir)
 	if err != nil {
-		fmt.Printf("utils/ForEachFileInDir os.ReadDir(): %v\n", err)
+		log.Printf("utils/ForEachFileInDir os.ReadDir(): %v\n", err)
 		return
 	}
 
 	for _, file := range files {
 		info, err := file.Info()
 		if err != nil {
-			fmt.Printf("utils/ForEachFileInDir file.Info(): %v\n", err)
+			log.Printf("utils/ForEachFileInDir file.Info(): %v\n", err)
 			continue
 		}
 
@@ -51,7 +52,7 @@ func GetFileContentByPath(path string) []byte {
 	var filePath = GetAbsolutePath(path)
 
 	if !ctnfile.FileExists(filePath) {
-		fmt.Printf("utils/GetFileContentByPath File does not exist: %s\n", filePath)
+		log.Printf("utils/GetFileContentByPath File does not exist: %s\n", filePath)
 		return []byte{}
 	}
 
