@@ -33,6 +33,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"slices"
 	"time"
@@ -49,6 +50,8 @@ func main() {
 	startTime := time.Now()
 	fmt.Printf("\n\n---- FileSync START %s ----\n", startTime.Format(time.TimeOnly))
 	defer fmt.Printf("---- FileSync END %s ----\n", startTime.Format(time.TimeOnly))
+
+	log.SetFlags(0)
 
 	var args = os.Args
 
