@@ -137,10 +137,19 @@ func (this Definition) StringRecurse(filter ...string) string {
 		lines = append(lines, strings.Split(optionString, "\n")...)
 	}
 
+	var optionCount = len(this.Options) - 1
+	if len(filter) > 0 {
+		for _, opt := range this.Options {
+			if !slices.Contains(filter, opt.Name) {
+				optionCount -= 1
+			}
+		}
+	}
+
 	utils.FormatStringAsTree(&str, utils.TreeFormatOptions{
 		IndentCount: 2,
 		Whitespace:  []rune(" "),
-		MaxDepth:    len(this.Options) - 1,
+		MaxDepth:    optionCount,
 	}, lines...)
 
 	return str.String()

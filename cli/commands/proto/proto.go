@@ -19,7 +19,7 @@ var def = commands.Definition{
 	},
 
 	Options: commands.TList{
-		{Name: "wah",
+		{Name: "nodesc",
 			Description: []string{},
 		},
 		{Name: "file",
@@ -52,7 +52,7 @@ var def = commands.Definition{
 	},
 
 	Execution: func(args commands.TInputList, self int) {
-		fmt.Printf("proto waah!\n%v\n", args)
+		fmt.Printf("%v\n", args)
 	},
 }
 

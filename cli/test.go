@@ -59,14 +59,9 @@ func cliCommands() {
 	fmt.Printf("\n-- Command Tests --\n")
 
 	cliTester([]string{
-		"help",
-		"help config",
-		"help full",
-		"prototype \"foo bar\"",
-		"prototype 1242e+8",
-		"prototype logging/index.ts",
-		"config set Port 1234",
-		"config list",
+		// "config",
+		// "config list",
+		// "config set Port 1234",
 	})
 }
 
