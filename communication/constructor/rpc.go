@@ -2,6 +2,7 @@ package constructor
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
 )
@@ -21,7 +22,7 @@ func NewRPC(method definitions.Method, parameters ...string) (rpc *RPC) {
 	def := definitions.RPCDefinitions[method]
 
 	if def.IsError() {
-		print(fmt.Errorf("RPC.NewRPC: Invalid parameter (method): %s\n", method))
+		log.Printf("RPC.NewRPC: Invalid parameter (method): %s\n", method)
 		return
 	}
 

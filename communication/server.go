@@ -1,7 +1,7 @@
 package communication
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -19,14 +19,14 @@ var upgrader = websocket.Upgrader{
 var ActiveConnection *websocket.Conn
 
 func StartServer(port string) {
-	print("\n---- Starting Server ----\n")
+	log.Print("\n---- Starting Server ----\n")
 
 	http.HandleFunc("/", wsHandler)
-	fmt.Printf("server: Started on: %s\n", port)
+	log.Printf("server: Started on: %s\n", port)
 
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		fmt.Println("server: Error starting server:", err)
+		log.Println("server: Error starting server:", err)
 	}
 }
 
@@ -35,16 +35,16 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
-		fmt.Println("server: Error upgrading:", err)
+		log.Println("server: Error upgrading:", err)
 		return
 	}
 
 	defer conn.Close()
 
-	fmt.Print("server: Connected to client!\n")
+	log.Print("server: Connected to client!\n")
 
 	if ActiveConnection != nil {
-		fmt.Printf("server: Overwriting existing connections with new one\n")
+		log.Printf("server: Overwriting existing connections with new one\n")
 	}
 
 	ActiveConnection = conn
@@ -59,7 +59,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		// Read message from the client
 		_, message, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Println("server: Error reading message:", err)
+			log.Println("server: Error reading message:", err)
 			break
 		}
 

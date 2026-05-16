@@ -2,6 +2,7 @@ package definitions
 
 import (
 	"fmt"
+	"log"
 )
 
 // The parameters of a request are always of type string.
@@ -10,7 +11,7 @@ type ParameterFields []string
 
 func (this ParameterFields) Generate(values []string) string {
 	if len(this) != len(values) {
-		fmt.Printf("ParameterFields  (%v) do not match passed in values (%v)", this, values)
+		log.Printf("ParameterFields  (%v) do not match passed in values (%v)", this, values)
 		return "{}"
 	}
 

@@ -1,7 +1,7 @@
 package cmdconfig
 
 import (
-	"fmt"
+	"log"
 	"strings"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
@@ -19,13 +19,13 @@ var def = commands.Definition{
 		// set_def, // TODO:
 	},
 	Execution: func(args commands.TInputList, self int) {
-		fmt.Printf("%s: %v\n", "Port", config.Values.Port)
-		fmt.Printf("%s: %v\n", "WorkindDirectory", constants.WorkindDirectory)
-		fmt.Printf("%s: %v\n", "ConfigFilePath", constants.ConfigFilePath)
-		fmt.Printf("%s: %v\n", "BitburnerRoot", config.Values.Directory)
-		fmt.Printf("%s: %v\n", "FileScanInterval", config.Values.FileScanInterval)
-		fmt.Printf("%s: [%v]\n", "IncludeFileExt", strings.Join(config.Values.FilePatterns.Include, ", "))
-		fmt.Printf("%s: [%v]\n", "ExcludeFileExt", strings.Join(config.Values.FilePatterns.Exclude, ", "))
+		log.Printf("%s: %v\n", "Port", config.Values.Port)
+		log.Printf("%s: %v\n", "WorkindDirectory", constants.WorkindDirectory)
+		log.Printf("%s: %v\n", "ConfigFilePath", constants.ConfigFilePath)
+		log.Printf("%s: %v\n", "BitburnerRoot", config.Values.Directory)
+		log.Printf("%s: %v\n", "FileScanInterval", config.Values.FileScanInterval)
+		log.Printf("%s: [%v]\n", "IncludeFileExt", strings.Join(config.Values.FilePatterns.Include, ", "))
+		log.Printf("%s: [%v]\n", "ExcludeFileExt", strings.Join(config.Values.FilePatterns.Exclude, ", "))
 	},
 }
 

@@ -3,7 +3,7 @@
 package communication
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/communication/constructor"
 	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
@@ -27,7 +27,7 @@ func GetId() int {
 
 func SendRequest(method definitions.Method, callback constructor.OnResponseCallback, parameters ...string) *constructor.Message {
 	if ActiveConnection == nil {
-		fmt.Printf("ActiveConnection is nil\nUnable to send message (%s)\n", method)
+		log.Printf("ActiveConnection is nil\nUnable to send message (%s)\n", method)
 		return nil
 	}
 
@@ -52,7 +52,7 @@ func OnResponse(body []byte) {
 	var id = int(json["id"].(float64))
 
 	if _, exists := MessageLog[id]; !exists {
-		fmt.Printf("communication.OnResponse: Unknown id (%d) received.\nDiscarding response:\n%v\n", id, json)
+		log.Printf("communication.OnResponse: Unknown id (%d) received.\nDiscarding response:\n%v\n", id, json)
 		return
 	}
 
@@ -62,11 +62,11 @@ func OnResponse(body []byte) {
 	if _, exists := json["error"]; exists {
 		result = json["error"]
 		message.IsError = true
-		fmt.Printf("\ncommunication.OnResponse: Message (%d) Received an error response:\n%v\n\n", id, result)
+		log.Printf("\ncommunication.OnResponse: Message (%d) Received an error response:\n%v\n\n", id, result)
 	}
 
 	message.Response = result
-	fmt.Printf("OnResponse %d: {\n%v\n}\n", id, ctnstring.Indent(message.String(), 2, " "))
+	log.Printf("OnResponse %d: {\n%v\n}\n", id, ctnstring.Indent(message.String(), 2, " "))
 
 	message.OnResponse(message)
 }

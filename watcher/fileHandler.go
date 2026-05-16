@@ -1,7 +1,7 @@
 package watcher
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
 	"github.com/CTNOriginals/BitburnerGoFilesync/communication/constructor"
@@ -11,25 +11,25 @@ import (
 
 var FileEventHandlerMap = MFileEventHandler{
 	OnFileCreate: func(file *FileInfo) {
-		fmt.Printf("OnFileCreate: %s\n", file.Path)
+		log.Printf("OnFileCreate: %s\n", file.Path)
 		PushFile(file)
 
 		FileStateMap[file.Path] = file
 	},
 	OnFileModify: func(file *FileInfo) {
-		fmt.Printf("OnFileModify: %s\n", file.Path)
+		log.Printf("OnFileModify: %s\n", file.Path)
 		PushFile(file)
 
 		file.Info = file.GetInfo()
 	},
 	OnFileDelete: func(file *FileInfo) {
-		fmt.Printf("OnFileDelete: %s\n", file.Path)
+		log.Printf("OnFileDelete: %s\n", file.Path)
 
 		var relPath = file.RelativePath()
 
 		communication.SendRequest(definitions.DeleteFile, func(message *constructor.Message) {
 			if message.IsError {
-				fmt.Printf("\nwatcher.OnFileDelete: Unable to delete file: %s\nResponse: %v\n\n", relPath, message.Response)
+				log.Printf("\nwatcher.OnFileDelete: Unable to delete file: %s\nResponse: %v\n\n", relPath, message.Response)
 			}
 		}, relPath, "home")
 
@@ -43,7 +43,7 @@ func PushFile(file *FileInfo) {
 
 	communication.SendRequest(definitions.PushFile, func(message *constructor.Message) {
 		if message.IsError {
-			fmt.Printf("\nwatcher.PushFile: Unable to push file content: %s\nResponse: %v\n\n", relPath, message.Response)
+			log.Printf("\nwatcher.PushFile: Unable to push file content: %s\nResponse: %v\n\n", relPath, message.Response)
 		}
 	}, relPath, string(content), "home")
 }

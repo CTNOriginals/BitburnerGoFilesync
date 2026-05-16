@@ -1,7 +1,7 @@
 package cmdproto
 
 import (
-	"fmt"
+	"log"
 	"path"
 	"strconv"
 	"strings"
@@ -52,7 +52,7 @@ var def = commands.Definition{
 	},
 
 	Execution: func(args commands.TInputList, self int) {
-		fmt.Printf("%v\n", args)
+		log.Printf("%v\n", args)
 	},
 }
 

@@ -1,7 +1,7 @@
 package cmdhelp
 
 import (
-	"fmt"
+	"log"
 	"strings"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
@@ -33,7 +33,7 @@ var def = commands.Definition{
 			" If your current input is a command that expects a value instead of a sub command name,",
 			" the Completion may list some possible values, but sometimes this is not possible.",
 		}
-		fmt.Printf("%s\n\n%s\n", strings.Join(instructions, "\n"), commands.List.StringRecurse())
+		log.Printf("%s\n\n%s\n", strings.Join(instructions, "\n"), commands.List.StringRecurse())
 	},
 }
 
