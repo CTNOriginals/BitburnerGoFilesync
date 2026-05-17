@@ -99,6 +99,8 @@ test: ##@run go test.
 
 wrun: ##@run Run a make target and restart on file change. make wrun <wgoargs="args..."> target=[TARGET]. Requires wgo: https://github.com/bokwoon95/wgo
 	wgo $(WGO_INCLUDE) $(wgoargs) $(MAKE) $(target)
+wrunstdin: ##@run Run a make wrun with wgoargs -stdin.
+	$(MAKE) wrun wgoargs="-stdin $(wgoargs)" target="$(target)"
 
 # -- Build --
 .PHONY: build-win build-linux build-mac build
