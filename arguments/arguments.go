@@ -10,7 +10,7 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/test"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
-	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/definitions"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/rpcschema"
 	gorillaws "github.com/gorilla/websocket"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
@@ -242,7 +242,7 @@ var argumentList = argList{
 			}
 
 			var onConnect = func(ws *gorillaws.Conn) {
-				websocket.SendRequest(definitions.GetDefinitionFile, onResponse)
+				websocket.SendRequest(rpcschema.GetDefinitionFile, onResponse)
 			}
 
 			websocket.OnConnectionCallbacks = append(websocket.OnConnectionCallbacks, onConnect)

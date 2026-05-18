@@ -4,22 +4,22 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/definitions"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/rpcschema"
 )
 
 // The "jsonrpc" field is excluded from this struct, it will be added in RPC.String().
 type RPC struct {
 	// Id         int
-	Method     definitions.Method
+	Method     rpcschema.Method
 	Parameters string
 }
 
-func NewRPC(method definitions.Method, parameters ...string) (rpc *RPC) {
+func NewRPC(method rpcschema.Method, parameters ...string) (rpc *RPC) {
 	rpc = &RPC{
 		Method: method,
 	}
 
-	def := definitions.RPCDefinitions[method]
+	def := rpcschema.SchemaMap[method]
 
 	if def.IsError() {
 		log.Printf("RPC.NewRPC: Invalid parameter (method): %s\n", method)

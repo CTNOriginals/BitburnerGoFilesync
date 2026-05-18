@@ -1,11 +1,11 @@
-package definitions
+package rpcschema
 
-type Definition struct {
+type Schema struct {
 	Method     Method
 	Parameters ParameterFields
 	Response   Response
 }
 
-func (this Definition) IsError() bool {
+func (this Schema) IsError() bool {
 	return this.Method == MethodError
 }

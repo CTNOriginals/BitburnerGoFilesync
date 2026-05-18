@@ -1,8 +1,8 @@
-package definitions
+package rpcschema
 
-type Definitions map[Method]*Definition
+type TSchemaMap map[Method]*Schema
 
-var RPCDefinitions = Definitions{
+var SchemaMap = TSchemaMap{
 	GetFile: {
 		Method:     GetFile,
 		Parameters: ParameterFields{"filename", "server"},

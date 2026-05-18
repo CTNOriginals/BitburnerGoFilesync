@@ -8,18 +8,18 @@ import (
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
-	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/definitions"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/rpcschema"
 
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 )
 
-var DefaultParameters = map[definitions.Method][]string{
-	definitions.GetFileNames:    {"home"},
-	definitions.GetFile:         {"proto.ts", "home"},
-	definitions.GetFileMetadata: {"proto.ts", "home"},
-	definitions.GetAllServers:   {},
-	definitions.PushFile:        {"proto.ts", string(utils.SanitizeFileContent(utils.GetFileContentByPath("proto.ts"))), "home"},
+var DefaultParameters = map[rpcschema.Method][]string{
+	rpcschema.GetFileNames:    {"home"},
+	rpcschema.GetFile:         {"proto.ts", "home"},
+	rpcschema.GetFileMetadata: {"proto.ts", "home"},
+	rpcschema.GetAllServers:   {},
+	rpcschema.PushFile:        {"proto.ts", string(utils.SanitizeFileContent(utils.GetFileContentByPath("proto.ts"))), "home"},
 }
 
 func DebugCommandListener() {
@@ -34,7 +34,7 @@ func DebugCommandListener() {
 		switch cmd {
 		case "--help", "-h", "?":
 			var msg strings.Builder
-			for _, method := range definitions.MethodsAsArray() {
+			for _, method := range rpcschema.MethodsAsArray() {
 				if _, exists := DefaultParameters[method]; !exists {
 					continue
 				}
@@ -61,12 +61,12 @@ func DebugCommandListener() {
 			continue
 		}
 
-		if _, exists := definitions.RPCDefinitions[definitions.Method(cmd)]; !exists {
+		if _, exists := rpcschema.SchemaMap[rpcschema.Method(cmd)]; !exists {
 			log.Printf("Invalid method name: %s\nSending raw input instead.\n", cmd)
 			continue
 		}
 
-		def := definitions.RPCDefinitions[definitions.Method(cmd)]
+		def := rpcschema.SchemaMap[rpcschema.Method(cmd)]
 		defaultParameters, defaultExists := DefaultParameters[def.Method]
 
 		if !defaultExists {

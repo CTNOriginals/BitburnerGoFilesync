@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
-	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/definitions"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/rpcschema"
 
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 	"github.com/gorilla/websocket"
@@ -24,7 +24,7 @@ func GetId() int {
 	return currentId - 1
 }
 
-func SendRequest(method definitions.Method, callback OnResponseCallback, parameters ...string) *Message {
+func SendRequest(method rpcschema.Method, callback OnResponseCallback, parameters ...string) *Message {
 	if ActiveConnection == nil {
 		log.Printf("ActiveConnection is nil\nUnable to send message (%s)\n", method)
 		return nil
