@@ -10,7 +10,7 @@ var RPCDefinitions = Definitions{
 	},
 	GetAllFiles: {
 		Method:     GetAllFiles,
-		Parameters: ParameterFields{"filename", "server"},
+		Parameters: ParameterFields{"server"},
 		Response: Response{
 			Typ:     ResObject,
 			IsArray: true,

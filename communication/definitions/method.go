@@ -26,7 +26,7 @@ const (
 	GetFileNames Method = "getFileNames"
 
 	// Parameters:
-	//   func(filename, server)
+	//   func(server)
 	GetAllFiles Method = "getAllFiles"
 
 	// Parameters:
