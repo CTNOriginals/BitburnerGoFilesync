@@ -1,10 +1,11 @@
 package test
 
 import (
-	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
+	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
 )
 
 func DoTest() {
-	cli.TestCli()
+	communication.TestCommunication()
+	// cli.TestCli()
 	// readlineDemo()
 }
