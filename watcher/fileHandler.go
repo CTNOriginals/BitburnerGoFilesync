@@ -5,7 +5,6 @@ import (
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
-	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/constructor"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/definitions"
 )
 
@@ -27,7 +26,7 @@ var FileEventHandlerMap = MFileEventHandler{
 
 		var relPath = file.RelativePath()
 
-		websocket.SendRequest(definitions.DeleteFile, func(message *constructor.Message) {
+		websocket.SendRequest(definitions.DeleteFile, func(message *websocket.Message) {
 			if message.IsError {
 				log.Printf("\nwatcher.OnFileDelete: Unable to delete file: %s\nResponse: %v\n\n", relPath, message.Response)
 			}
@@ -41,7 +40,7 @@ func PushFile(file *FileInfo) {
 	var relPath = file.RelativePath()
 	var content = utils.SanitizeFileContent(utils.GetFileContentByPath(relPath))
 
-	websocket.SendRequest(definitions.PushFile, func(message *constructor.Message) {
+	websocket.SendRequest(definitions.PushFile, func(message *websocket.Message) {
 		if message.IsError {
 			log.Printf("\nwatcher.PushFile: Unable to push file content: %s\nResponse: %v\n\n", relPath, message.Response)
 		}

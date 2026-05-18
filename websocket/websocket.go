@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
-	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/constructor"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/definitions"
 
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
@@ -16,7 +15,7 @@ import (
 // Keeps track of all the outgoing messages by linking them with their id.
 // If a response is received, the original request can be found in here as it should share an id.
 // Once the response is linked, the response body will be parced and added to the initial message object
-var MessageLog constructor.MMessageLog = constructor.MMessageLog{}
+var MessageLog MMessageLog = MMessageLog{}
 
 var currentId = 0
 
@@ -25,15 +24,15 @@ func GetId() int {
 	return currentId - 1
 }
 
-func SendRequest(method definitions.Method, callback constructor.OnResponseCallback, parameters ...string) *constructor.Message {
+func SendRequest(method definitions.Method, callback OnResponseCallback, parameters ...string) *Message {
 	if ActiveConnection == nil {
 		log.Printf("ActiveConnection is nil\nUnable to send message (%s)\n", method)
 		return nil
 	}
 
 	var id = GetId()
-	var rpc = constructor.NewRPC(method, parameters...)
-	var msg = constructor.NewMessage(rpc, callback)
+	var rpc = NewRPC(method, parameters...)
+	var msg = NewMessage(rpc, callback)
 	var json = rpc.JSON(id)
 
 	var err = ActiveConnection.WriteMessage(websocket.TextMessage, []byte(json))

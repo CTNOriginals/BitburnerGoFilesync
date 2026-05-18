@@ -4,19 +4,19 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/websocket"
+	gorillaws "github.com/gorilla/websocket"
 )
 
-var OnConnectionCallbacks []func(ws *websocket.Conn) = []func(ws *websocket.Conn){}
+var OnConnectionCallbacks []func(ws *gorillaws.Conn) = []func(ws *gorillaws.Conn){}
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
-var upgrader = websocket.Upgrader{
+var upgrader = gorillaws.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
 }
 
-var ActiveConnection *websocket.Conn
+var ActiveConnection *gorillaws.Conn
 
 func StartServer(port string) {
 	log.Print("\n---- Starting Server ----\n")

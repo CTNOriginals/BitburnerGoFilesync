@@ -9,10 +9,9 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/test"
-	websocket1 "github.com/CTNOriginals/BitburnerGoFilesync/websocket"
-	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/constructor"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/definitions"
-	"github.com/gorilla/websocket"
+	gorillaws "github.com/gorilla/websocket"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
@@ -228,7 +227,7 @@ var argumentList = argList{
 		},
 		Params: argParameters{},
 		Action: func(params []string) {
-			var onResponse = func(message *constructor.Message) {
+			var onResponse = func(message *websocket.Message) {
 				if message.IsError {
 					log.Println(message.Response)
 					return
@@ -242,11 +241,11 @@ var argumentList = argList{
 				ctnfile.WriteFile(config.Values.Directory+"/NetscriptDefinitions.d.ts", strings.Split(content, "\n"))
 			}
 
-			var onConnect = func(ws *websocket.Conn) {
-				websocket1.SendRequest(definitions.GetDefinitionFile, onResponse)
+			var onConnect = func(ws *gorillaws.Conn) {
+				websocket.SendRequest(definitions.GetDefinitionFile, onResponse)
 			}
 
-			websocket1.OnConnectionCallbacks = append(websocket1.OnConnectionCallbacks, onConnect)
+			websocket.OnConnectionCallbacks = append(websocket.OnConnectionCallbacks, onConnect)
 		},
 	},
 

@@ -1,4 +1,4 @@
-package constructor
+package websocket
 
 import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/definitions"

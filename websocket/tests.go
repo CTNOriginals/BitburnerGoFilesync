@@ -3,7 +3,6 @@ package websocket
 import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
-	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/constructor"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/definitions"
 )
 
@@ -16,7 +15,7 @@ func TestCommunication() {
 		}
 	}
 
-	SendRequest(definitions.GetAllFiles, func(message *constructor.Message) {
+	SendRequest(definitions.GetAllFiles, func(message *Message) {
 		// log.Printf("\nGetAllFiles OnResponse: {\n%s\n}\n", ctnstring.Indent(message.String(), 2, " "))
 	}, "home")
 
