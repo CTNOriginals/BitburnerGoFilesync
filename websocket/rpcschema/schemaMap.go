@@ -1,8 +1,8 @@
-package definitions
+package rpcschema
 
-type Definitions map[Method]*Definition
+type TSchemaMap map[Method]*Schema
 
-var RPCDefinitions = Definitions{
+var SchemaMap = TSchemaMap{
 	GetFile: {
 		Method:     GetFile,
 		Parameters: ParameterFields{"filename", "server"},
@@ -10,7 +10,7 @@ var RPCDefinitions = Definitions{
 	},
 	GetAllFiles: {
 		Method:     GetAllFiles,
-		Parameters: ParameterFields{"filename", "server"},
+		Parameters: ParameterFields{"server"},
 		Response: Response{
 			Typ:     ResObject,
 			IsArray: true,

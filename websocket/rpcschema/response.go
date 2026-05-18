@@ -1,4 +1,4 @@
-package definitions
+package rpcschema
 
 type TResponse int
 

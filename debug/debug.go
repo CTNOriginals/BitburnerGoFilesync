@@ -6,20 +6,20 @@ import (
 	"os"
 	"strings"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/rpcschema"
 
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 )
 
-var DefaultParameters = map[definitions.Method][]string{
-	definitions.GetFileNames:    {"home"},
-	definitions.GetFile:         {"proto.ts", "home"},
-	definitions.GetFileMetadata: {"proto.ts", "home"},
-	definitions.GetAllServers:   {},
-	definitions.PushFile:        {"proto.ts", string(utils.SanitizeFileContent(utils.GetFileContentByPath("proto.ts"))), "home"},
+var DefaultParameters = map[rpcschema.Method][]string{
+	rpcschema.GetFileNames:    {"home"},
+	rpcschema.GetFile:         {"proto.ts", "home"},
+	rpcschema.GetFileMetadata: {"proto.ts", "home"},
+	rpcschema.GetAllServers:   {},
+	rpcschema.PushFile:        {"proto.ts", string(utils.SanitizeFileContent(utils.GetFileContentByPath("proto.ts"))), "home"},
 }
 
 func DebugCommandListener() {
@@ -34,7 +34,7 @@ func DebugCommandListener() {
 		switch cmd {
 		case "--help", "-h", "?":
 			var msg strings.Builder
-			for _, method := range definitions.MethodsAsArray() {
+			for _, method := range rpcschema.MethodsAsArray() {
 				if _, exists := DefaultParameters[method]; !exists {
 					continue
 				}
@@ -45,28 +45,28 @@ func DebugCommandListener() {
 			continue
 		case "--test":
 			for method, params := range DefaultParameters {
-				var msg = communication.SendRequest(method, nil, params...)
-			log.Println(msg.String())
+				var msg = websocket.SendRequest(method, nil, params...)
+				log.Println(msg.String())
 			}
 			continue
 		case "--log":
-			for id, msg := range communication.MessageLog {
+			for id, msg := range websocket.MessageLog {
 				log.Printf("%d: {\n%s\n}\n", id, ctnstring.Indent(ctnstruct.ToString(*msg), 2, " "))
 			}
 			continue
 		}
 
-		if communication.ActiveConnection == nil {
+		if websocket.ActiveConnection == nil {
 			log.Println("No active connection")
 			continue
 		}
 
-		if _, exists := definitions.RPCDefinitions[definitions.Method(cmd)]; !exists {
+		if _, exists := rpcschema.SchemaMap[rpcschema.Method(cmd)]; !exists {
 			log.Printf("Invalid method name: %s\nSending raw input instead.\n", cmd)
 			continue
 		}
 
-		def := definitions.RPCDefinitions[definitions.Method(cmd)]
+		def := rpcschema.SchemaMap[rpcschema.Method(cmd)]
 		defaultParameters, defaultExists := DefaultParameters[def.Method]
 
 		if !defaultExists {
@@ -74,6 +74,6 @@ func DebugCommandListener() {
 			continue
 		}
 
-		communication.SendRequest(def.Method, nil, defaultParameters...)
+		websocket.SendRequest(def.Method, nil, defaultParameters...)
 	}
 }
