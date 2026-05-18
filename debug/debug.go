@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/definitions"
 
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
@@ -45,18 +45,18 @@ func DebugCommandListener() {
 			continue
 		case "--test":
 			for method, params := range DefaultParameters {
-				var msg = communication.SendRequest(method, nil, params...)
-			log.Println(msg.String())
+				var msg = websocket.SendRequest(method, nil, params...)
+				log.Println(msg.String())
 			}
 			continue
 		case "--log":
-			for id, msg := range communication.MessageLog {
+			for id, msg := range websocket.MessageLog {
 				log.Printf("%d: {\n%s\n}\n", id, ctnstring.Indent(ctnstruct.ToString(*msg), 2, " "))
 			}
 			continue
 		}
 
-		if communication.ActiveConnection == nil {
+		if websocket.ActiveConnection == nil {
 			log.Println("No active connection")
 			continue
 		}
@@ -74,6 +74,6 @@ func DebugCommandListener() {
 			continue
 		}
 
-		communication.SendRequest(def.Method, nil, defaultParameters...)
+		websocket.SendRequest(def.Method, nil, defaultParameters...)
 	}
 }

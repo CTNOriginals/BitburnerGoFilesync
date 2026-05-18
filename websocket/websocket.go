@@ -1,13 +1,13 @@
 // Communication stands for the communication between the server and the client.
 // The name may be a bit confusing but i was unable to think of a better one for this case.
-package communication
+package websocket
 
 import (
 	"log"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication/constructor"
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/constructor"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/definitions"
 
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 	"github.com/gorilla/websocket"

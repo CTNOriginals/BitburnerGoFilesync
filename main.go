@@ -39,10 +39,10 @@ import (
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/arguments"
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/watcher"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 )
 
 func main() {
@@ -68,7 +68,7 @@ func main() {
 	}
 
 	if !constants.NoServer {
-		go communication.StartServer(config.Values.Port)
+		go websocket.StartServer(config.Values.Port)
 	} else if constants.KeepAlive {
 		for {
 			time.Sleep(time.Millisecond)

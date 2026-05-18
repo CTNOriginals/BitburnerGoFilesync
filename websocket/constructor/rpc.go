@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/definitions"
 )
 
 // The "jsonrpc" field is excluded from this struct, it will be added in RPC.String().

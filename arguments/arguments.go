@@ -6,12 +6,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication/constructor"
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/test"
+	websocket1 "github.com/CTNOriginals/BitburnerGoFilesync/websocket"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/constructor"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/definitions"
 	"github.com/gorilla/websocket"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
@@ -243,10 +243,10 @@ var argumentList = argList{
 			}
 
 			var onConnect = func(ws *websocket.Conn) {
-				communication.SendRequest(definitions.GetDefinitionFile, onResponse)
+				websocket1.SendRequest(definitions.GetDefinitionFile, onResponse)
 			}
 
-			communication.OnConnectionCallbacks = append(communication.OnConnectionCallbacks, onConnect)
+			websocket1.OnConnectionCallbacks = append(websocket1.OnConnectionCallbacks, onConnect)
 		},
 	},
 
