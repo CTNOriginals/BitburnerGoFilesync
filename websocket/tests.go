@@ -7,7 +7,7 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 )
 
-func TestCommunication() {
+func TestClient() {
 	Client.Ready = make(chan struct{})
 	go Client.Start(config.Values.Port)
 	defer Client.Close()
