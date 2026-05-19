@@ -88,11 +88,87 @@ func AwaitResponse[T any](message *SMessage) *T {
 	return &result
 }
 
+func (this *SSocket) PushFile(
+	params Params_PushFile,
+	callback func(result *Result_PushFile),
+) {
+	var message = this.send(PushFile, params)
+	callback(AwaitResponse[Result_PushFile](message))
+}
+
+func (this *SSocket) GetFile(
+	params Params_GetFile,
+	callback func(result *Result_GetFile),
+) {
+	var message = this.send(GetFile, params)
+	callback(AwaitResponse[Result_GetFile](message))
+}
+
+func (this *SSocket) GetFileMetadata(
+	params Params_GetFileMetadata,
+	callback func(result *Result_GetFileMetadata),
+) {
+	var message = this.send(GetFileMetadata, params)
+	callback(AwaitResponse[Result_GetFileMetadata](message))
+}
+
+func (this *SSocket) DeleteFile(
+	params Params_DeleteFile,
+	callback func(result *Result_DeleteFile),
+) {
+	var message = this.send(DeleteFile, params)
+	callback(AwaitResponse[Result_DeleteFile](message))
+}
+
+func (this *SSocket) GetFileNames(
+	params Params_GetFileNames,
+	callback func(result *Result_GetFileNames),
+) {
+	var message = this.send(GetFileNames, params)
+	callback(AwaitResponse[Result_GetFileNames](message))
+}
+
 func (this *SSocket) GetAllFiles(
 	params Params_GetAllFiles,
-	callback func(result *[]Result_GetAllFiles),
+	callback func(result *Result_GetAllFiles),
 ) {
 	var message = this.send(GetAllFiles, params)
-	var result = AwaitResponse[[]Result_GetAllFiles](message)
-	callback(result)
+	callback(AwaitResponse[Result_GetAllFiles](message))
+}
+
+func (this *SSocket) GetAllFileMetadata(
+	params Params_GetAllFileMetadata,
+	callback func(result *Result_GetAllFileMetadata),
+) {
+	var message = this.send(GetAllFileMetadata, params)
+	callback(AwaitResponse[Result_GetAllFileMetadata](message))
+}
+
+func (this *SSocket) CalculateRam(
+	params Params_CalculateRam,
+	callback func(result *Result_CalculateRam),
+) {
+	var message = this.send(CalculateRam, params)
+	callback(AwaitResponse[Result_CalculateRam](message))
+}
+
+func (this *SSocket) GetDefinitionFile(
+	callback func(result *Result_GetDefinitionFile),
+) {
+	var message = this.send(GetDefinitionFile, nil)
+	callback(AwaitResponse[Result_GetDefinitionFile](message))
+}
+
+func (this *SSocket) GetSaveFile(
+	callback func(result *Result_GetSaveFile),
+) {
+	var message = this.send(GetSaveFile, nil)
+	callback(AwaitResponse[Result_GetSaveFile](message))
+}
+
+func (this *SSocket) GetAllServers(
+	callback func(result *Result_GetAllServers),
+) {
+	var message = this.send(GetAllServers, nil)
+	callback(AwaitResponse[Result_GetAllServers](message))
 }
