@@ -69,34 +69,30 @@ func (this *SSocket) Receive(body json.RawMessage) {
 	message.OnResponse <- true
 }
 
-type getAllFilesParams struct {
-	Server string `json:"server"`
-}
-type getAllFilesResult struct {
-	Filename string `json:"filename"`
-	Content  string `json:"content"`
-}
-
-func (this *SSocket) GetAllFiles(
-	params getAllFilesParams,
-	callback func(result []getAllFilesResult),
-) {
-	var message = this.send(GetAllFiles, params)
-
+func AwaitResponse[T any](message *SMessage) *T {
 	var success = <-message.OnResponse
 
 	if success == false {
 		log.Printf("Socket.GetAllFiles reveived response error: %v\n", message.Response)
-		return
+		return nil
 	}
 
-	var result []getAllFilesResult
+	var result T
 	var err = json.Unmarshal(message.Response.Result, &result)
 
 	if err != nil {
 		log.Printf("Socket.GetAllFiles error while parsing response result: %v\n", err)
-		return
+		return nil
 	}
 
+	return &result
+}
+
+func (this *SSocket) GetAllFiles(
+	params Params_GetAllFiles,
+	callback func(result *[]Result_GetAllFiles),
+) {
+	var message = this.send(GetAllFiles, params)
+	var result = AwaitResponse[[]Result_GetAllFiles](message)
 	callback(result)
 }
