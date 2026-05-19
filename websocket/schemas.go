@@ -49,10 +49,10 @@ type Params_GetFileNames ServerName
 type Result_GetFileNames []string
 
 type Params_GetAllFiles ServerName
-type Result_GetAllFiles File_Content
+type Result_GetAllFiles []File_Content
 
 type Params_GetAllFileMetadata ServerName
-type Result_GetAllFileMetadata []Result_GetAllFileMetadata
+type Result_GetAllFileMetadata []FileMetadata
 
 type Params_CalculateRam File_Server
 type Result_CalculateRam float64
