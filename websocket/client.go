@@ -10,6 +10,7 @@ import (
 
 type SClient struct {
 	Connection *wsgorilla.Conn
+	Socket     SSocket
 }
 
 func (this SClient) Active() bool {
@@ -22,13 +23,31 @@ func (this *SClient) Start(port string) {
 		return
 	}
 
-	StartServer(port, this.connectionHandler)
+	this.Printf("---- Starting Server ----\n")
+
+	http.HandleFunc("/", this.onConnect)
+	this.Printf("server started on port %s\n", port)
+
+	var err = http.ListenAndServe(":"+port, nil)
+
+	if err != nil {
+		this.Printf("Error starting server listener: %v\n", err)
+		return
+	}
+
+	this.Connection.SetCloseHandler(this.onClose)
+
+	go this.sender()
+	go this.listener()
 }
+
+func (this SClient) sender() {
+	// this.Socket
+}
+
 func (this SClient) listener() {
-	// Listen for incoming messages
 	for {
-		// Read message from the client
-		_, message, err := this.Connection.ReadMessage()
+		var _, message, err = this.Connection.ReadMessage()
 		if err != nil {
 			this.Printf("server: Error reading message: %v\n", err)
 			break
@@ -40,7 +59,7 @@ func (this SClient) listener() {
 	}
 }
 
-func (this *SClient) connectionHandler(w http.ResponseWriter, r *http.Request) {
+func (this *SClient) onConnect(w http.ResponseWriter, r *http.Request) {
 	if this.Active() {
 		this.Printf("Overwriting existing connections with new one\n")
 	}
@@ -61,18 +80,18 @@ func (this *SClient) connectionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer this.Connection.Close()
-
 	this.Printf("Connected!\n")
 
-	defer func() { this.Connection = nil }()
-
 	// TODO: Integrate this into client
-	for _, cb := range OnConnectionCallbacks {
-		cb(this.Connection)
-	}
+	// for _, cb := range OnConnectionCallbacks {
+	// 	cb(this.Connection)
+	// }
+}
 
-	this.listener()
+func (this *SClient) onClose(code int, text string) error {
+	this.Printf("onClose: %d - %s\n", code, text)
+	this.Connection = nil
+	return nil
 }
 
 func (this SClient) Printf(format string, args ...any) {
