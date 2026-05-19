@@ -17,18 +17,18 @@ Schemas:
 		error: any,
 	}
 */
-type Method string
+type TMethod string
 
 const (
 	// Schema:
 	//  params: filename, content, server
 	//  result: OK
-	PushFile Method = "pushFile"
+	PushFile TMethod = "pushFile"
 
 	// Schema:
 	//  params: filename, server
 	//  result: string
-	GetFile Method = "getFile"
+	GetFile TMethod = "getFile"
 
 	// Schema:
 	//  params: filename, server
@@ -38,22 +38,22 @@ const (
 	//   btime: string,
 	//   mtime: string
 	//  }
-	GetFileMetadata Method = "getFileMetadata"
+	GetFileMetadata TMethod = "getFileMetadata"
 
 	// Schema:
 	//  params: filename, server
 	//  result: OK
-	DeleteFile Method = "deleteFile"
+	DeleteFile TMethod = "deleteFile"
 
 	// Schema:
 	//  params: server
 	//  result: string[]
-	GetFileNames Method = "getFileNames"
+	GetFileNames TMethod = "getFileNames"
 
 	// Schema:
 	//  params: server
 	//  result: {filename: string, content: string}[]
-	GetAllFiles Method = "getAllFiles"
+	GetAllFiles TMethod = "getAllFiles"
 
 	// Schema:
 	//  params: server
@@ -63,16 +63,16 @@ const (
 	//   btime: string,
 	//   mtime: string
 	//  }[]
-	GetAllFileMetadata Method = "getAllFileMetadata"
+	GetAllFileMetadata TMethod = "getAllFileMetadata"
 
 	// Schema:
 	//  params: filename, server
 	//  result: number
-	CalculateRam Method = "calculateRam"
+	CalculateRam TMethod = "calculateRam"
 
 	// Schema:
 	//  result: string
-	GetDefinitionFile Method = "getDefinitionFile"
+	GetDefinitionFile TMethod = "getDefinitionFile"
 
 	// Schema:
 	//  result: {
@@ -80,7 +80,7 @@ const (
 	//   binary: bool,
 	//   save: string,
 	//  }
-	GetSaveFile Method = "getSaveFile"
+	GetSaveFile TMethod = "getSaveFile"
 
 	// Schema:
 	//  result: {
@@ -88,16 +88,16 @@ const (
 	//   hasAdminRights: bool,
 	//   purchasedByPlayer: bool,
 	//  }[]
-	GetAllServers Method = "getAllServers"
+	GetAllServers TMethod = "getAllServers"
 
 	// Schema:
 	//  result: any
 	//  error: any && !nil
-	MethodError Method = "error"
+	MethodError TMethod = "error"
 )
 
-func MethodsAsArray() []Method {
-	return []Method{
+func MethodsAsArray() []TMethod {
+	return []TMethod{
 		PushFile,
 		GetFile,
 		GetFileMetadata,
