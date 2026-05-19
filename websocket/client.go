@@ -62,7 +62,7 @@ func (this *SClient) listener() {
 			break
 		}
 
-		this.Printf("Received message: %s\n", string(message))
+		// this.Printf("Received message: %s\n", string(message))
 		this.Socket.Receive(message)
 	}
 }
