@@ -1,46 +1,99 @@
 package rpcschema
 
-type (
-	Method string
-)
+/*
+Schemas:
+
+	Input: {
+		jsonrpc: 2.0,
+		id: number,
+		method: string,
+		params: string | {[key: string]: string},
+	}
+
+	Output: {
+		jsonrpc: 2.0,
+		id: number,
+		result: any,
+		error: any,
+	}
+*/
+type Method string
 
 const (
-	// Parameters:
-	//   func(filename, content, server)
+	// Schema:
+	//  params: filename, content, server
+	//  result: OK
 	PushFile Method = "pushFile"
 
-	// Parameters:
-	//   func(filename, server)
+	// Schema:
+	//  params: filename, server
+	//  result: string
 	GetFile Method = "getFile"
 
-	// Parameters:
-	//   func(filename, server)
+	// Schema:
+	//  params: filename, server
+	//  result: {
+	//   filename: string,
+	//   atime: string,
+	//   btime: string,
+	//   mtime: string
+	//  }
 	GetFileMetadata Method = "getFileMetadata"
 
-	// Parameters:
-	//   func(filename, server)
+	// Schema:
+	//  params: filename, server
+	//  result: OK
 	DeleteFile Method = "deleteFile"
 
-	// Parameters:
-	//   func(server)
+	// Schema:
+	//  params: server
+	//  result: string[]
 	GetFileNames Method = "getFileNames"
 
-	// Parameters:
-	//   func(server)
+	// Schema:
+	//  params: server
+	//  result: {filename: string, content: string}[]
 	GetAllFiles Method = "getAllFiles"
 
-	// Parameters:
-	//   func(server)
+	// Schema:
+	//  params: server
+	//  result: {
+	//   filename: string,
+	//   atime: string,
+	//   btime: string,
+	//   mtime: string
+	//  }[]
 	GetAllFileMetadata Method = "getAllFileMetadata"
 
-	// Parameters:
-	//   func(filename, server)
+	// Schema:
+	//  params: filename, server
+	//  result: number
 	CalculateRam Method = "calculateRam"
 
+	// Schema:
+	//  result: string
 	GetDefinitionFile Method = "getDefinitionFile"
-	GetSaveFile       Method = "getSaveFile"
-	GetAllServers     Method = "getAllServers"
-	MethodError       Method = "error"
+
+	// Schema:
+	//  result: {
+	//   identifier: string,
+	//   binary: bool,
+	//   save: string,
+	//  }
+	GetSaveFile Method = "getSaveFile"
+
+	// Schema:
+	//  result: {
+	//   hostname: string,
+	//   hasAdminRights: bool,
+	//   purchasedByPlayer: bool,
+	//  }[]
+	GetAllServers Method = "getAllServers"
+
+	// Schema:
+	//  result: any
+	//  error: any && !nil
+	MethodError Method = "error"
 )
 
 func MethodsAsArray() []Method {
