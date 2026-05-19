@@ -34,18 +34,25 @@ func (this *SClient) Start(port string) {
 		this.Printf("Error starting server listener: %v\n", err)
 		return
 	}
-
-	this.Connection.SetCloseHandler(this.onClose)
-
-	go this.sender()
-	go this.listener()
 }
 
-func (this SClient) sender() {
-	// this.Socket
+func (this SClient) Close() {
+	if !this.Active() {
+		this.Printf("Unable to close the connection while it is nil\n")
+		return
+	}
+
+	this.Connection.Close()
 }
 
-func (this SClient) listener() {
+func (this *SClient) sender() {
+	for {
+		var message = <-this.Socket.Channel
+		this.Printf("sending message: %v\n", message)
+	}
+}
+
+func (this *SClient) listener() {
 	for {
 		var _, message, err = this.Connection.ReadMessage()
 		if err != nil {
@@ -54,9 +61,18 @@ func (this SClient) listener() {
 		}
 
 		this.Printf("Received message: %s\n", string(message))
-
-		// OnResponse(message)
+		this.Socket.Receive(message)
 	}
+}
+
+func (this *SClient) onReady() {
+	this.Printf("connection established!")
+	this.Connection.SetCloseHandler(this.onClose)
+
+	this.Socket.Open()
+
+	go this.sender()
+	go this.listener()
 }
 
 func (this *SClient) onConnect(w http.ResponseWriter, r *http.Request) {
@@ -80,17 +96,18 @@ func (this *SClient) onConnect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	this.Printf("Connected!\n")
-
 	// TODO: Integrate this into client
 	// for _, cb := range OnConnectionCallbacks {
 	// 	cb(this.Connection)
 	// }
+
+	this.onReady()
 }
 
 func (this *SClient) onClose(code int, text string) error {
 	this.Printf("onClose: %d - %s\n", code, text)
 	this.Connection = nil
+	this.Socket.Close()
 	return nil
 }
 
