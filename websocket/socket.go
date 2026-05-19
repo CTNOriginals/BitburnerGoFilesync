@@ -58,6 +58,8 @@ func (this *SSocket) Receive(body json.RawMessage) {
 		return
 	}
 
+	message.Response = &response
+
 	if response.Error != nil {
 		message.OnResponse <- false
 		log.Printf("Socket.Receive response contained error: %v\n", response.Error)
@@ -68,11 +70,11 @@ func (this *SSocket) Receive(body json.RawMessage) {
 }
 
 type getAllFilesParams struct {
-	server string
+	Server string `json:"server"`
 }
 type getAllFilesResult struct {
-	filename string
-	content  string
+	Filename string `json:"filename"`
+	Content  string `json:"content"`
 }
 
 func (this *SSocket) GetAllFiles(

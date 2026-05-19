@@ -18,7 +18,7 @@ func TestCommunication() {
 	}
 
 	Client.Socket.GetAllFiles(getAllFilesParams{
-		server: "home",
+		Server: "home",
 	}, func(result []getAllFilesResult) {
 		log.Printf("got all files: %v\n", result)
 	})

@@ -48,7 +48,8 @@ func (this SClient) Close() {
 func (this *SClient) sender() {
 	for {
 		var message = <-this.Socket.Channel
-		this.Printf("sending message: %v\n", message)
+		// this.Printf("sending message: %v\n", message)
+		this.Connection.WriteJSON(message.Request)
 	}
 }
 
