@@ -11,6 +11,7 @@ import (
 type SClient struct {
 	Connection *wsgorilla.Conn
 	Socket     SSocket
+	Ready      chan struct{}
 }
 
 func (this SClient) Active() bool {
@@ -67,10 +68,13 @@ func (this *SClient) listener() {
 }
 
 func (this *SClient) onReady() {
-	this.Printf("connection established!")
+	this.Printf("Ready!")
 	this.Connection.SetCloseHandler(this.onClose)
 
 	this.Socket.Open()
+
+	// unblock any scripts waiting on this signal
+	close(this.Ready)
 
 	go this.sender()
 	go this.listener()
