@@ -34,10 +34,10 @@ func (this *SSocket) send(method TMethod, params any) *SMessage {
 		OnResponse: make(chan bool),
 	}
 
-	log.Printf("Socket.send sending message: %v\n", *message)
+	// log.Printf("Socket.send sending message: %v\n", *message)
 
-	this.Channel <- message
 	this.Messages[id] = message
+	this.Channel <- message
 
 	return message
 }
