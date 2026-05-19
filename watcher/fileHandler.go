@@ -2,6 +2,9 @@ package watcher
 
 import (
 	"log"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 )
 
 var FileEventHandlerMap = MFileEventHandler{
@@ -22,27 +25,22 @@ var FileEventHandlerMap = MFileEventHandler{
 
 		var relPath = file.RelativePath()
 
-		log.Printf("watcher/fileHandler TODO: Handle OnFileDelete(%s)\n", relPath)
+		websocket.Client.Socket.DeleteFile(websocket.Params_DeleteFile{
+			Filename: relPath,
+			Server:   "home",
+		}, nil)
 
-		// websocket.SendRequest(rpcschema.DeleteFile, func(message *websocket.Message) {
-		// 	if message.IsError {
-		// 		log.Printf("\nwatcher.OnFileDelete: Unable to delete file: %s\nResponse: %v\n\n", relPath, message.Response)
-		// 	}
-		// }, relPath, "home")
-
-		// delete(FileStateMap, file.Path)
+		delete(FileStateMap, file.Path)
 	},
 }
 
 func PushFile(file *FileInfo) {
 	var relPath = file.RelativePath()
-	// var content = utils.SanitizeFileContent(utils.GetFileContentByPath(relPath))
+	var content = utils.SanitizeFileContent(utils.GetFileContentByPath(relPath))
 
-	log.Printf("watcher/fileHandler TODO: Handle PushFile(%s)\n", relPath)
-
-	// websocket.SendRequest(rpcschema.PushFile, func(message *websocket.Message) {
-	// 	if message.IsError {
-	// 		log.Printf("\nwatcher.PushFile: Unable to push file content: %s\nResponse: %v\n\n", relPath, message.Response)
-	// 	}
-	// }, relPath, string(content), "home")
+	websocket.Client.Socket.PushFile(websocket.Params_PushFile{
+		Filename: relPath,
+		Content:  string(content),
+		Server:   "home",
+	}, nil)
 }
