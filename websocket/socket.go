@@ -73,7 +73,7 @@ func AwaitResponse[T any](message *SMessage) *T {
 	var success = <-message.OnResponse
 
 	if success == false {
-		log.Printf("Socket.GetAllFiles reveived response error: %v\n", message.Response)
+		log.Printf("Socket.AwaitResponse received response error: %v\n", message.Response)
 		return nil
 	}
 
@@ -81,7 +81,7 @@ func AwaitResponse[T any](message *SMessage) *T {
 	var err = json.Unmarshal(message.Response.Result, &result)
 
 	if err != nil {
-		log.Printf("Socket.GetAllFiles error while parsing response result: %v\n", err)
+		log.Printf("Socket.AwaitResponse error while parsing response result: %v\n", err)
 		return nil
 	}
 
