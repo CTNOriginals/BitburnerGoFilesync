@@ -62,21 +62,3 @@ func (this SMessage) String() string {
 
 	return str.String()
 }
-
-// func (this *SMessage) Receive(body json.RawMessage) error {
-// 	var response *SResponse = nil
-// 	var err = json.Unmarshal(body, response)
-//
-// 	if err != nil {
-// 		return fmt.Errorf("Message.Receive error while trying to unmarshal body: %v", err)
-// 	}
-//
-// 	if response.Error != nil {
-// 		this.OnResponse <- false
-// 		return fmt.Errorf("%v", response.Error)
-// 	}
-//
-// 	this.OnResponse <- true
-//
-// 	return nil
-// }
