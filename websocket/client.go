@@ -73,8 +73,10 @@ func (this *SClient) onReady() {
 
 	this.Socket.Open()
 
-	// unblock any scripts waiting on this signal
-	close(this.Ready)
+	if this.Ready != nil {
+		// unblock any scripts waiting on this signal
+		close(this.Ready)
+	}
 
 	go this.sender()
 	go this.listener()
