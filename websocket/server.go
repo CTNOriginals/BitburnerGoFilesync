@@ -63,6 +63,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		OnResponse(message)
+		log.Printf("Received message: %s\n", string(message))
+
+		// OnResponse(message)
 	}
 }

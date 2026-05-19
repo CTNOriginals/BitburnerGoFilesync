@@ -9,9 +9,6 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/test"
-	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
-	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/rpcschema"
-	gorillaws "github.com/gorilla/websocket"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
@@ -227,25 +224,26 @@ var argumentList = argList{
 		},
 		Params: argParameters{},
 		Action: func(params []string) {
-			var onResponse = func(message *websocket.Message) {
-				if message.IsError {
-					log.Println(message.Response)
-					return
-				}
+			log.Printf("arguments TODO: Handle --get-definitions\n")
+			// var onResponse = func(message *websocket.Message) {
+			// 	if message.IsError {
+			// 		log.Println(message.Response)
+			// 		return
+			// 	}
+			//
+			// 	var content, ok = message.Response.(string)
+			// 	if !ok {
+			// 		log.Printf("'--get-definitions' expects a string response but received another type instead: %v", message.Response)
+			// 		return
+			// 	}
+			// 	ctnfile.WriteFile(config.Values.Directory+"/NetscriptDefinitions.d.ts", strings.Split(content, "\n"))
+			// }
+			//
+			// var onConnect = func(_ *gorillaws.Conn) {
+			// websocket.SendRequest(rpcschema.GetDefinitionFile, onResponse)
+			// }
 
-				var content, ok = message.Response.(string)
-				if !ok {
-					log.Printf("'--get-definitions' expects a string response but received another type instead: %v", message.Response)
-					return
-				}
-				ctnfile.WriteFile(config.Values.Directory+"/NetscriptDefinitions.d.ts", strings.Split(content, "\n"))
-			}
-
-			var onConnect = func(ws *gorillaws.Conn) {
-				websocket.SendRequest(rpcschema.GetDefinitionFile, onResponse)
-			}
-
-			websocket.OnConnectionCallbacks = append(websocket.OnConnectionCallbacks, onConnect)
+			// websocket.OnConnectionCallbacks = append(websocket.OnConnectionCallbacks, onConnect)
 		},
 	},
 
