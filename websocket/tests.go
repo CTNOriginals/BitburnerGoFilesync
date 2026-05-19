@@ -6,10 +6,10 @@ import (
 )
 
 func TestCommunication() {
-	go StartServer(config.Values.Port)
+	go Client.Start(config.Values.Port)
 
 	for {
-		if ActiveConnection != nil {
+		if Client.Active() {
 			break
 		}
 	}

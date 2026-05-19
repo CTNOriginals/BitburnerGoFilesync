@@ -7,7 +7,26 @@ import (
 	gorillaws "github.com/gorilla/websocket"
 )
 
-var OnConnectionCallbacks []func(ws *gorillaws.Conn) = []func(ws *gorillaws.Conn){}
+type TConnectionCallback func(ws *gorillaws.Conn)
+type TConnectionCallbackList []TConnectionCallback
+
+func (this *TConnectionCallbackList) Push(cb TConnectionCallback) int {
+	var index = len(*this)
+
+	*this = append(*this, cb)
+
+	return index
+}
+
+func (this *TConnectionCallbackList) Remove(index int) {
+	if index >= len(*this) {
+		return
+	}
+
+	*this = append((*this)[0:index], (*this)[index+1:]...)
+}
+
+var OnConnectionCallbacks TConnectionCallbackList = make(TConnectionCallbackList, 0)
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
 var upgrader = gorillaws.Upgrader{
@@ -18,10 +37,10 @@ var upgrader = gorillaws.Upgrader{
 
 var ActiveConnection *gorillaws.Conn
 
-func StartServer(port string) {
+func StartServer(port string, handler func(http.ResponseWriter, *http.Request)) {
 	log.Print("\n---- Starting Server ----\n")
 
-	http.HandleFunc("/", wsHandler)
+	http.HandleFunc("/", handler)
 	log.Printf("server: Started on: %s\n", port)
 
 	err := http.ListenAndServe(":"+port, nil)
@@ -30,9 +49,16 @@ func StartServer(port string) {
 	}
 }
 
-func wsHandler(w http.ResponseWriter, r *http.Request) {
+// Default websocket handler
+func DefaultWebsocketHandler(w http.ResponseWriter, r *http.Request) {
+	var upgrader = gorillaws.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			// accept any connection
+			return true
+		},
+	}
 	// Upgrade the HTTP connection to a WebSocket connection
-	conn, err := upgrader.Upgrade(w, r, nil)
+	var conn, err = upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
 		log.Println("server: Error upgrading:", err)
