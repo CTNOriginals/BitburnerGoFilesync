@@ -3,7 +3,6 @@ package websocket
 import (
 	"log"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 )
 
@@ -21,5 +20,5 @@ func TestClient() {
 		log.Printf("got all files: %v\n", result)
 	})
 
-	cli.CommandWatcher()
+	// cli.CommandWatcher()
 }

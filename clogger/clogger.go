@@ -54,10 +54,10 @@ func (this *SClog) printf(format string, args ...any) {
 	this.print(fmt.Sprintf(format, args...))
 }
 
-func (this SClog) Print(msg ...any) {
+func (this *SClog) Print(msg ...any) {
 	this.print(msg...)
 }
 
-func (this SClog) Printf(format string, args ...any) {
+func (this *SClog) Printf(format string, args ...any) {
 	this.printf(format, args...)
 }
