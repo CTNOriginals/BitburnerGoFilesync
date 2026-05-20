@@ -3,12 +3,31 @@ package clogger
 import (
 	"fmt"
 	"log"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
+)
+
+type ELogLevel utils.TBitMask
+
+const (
+	LogInfo ELogLevel = 1 << iota
+	LogDebug
+	LogWarn
+	LogError
+	LogFatal
+
+	LogNone    = 0
+	LogMessage = LogInfo | LogDebug
+	LogAlert   = LogWarn | LogError | LogFatal
+	LogAll     = (1 << iota) - 1
 )
 
 type SClog struct {
 	Prefix     string
 	PrefixTime bool
 	PrefixDate bool
+
+	LogLevel ELogLevel
 
 	logger *log.Logger
 }
