@@ -5,7 +5,7 @@ import (
 )
 
 func DoTest() {
-	websocket.TestCommunication()
+	websocket.TestClient()
 	// cli.TestCli()
 	// readlineDemo()
 }

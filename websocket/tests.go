@@ -1,23 +1,25 @@
 package websocket
 
 import (
+	"log"
+
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
-	"github.com/CTNOriginals/BitburnerGoFilesync/websocket/rpcschema"
 )
 
-func TestCommunication() {
-	go StartServer(config.Values.Port)
+func TestClient() {
+	Client.Ready = make(chan struct{})
+	go Client.Start(config.Values.Port)
+	defer Client.Close()
 
-	for {
-		if ActiveConnection != nil {
-			break
-		}
-	}
+	// block untill closed
+	<-Client.Ready
 
-	SendRequest(rpcschema.GetAllFiles, func(message *Message) {
-		// log.Printf("\nGetAllFiles OnResponse: {\n%s\n}\n", ctnstring.Indent(message.String(), 2, " "))
-	}, "home")
+	Client.Socket.GetAllFiles(Params_GetAllFiles{
+		Server: "home",
+	}, func(result *Result_GetAllFiles) {
+		log.Printf("got all files: %v\n", result)
+	})
 
 	cli.CommandWatcher()
 }

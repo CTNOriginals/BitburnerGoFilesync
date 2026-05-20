@@ -68,7 +68,8 @@ func main() {
 	}
 
 	if !constants.NoServer {
-		go websocket.StartServer(config.Values.Port)
+		go websocket.Client.Start(config.Values.Port)
+		defer websocket.Client.Close()
 	} else if constants.KeepAlive {
 		for {
 			time.Sleep(time.Millisecond)
