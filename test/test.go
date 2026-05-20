@@ -1,11 +1,12 @@
 package test
 
 import (
-	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
+	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 )
 
 func DoTest() {
-	websocket.TestClient()
+	// websocket.TestClient()
+	clogger.TestLogger()
 	// cli.TestCli()
 	// readlineDemo()
 }
