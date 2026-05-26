@@ -3,12 +3,13 @@ package clogger
 import (
 	"fmt"
 	"log"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 )
 
 type SClog struct {
-	Prefix     string
-	PrefixTime bool
-	PrefixDate bool
+	Name   string
+	Prefix ELogPrefix
 
 	LogLevel ELogLevel
 	LogState MLogLevelState
@@ -20,26 +21,16 @@ func (this SClog) isInitialized() bool {
 	return this.logger != nil
 }
 
-// Flag bits:
-//
-//	0b01: Time
-//	0b10: Date
-func (this SClog) getFlag() int {
-	var flag = 0
-
-	if this.PrefixDate {
-		flag = 2
-	}
-
-	if this.PrefixTime {
-		flag += 1
-	}
-
-	return flag
-}
-
 func (this *SClog) initialize() {
-	this.logger = log.New(log.Default().Writer(), this.Prefix, this.getFlag())
+	var flag utils.TBitMask = 0
+	if this.Prefix.Has(PrefixTime) {
+		flag.Set(0b01)
+	}
+	if this.Prefix.Has(PrefixDate) {
+		flag.Set(0b10)
+	}
+
+	this.logger = log.New(log.Default().Writer(), this.Name, int(flag))
 }
 
 func (this *SClog) print(msg ...any) {

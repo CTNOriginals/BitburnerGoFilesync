@@ -2,7 +2,7 @@ package clogger
 
 import "github.com/CTNOriginals/BitburnerGoFilesync/utils"
 
-type ELogLevel utils.TBitMask
+type ELogLevel = utils.TBitMask
 
 const (
 	LogInfo ELogLevel = 1 << iota
