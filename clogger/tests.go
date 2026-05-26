@@ -4,7 +4,7 @@ import "log"
 
 func TestLogger() {
 	log.Printf("\n--- CLOGGER TEST ---\n")
-	var clog = SClog{Prefix: "test: "}
+	var clog = SClog{Name: "test: "}
 	clog.Print("hello")
 	clog.Printf("%s=%d", "x", 1)
 
