@@ -1,25 +1,34 @@
 package clogger
 
-import "github.com/CTNOriginals/BitburnerGoFilesync/utils"
+import (
+	"log"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
+)
 
 type ELogPrefix = utils.TBitMask
 
 const (
 	PrefixName ELogPrefix = 1 << iota
 	PrefixLevel
-	PrefixTime
 	PrefixDate
+	PrefixTime
+	PrefixShortFile
+	PrefixLongFile
+
+	// Put the name of the logger at the beginning of the line
+	// instead of at the beginning of the message.
+	PrefixNameAtStart
 )
 
-func GetTimeDate(prefix ELogPrefix) utils.TBitMask {
+func PrefixGetLogFlag(prefix ELogPrefix) utils.TBitMask {
 	var flag utils.TBitMask = 0
 
-	if prefix.Has(PrefixTime) {
-		flag.Set(0b01)
-	}
-	if prefix.Has(PrefixDate) {
-		flag.Set(0b10)
-	}
+	flag.SetIf(log.Ldate, prefix.Has(PrefixDate))
+	flag.SetIf(log.Ltime, prefix.Has(PrefixTime))
+	flag.SetIf(log.Lshortfile, prefix.Has(PrefixShortFile))
+	flag.SetIf(log.Llongfile, prefix.Has(PrefixLongFile))
+	flag.SetIf(log.Lmsgprefix, !prefix.Has(PrefixNameAtStart))
 
 	return flag
 }

@@ -4,7 +4,10 @@ import "log"
 
 func TestLogger() {
 	log.Printf("\n--- CLOGGER TEST ---\n")
-	var clog = SClog{Name: "test: "}
+	var clog = SClog{
+		Name:   "test: ",
+		Prefix: PrefixName | PrefixDate,
+	}
 	clog.Print("hello")
 	clog.Printf("%s=%d", "x", 1)
 

@@ -14,3 +14,17 @@ func (this *TBitMask) Toggle(flag TBitMask) {
 func (this *TBitMask) Clear(flag TBitMask) {
 	*this = *this &^ flag
 }
+
+// Preforms an AND operation on this and flag
+// and sets the result to this
+func (this *TBitMask) Compare(flag TBitMask) {
+	*this = *this & flag
+}
+
+func (this *TBitMask) SetIf(flag TBitMask, condition bool) {
+	if !condition {
+		return
+	}
+
+	this.Set(flag)
+}
