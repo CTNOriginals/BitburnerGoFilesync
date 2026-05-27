@@ -13,8 +13,8 @@ const (
 	PrefixLevel
 	PrefixDate
 	PrefixTime
-	PrefixShortFile
-	PrefixLongFile
+	// PrefixShortFile // TODO:
+	// PrefixLongFile // TODO:
 
 	// Put the name of the logger at the beginning of the line
 	// instead of at the beginning of the message.
@@ -26,8 +26,6 @@ func PrefixGetLogFlag(prefix ELogPrefix) utils.TBitMask {
 
 	flag.SetIf(log.Ldate, prefix.Has(PrefixDate))
 	flag.SetIf(log.Ltime, prefix.Has(PrefixTime))
-	flag.SetIf(log.Lshortfile, prefix.Has(PrefixShortFile))
-	flag.SetIf(log.Llongfile, prefix.Has(PrefixLongFile))
 	flag.SetIf(log.Lmsgprefix, !prefix.Has(PrefixNameAtStart))
 
 	return flag
