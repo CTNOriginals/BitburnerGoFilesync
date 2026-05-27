@@ -7,7 +7,7 @@ import (
 
 type SClog struct {
 	Name   string
-	Prefix ELogPrefix
+	Prefix TLogPrefix
 
 	LogLevel TLogLevel
 	LogState MLogLevelState
@@ -22,11 +22,11 @@ func (this SClog) isInitialized() bool {
 func (this *SClog) initialize() {
 	var name = ""
 
-	if this.Prefix.Has(PrefixName) {
+	if this.Prefix.Mask().Has(PrefixName.Mask()) {
 		name = this.Name
 	}
 
-	this.logger = log.New(log.Default().Writer(), name, int(PrefixGetLogFlag(this.Prefix)))
+	this.logger = log.New(log.Default().Writer(), name, int(this.Prefix.GetLogFlag()))
 }
 
 func (this *SClog) print(level TLogLevel, msg ...any) {

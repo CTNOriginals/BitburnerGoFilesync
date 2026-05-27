@@ -7,9 +7,10 @@ import (
 )
 
 type ELogPrefix = utils.TBitMask
+type TLogPrefix ELogPrefix
 
 const (
-	PrefixName ELogPrefix = 1 << iota
+	PrefixName TLogPrefix = 1 << iota
 	PrefixLevel
 	PrefixDate
 	PrefixTime
@@ -21,12 +22,17 @@ const (
 	PrefixNameAtStart
 )
 
-func PrefixGetLogFlag(prefix ELogPrefix) utils.TBitMask {
-	var flag utils.TBitMask = 0
+func (this TLogPrefix) Mask() ELogPrefix {
+	return ELogPrefix(this)
+}
 
-	flag.SetIf(log.Ldate, prefix.Has(PrefixDate))
-	flag.SetIf(log.Ltime, prefix.Has(PrefixTime))
-	flag.SetIf(log.Lmsgprefix, !prefix.Has(PrefixNameAtStart))
+func (this TLogPrefix) GetLogFlag() utils.TBitMask {
+	var flag utils.TBitMask = 0
+	var mask = this.Mask()
+
+	flag.SetIf(log.Ldate, mask.Has(PrefixDate.Mask()))
+	flag.SetIf(log.Ltime, mask.Has(PrefixTime.Mask()))
+	flag.SetIf(log.Lmsgprefix, !mask.Has(PrefixNameAtStart.Mask()))
 
 	return flag
 }
