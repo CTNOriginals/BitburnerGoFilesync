@@ -5,11 +5,12 @@ import "log"
 func TestLogger() {
 	log.Printf("\n--- CLOGGER TEST ---\n")
 	var clog = SClog{
-		Name:   "test: ",
-		Prefix: PrefixName | PrefixDate,
+		Name:     "test: ",
+		Prefix:   PrefixName | PrefixDate,
+		LogLevel: LogInfo | LogError,
 	}
-	clog.Print("hello")
-	clog.Printf("%s=%d", "x", 1)
+	clog.Info("hello world!")
+	clog.Infof("Levels: '%s'", clog.LogLevel.String())
 
 	// fmt.Println(clog.getFlag())
 	//

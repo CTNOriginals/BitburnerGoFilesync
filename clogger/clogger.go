@@ -9,7 +9,7 @@ type SClog struct {
 	Name   string
 	Prefix ELogPrefix
 
-	LogLevel ELogLevel
+	LogLevel TLogLevel
 	LogState MLogLevelState
 
 	logger *log.Logger
@@ -29,22 +29,29 @@ func (this *SClog) initialize() {
 	this.logger = log.New(log.Default().Writer(), name, int(PrefixGetLogFlag(this.Prefix)))
 }
 
-func (this *SClog) print(msg ...any) {
+func (this *SClog) print(level TLogLevel, msg ...any) {
 	if !this.isInitialized() {
 		this.initialize()
 	}
 
+	var prefix = this.logger.Prefix()
+	// Set the prefix to include the log level
+	this.logger.SetPrefix(fmt.Sprintf("%s %s", level.String(), prefix))
+
+	// Print out the message
 	this.logger.Print(msg...)
+
+	// Reset the Prefix to what it was before the level was added
+	this.logger.SetPrefix(prefix)
 }
 
-func (this *SClog) printf(format string, args ...any) {
-	this.print(fmt.Sprintf(format, args...))
+func (this *SClog) printf(level TLogLevel, format string, args ...any) {
+	this.print(level, fmt.Sprintf(format, args...))
 }
 
-func (this *SClog) Print(msg ...any) {
-	this.print(msg...)
+func (this *SClog) Info(msg ...any) {
+	this.print(LogInfo, msg...)
 }
-
-func (this *SClog) Printf(format string, args ...any) {
-	this.printf(format, args...)
+func (this *SClog) Infof(format string, args ...any) {
+	this.printf(LogInfo, format, args...)
 }
