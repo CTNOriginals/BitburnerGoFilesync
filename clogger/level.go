@@ -13,20 +13,18 @@ type MLogLevel map[TLogLevel]string
 const (
 	LogInfo TLogLevel = 1 << iota
 	LogDebug
-	LogWarn
 	LogError
 	LogFatal
 
 	LogNone    = 0
 	LogMessage = LogInfo | LogDebug
-	LogAlert   = LogWarn | LogError | LogFatal
+	LogAlert   = LogError | LogFatal
 	LogAll     = (1 << iota) - 1
 )
 
 var LogLevelTable = MLogLevel{
 	LogInfo:  "Info",
 	LogDebug: "Debug",
-	LogWarn:  "Warn",
 	LogError: "Error",
 	LogFatal: "Fatal",
 }
