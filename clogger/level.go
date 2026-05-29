@@ -15,11 +15,6 @@ const (
 	LogDebug
 	LogError
 	LogFatal
-
-	LogNone    = 0
-	LogMessage = LogInfo | LogDebug
-	LogAlert   = LogError | LogFatal
-	LogAll     = (1 << iota) - 1
 )
 
 var LogLevelTable = MLogLevel{
@@ -51,4 +46,4 @@ func (this TLogLevel) String() string {
 	return str.String()
 }
 
-type MLogLevelState map[TLogLevel]func() bool
+type MLogLevelState map[TLogLevel]FState

@@ -5,12 +5,14 @@ import (
 	"log"
 )
 
-type SClog struct {
-	Name   string
-	Prefix TLogPrefix
+type FState func() bool
 
-	LogLevel TLogLevel
-	LogState MLogLevelState
+type SClog struct {
+	Name       string
+	PrefixMask TPrefixMask
+
+	DefaultState  FState
+	LogLevelState MLogLevelState
 
 	logger *log.Logger
 }
@@ -20,13 +22,7 @@ func (this SClog) isInitialized() bool {
 }
 
 func (this *SClog) initialize() {
-	var name = ""
-
-	if this.Prefix.Mask().Has(PrefixName.Mask()) {
-		name = this.Name
-	}
-
-	this.logger = log.New(log.Default().Writer(), name, int(this.Prefix.GetLogFlag()))
+	this.logger = log.New(log.Default().Writer(), "", 0)
 }
 
 func (this *SClog) print(level TLogLevel, msg ...any) {
@@ -34,15 +30,8 @@ func (this *SClog) print(level TLogLevel, msg ...any) {
 		this.initialize()
 	}
 
-	var prefix = this.logger.Prefix()
-	// Set the prefix to include the log level
-	this.logger.SetPrefix(fmt.Sprintf("%s %s", level.String(), prefix))
-
 	// Print out the message
 	this.logger.Print(msg...)
-
-	// Reset the Prefix to what it was before the level was added
-	this.logger.SetPrefix(prefix)
 }
 
 func (this *SClog) printf(level TLogLevel, format string, args ...any) {

@@ -5,10 +5,9 @@ import "log"
 func TestLogger() {
 	log.Printf("\n--- CLOGGER TEST ---\n")
 	var clog = SClog{
-		Name:     "test: ",
-		Prefix:   PrefixName | PrefixTime,
-		LogLevel: LogInfo | LogError,
+		Name:       "test: ",
+		PrefixMask: PrefixName | PrefixTime,
 	}
 	clog.Info("hello world!")
-	clog.Debugf("Levels: '%s'", clog.LogLevel.String())
+	clog.Debugf("Levels: '%v'", clog)
 }
