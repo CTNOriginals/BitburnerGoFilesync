@@ -8,7 +8,6 @@ import (
 
 type ELogLevel = utils.TBitMask
 type TLogLevel ELogLevel
-type MLogLevel map[TLogLevel]string
 
 const (
 	LogInfo TLogLevel = 1 << iota
@@ -25,7 +24,7 @@ var LogLevelOrder = []TLogLevel{
 	LogDebug,
 }
 
-var LogLevelNames = MLogLevel{
+var LogLevelNames = map[TLogLevel]string{
 	LogInfo:  "Info",
 	LogDebug: "Debug",
 	LogError: "Error",
@@ -58,4 +57,17 @@ func (this TLogLevel) String() string {
 	return str.String()
 }
 
-type MLogLevelState map[TLogLevel]FState
+type MLogLevel[T any] map[TLogLevel]T
+
+func (this MLogLevel[T]) Get(level TLogLevel) *T {
+	for lvl, val := range this {
+		if lvl.Has(level) {
+			return &val
+		}
+	}
+
+	return nil
+}
+
+type MLogLevelState = MLogLevel[FState]
+type MLogLevelPrefix = MLogLevel[TPrefixMask]

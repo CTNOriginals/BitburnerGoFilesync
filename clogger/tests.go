@@ -10,12 +10,8 @@ import (
 func TestLogger() {
 	log.Printf("\n--- CLOGGER TEST ---\n")
 	var clog = SClog{
-		Name: "test",
-		PrefixMask: PrefixLevel |
-			PrefixName |
-			PrefixTime |
-			PrefixDate |
-			PrefixFile,
+		Name:       "test",
+		PrefixMask: PrefixLevel | PrefixName,
 
 		DefaultState: func() bool {
 			return constants.Debug
@@ -30,6 +26,15 @@ func TestLogger() {
 				var now = time.Now()
 				return now.Second()%2 != 0
 			},
+		},
+
+		LogLevelPrefix: MLogLevelPrefix{
+			LogDebug: PrefixFile,
+			LogError | LogFatal: PrefixLevel |
+				PrefixName |
+				PrefixTime |
+				PrefixDate |
+				PrefixFile,
 		},
 	}
 

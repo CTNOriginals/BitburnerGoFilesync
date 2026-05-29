@@ -11,8 +11,9 @@ type SClog struct {
 	Name       string
 	PrefixMask TPrefixMask
 
-	DefaultState  FState
-	LogLevelState MLogLevelState
+	DefaultState   FState
+	LogLevelState  MLogLevelState
+	LogLevelPrefix MLogLevelPrefix
 
 	logger *log.Logger
 }
@@ -24,11 +25,8 @@ func (this *SClog) initialize() {
 func (this SClog) CheckState(level TLogLevel) bool {
 	var stateChecker = this.DefaultState
 
-	for lvl, fn := range this.LogLevelState {
-		if lvl.Has(level) {
-			stateChecker = fn
-			break
-		}
+	if levelState := this.LogLevelState.Get(level); levelState != nil {
+		stateChecker = *levelState
 	}
 
 	if stateChecker == nil {
@@ -47,8 +45,14 @@ func (this *SClog) print(level TLogLevel, msg ...any) {
 		return
 	}
 
-	var prefix = this.PrefixMask.GetPrefix(this.Name, level)
-	msg = append([]any{prefix}, msg...)
+	var prefix = this.PrefixMask
+	if levelPrefix := this.LogLevelPrefix.Get(level); levelPrefix != nil {
+		prefix = *levelPrefix
+	}
+
+	var prefixString = prefix.GetPrefix(this.Name, level)
+
+	msg = append([]any{prefixString}, msg...)
 
 	// Print out the message
 	this.logger.Print(msg...)
