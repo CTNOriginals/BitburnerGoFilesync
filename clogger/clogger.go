@@ -17,10 +17,6 @@ type SClog struct {
 	logger *log.Logger
 }
 
-func (this SClog) isInitialized() bool {
-	return this.logger != nil
-}
-
 func (this *SClog) initialize() {
 	this.logger = log.New(log.Default().Writer(), "", 0)
 }
@@ -43,7 +39,7 @@ func (this SClog) CheckState(level TLogLevel) bool {
 }
 
 func (this *SClog) print(level TLogLevel, msg ...any) {
-	if !this.isInitialized() {
+	if this.logger == nil {
 		this.initialize()
 	}
 
