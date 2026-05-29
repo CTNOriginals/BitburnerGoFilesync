@@ -37,36 +37,32 @@ func (this *SClog) print(level TLogLevel, msg ...any) {
 	this.logger.Print(msg...)
 }
 
-func (this *SClog) printf(level TLogLevel, format string, args ...any) {
-	this.print(level, fmt.Sprintf(format, args...))
-}
-
 // -- Log Level Functions --
 
 func (this *SClog) Info(msg ...any) {
 	this.print(LogInfo, msg...)
 }
 func (this *SClog) Infof(format string, args ...any) {
-	this.printf(LogInfo, format, args...)
+	this.print(LogInfo, fmt.Sprintf(format, args...))
 }
 
 func (this *SClog) Debug(msg ...any) {
 	this.print(LogDebug, msg...)
 }
 func (this *SClog) Debugf(format string, args ...any) {
-	this.printf(LogDebug, format, args...)
+	this.print(LogDebug, fmt.Sprintf(format, args...))
 }
 
 func (this *SClog) Error(msg ...any) {
 	this.print(LogError, msg...)
 }
 func (this *SClog) Errorf(format string, args ...any) {
-	this.printf(LogError, format, args...)
+	this.print(LogError, fmt.Sprintf(format, args...))
 }
 
 func (this *SClog) Fatal(msg ...any) {
 	this.print(LogFatal, msg...)
 }
 func (this *SClog) Fatalf(format string, args ...any) {
-	this.printf(LogFatal, format, args...)
+	this.print(LogFatal, fmt.Sprintf(format, args...))
 }
