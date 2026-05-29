@@ -30,6 +30,9 @@ func (this *SClog) print(level TLogLevel, msg ...any) {
 		this.initialize()
 	}
 
+	var prefix = this.PrefixMask.GetPrefix(this.Name, level)
+	msg = append([]any{prefix}, msg...)
+
 	// Print out the message
 	this.logger.Print(msg...)
 }
