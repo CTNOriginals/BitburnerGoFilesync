@@ -25,9 +25,30 @@ func (this *SClog) initialize() {
 	this.logger = log.New(log.Default().Writer(), "", 0)
 }
 
+func (this SClog) CheckState(level TLogLevel) bool {
+	var stateChecker = this.DefaultState
+
+	for lvl, fn := range this.LogLevelState {
+		if lvl.Has(level) {
+			stateChecker = fn
+			break
+		}
+	}
+
+	if stateChecker == nil {
+		return true
+	}
+
+	return stateChecker()
+}
+
 func (this *SClog) print(level TLogLevel, msg ...any) {
 	if !this.isInitialized() {
 		this.initialize()
+	}
+
+	if !this.CheckState(level) {
+		return
 	}
 
 	var prefix = this.PrefixMask.GetPrefix(this.Name, level)

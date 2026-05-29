@@ -36,6 +36,10 @@ func (this TLogLevel) Mask() ELogLevel {
 	return ELogLevel(this)
 }
 
+func (this TLogLevel) Has(flag TLogLevel) bool {
+	return this.Mask().Has(flag.Mask())
+}
+
 func (this TLogLevel) String() string {
 	var str strings.Builder
 

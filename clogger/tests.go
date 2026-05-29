@@ -27,13 +27,14 @@ func TestLogger() {
 				return now.Second()%2 == 0
 			},
 			LogError | LogFatal: func() bool {
-				return true
+				var now = time.Now()
+				return now.Second()%2 != 0
 			},
 		},
 	}
 
 	clog.Info("hello world!")
-	clog.Debugf("Levels: '%v'", clog.LogLevelState)
+	clog.Debug("foo bar baz")
 	clog.Error("something gone wrong!\nyou better fix it...")
 	clog.Fatalf("fat alf done it again: %v", clog)
 }
