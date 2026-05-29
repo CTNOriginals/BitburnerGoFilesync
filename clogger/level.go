@@ -17,7 +17,15 @@ const (
 	LogFatal
 )
 
-var LogLevelTable = MLogLevel{
+// The order/priority of each log level from high to low.
+var LogLevelOrder = []TLogLevel{
+	LogFatal,
+	LogError,
+	LogInfo,
+	LogDebug,
+}
+
+var LogLevelNames = MLogLevel{
 	LogInfo:  "Info",
 	LogDebug: "Debug",
 	LogError: "Error",
@@ -31,7 +39,7 @@ func (this TLogLevel) Mask() ELogLevel {
 func (this TLogLevel) String() string {
 	var str strings.Builder
 
-	for typ, name := range LogLevelTable {
+	for _, typ := range LogLevelOrder {
 		if !this.Mask().Has(typ.Mask()) {
 			continue
 		}
@@ -40,7 +48,7 @@ func (this TLogLevel) String() string {
 			str.WriteString(" ")
 		}
 
-		str.WriteString(name)
+		str.WriteString(LogLevelNames[typ])
 	}
 
 	return str.String()
