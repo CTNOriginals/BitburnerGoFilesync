@@ -48,14 +48,10 @@ func (this TPrefixMask) Mask() EPrefixMask {
 }
 
 // Returns the string form of a single prefix
-func (this TPrefixMask) getPrefixString(fullPrefix TPrefixMask, name string, level TLogLevel) string {
+func (this TPrefixMask) getPrefixPart(part TPrefixMask) string {
 	var now = time.Now()
 
-	switch this {
-	case PrefixName:
-		return name
-	case PrefixLevel:
-		return level.String()
+	switch part {
 	case PrefixDate:
 		var date = now.Format(time.DateOnly)
 		return date[2:]
@@ -68,7 +64,7 @@ func (this TPrefixMask) getPrefixString(fullPrefix TPrefixMask, name string, lev
 			return "unknown:0"
 		}
 
-		if fullPrefix.Mask().Has(PrefixFullPath.Mask()) {
+		if this.Mask().Has(PrefixFullPath.Mask()) {
 			return fmt.Sprintf("%s:%d", file, line)
 		}
 
@@ -90,7 +86,7 @@ func (this TPrefixMask) getPrefixString(fullPrefix TPrefixMask, name string, lev
 		return fnName
 	}
 
-	log.Printf("Unknown prefix mask: %b\n", this)
+	log.Printf("Unknown prefix mask: %b\n", part)
 	return ""
 }
 
@@ -106,7 +102,16 @@ func (this TPrefixMask) GetPrefix(name string, level TLogLevel) string {
 			builder.WriteRune(' ')
 		}
 
-		builder.WriteString(prefix.getPrefixString(this, name, level))
+		switch prefix {
+		case PrefixName:
+			builder.WriteString(name)
+			continue
+		case PrefixLevel:
+			builder.WriteString(level.String())
+			continue
+		}
+
+		builder.WriteString(this.getPrefixPart(prefix))
 	}
 
 	if builder.Len() == 0 {
@@ -118,11 +123,11 @@ func (this TPrefixMask) GetPrefix(name string, level TLogLevel) string {
 	if !exists ||
 		config.Values.Logging.NoColor ||
 		this.Mask().Has(PrefixNoColor.Mask()) {
-		return fmt.Sprintf("%s: ", builder.String())
+		return fmt.Sprintf("%s", builder.String())
 	}
 
 	return fmt.Sprintf(
-		"%s%s%s: ",
+		"%s%s%s",
 		color,
 		builder.String(),
 		"\x1b[0m",

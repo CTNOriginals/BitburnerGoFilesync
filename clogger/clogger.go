@@ -83,6 +83,9 @@ func (this *SClog) print(level TLogLevel, msg ...any) {
 	}
 
 	var prefixString = prefix.GetPrefix(this.Name, level)
+	if len(prefixString) > 0 {
+		prefixString += ": "
+	}
 
 	msg = append([]any{prefixString}, msg...)
 
