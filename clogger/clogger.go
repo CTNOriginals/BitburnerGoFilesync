@@ -93,6 +93,7 @@ func (this *SClog) print(level TLogLevel, msg ...any) {
 		var tracePrefixMask = PrefixDate |
 			PrefixTime |
 			PrefixFile |
+			PrefixFullPath |
 			PrefixCall |
 			PrefixNoColor
 

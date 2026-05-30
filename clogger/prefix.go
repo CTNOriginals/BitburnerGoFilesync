@@ -29,6 +29,9 @@ const (
 
 	// Prevents the prefix content from being colored
 	PrefixNoColor
+
+	// Makes PrefixFile contain the full file path
+	PrefixFullPath
 )
 
 var PrefixOrder = []TPrefixMask{
@@ -45,7 +48,7 @@ func (this TPrefixMask) Mask() EPrefixMask {
 }
 
 // Returns the string form of a single prefix
-func (this TPrefixMask) getPrefixString(name string, level TLogLevel) string {
+func (this TPrefixMask) getPrefixString(fullPrefix TPrefixMask, name string, level TLogLevel) string {
 	var now = time.Now()
 
 	switch this {
@@ -63,6 +66,10 @@ func (this TPrefixMask) getPrefixString(name string, level TLogLevel) string {
 
 		if !ok {
 			return "unknown:0"
+		}
+
+		if fullPrefix.Mask().Has(PrefixFullPath.Mask()) {
+			return fmt.Sprintf("%s:%d", file, line)
 		}
 
 		var parts = strings.Split(file, "/")
@@ -99,7 +106,7 @@ func (this TPrefixMask) GetPrefix(name string, level TLogLevel) string {
 			builder.WriteRune(' ')
 		}
 
-		builder.WriteString(prefix.getPrefixString(name, level))
+		builder.WriteString(prefix.getPrefixString(this, name, level))
 	}
 
 	if builder.Len() == 0 {
