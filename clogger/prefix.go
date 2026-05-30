@@ -86,7 +86,11 @@ func (this TPrefixMask) GetPrefix(name string, level TLogLevel) string {
 		return ""
 	}
 
-	builder.WriteString(": ")
-
-	return builder.String()
+	// TODO: global config option to disable ansi colors
+	return fmt.Sprintf(
+		"%s%s%s: ",
+		LogLevelColors[level],
+		builder.String(),
+		"\x1b[0m",
+	)
 }
