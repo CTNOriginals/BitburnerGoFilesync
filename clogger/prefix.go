@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 )
@@ -107,8 +108,9 @@ func (this TPrefixMask) GetPrefix(name string, level TLogLevel) string {
 
 	var color, exists = LogLevelColors[level]
 
-	// TODO: global config option to disable ansi colors
-	if !exists || this.Mask().Has(PrefixNoColor.Mask()) {
+	if !exists ||
+		config.Values.Logging.NoColor ||
+		this.Mask().Has(PrefixNoColor.Mask()) {
 		return fmt.Sprintf("%s: ", builder.String())
 	}
 
