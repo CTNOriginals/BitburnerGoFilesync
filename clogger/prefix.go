@@ -22,6 +22,9 @@ const (
 	PrefixFile
 	// The function info that called the log
 	PrefixCall
+
+	// Prevents the prefix content from being colored
+	PrefixNoColor
 )
 
 var PrefixOrder = []TPrefixMask{
@@ -102,10 +105,16 @@ func (this TPrefixMask) GetPrefix(name string, level TLogLevel) string {
 		return ""
 	}
 
+	var color, exists = LogLevelColors[level]
+
 	// TODO: global config option to disable ansi colors
+	if !exists || this.Mask().Has(PrefixNoColor.Mask()) {
+		return fmt.Sprintf("%s: ", builder.String())
+	}
+
 	return fmt.Sprintf(
 		"%s%s%s: ",
-		LogLevelColors[level],
+		color,
 		builder.String(),
 		"\x1b[0m",
 	)

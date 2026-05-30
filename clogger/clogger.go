@@ -93,7 +93,8 @@ func (this *SClog) print(level TLogLevel, msg ...any) {
 		var tracePrefixMask = PrefixDate |
 			PrefixTime |
 			PrefixFile |
-			PrefixCall
+			PrefixCall |
+			PrefixNoColor
 
 		var tracePrefix = tracePrefixMask.GetPrefix(this.Name, level)
 		this.logger.Printf("%s\n%s\n", tracePrefix, this.GetStackTrace(2))
