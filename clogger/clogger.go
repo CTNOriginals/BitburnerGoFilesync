@@ -6,6 +6,8 @@ import (
 )
 
 type FState func() bool
+type MLogLevelState = MLogLevel[FState]
+type MLogLevelPrefix = MLogLevel[TPrefixMask]
 
 type SClog struct {
 	Name       string

@@ -24,13 +24,6 @@ var LogLevelOrder = []TLogLevel{
 	LogDebug,
 }
 
-var LogLevelNames = map[TLogLevel]string{
-	LogInfo:  "Info",
-	LogDebug: "Debug",
-	LogError: "Error",
-	LogFatal: "Fatal",
-}
-
 func (this TLogLevel) Mask() ELogLevel {
 	return ELogLevel(this)
 }
@@ -56,18 +49,3 @@ func (this TLogLevel) String() string {
 
 	return str.String()
 }
-
-type MLogLevel[T any] map[TLogLevel]T
-
-func (this MLogLevel[T]) Get(level TLogLevel) *T {
-	for lvl, val := range this {
-		if lvl.Has(level) {
-			return &val
-		}
-	}
-
-	return nil
-}
-
-type MLogLevelState = MLogLevel[FState]
-type MLogLevelPrefix = MLogLevel[TPrefixMask]
