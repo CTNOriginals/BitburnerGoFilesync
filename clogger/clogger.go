@@ -3,6 +3,8 @@ package clogger
 import (
 	"fmt"
 	"log"
+	"runtime"
+	"strings"
 )
 
 type FState func() bool
@@ -24,7 +26,37 @@ func (this *SClog) initialize() {
 	this.logger = log.New(log.Default().Writer(), "", 0)
 }
 
-func (this SClog) CheckState(level TLogLevel) bool {
+func (this *SClog) checkInit() {
+	if this.logger == nil {
+		this.initialize()
+	}
+}
+
+func (this *SClog) GetStackTrace(skip int) string {
+	var trace = make([]byte, 1<<16)
+	var traceSize = runtime.Stack(trace, false)
+	var lines = strings.Split(string(trace[:traceSize]), "\n")
+
+	// skip this GetStackTrace()
+	skip += 1
+	// each 2 lines is 1 trace
+	skip *= 2
+	// skip the top trace line that doesnt hold info
+	skip += 1
+
+	if len(lines) < skip {
+		return string(trace[:traceSize])
+	}
+
+	return strings.Join(lines[skip:], "\n")
+}
+
+func (this *SClog) PrintStackTrace() {
+	this.checkInit()
+	this.logger.Print(this.GetStackTrace(1), "\n")
+}
+
+func (this SClog) checkState(level TLogLevel) bool {
 	var stateChecker = this.DefaultState
 
 	if levelState := this.LogLevelState.Get(level); levelState != nil {
@@ -39,11 +71,9 @@ func (this SClog) CheckState(level TLogLevel) bool {
 }
 
 func (this *SClog) print(level TLogLevel, msg ...any) {
-	if this.logger == nil {
-		this.initialize()
-	}
+	this.checkInit()
 
-	if !this.CheckState(level) {
+	if !this.checkState(level) {
 		return
 	}
 
@@ -58,6 +88,16 @@ func (this *SClog) print(level TLogLevel, msg ...any) {
 
 	// Print out the message
 	this.logger.Print(msg...)
+
+	if level.Has(LogFatal) {
+		var tracePrefixMask = PrefixDate |
+			PrefixTime |
+			PrefixFile |
+			PrefixCall
+
+		var tracePrefix = tracePrefixMask.GetPrefix(this.Name, level)
+		this.logger.Printf("%s\n%s\n", tracePrefix, this.GetStackTrace(2))
+	}
 }
 
 // -- Log Level Functions --
