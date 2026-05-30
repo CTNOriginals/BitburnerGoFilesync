@@ -21,8 +21,11 @@ const (
 	PrefixDate
 	PrefixTime
 	PrefixFile
+
 	// The function info that called the log
 	PrefixCall
+
+	// -- Prefix Options --
 
 	// Prevents the prefix content from being colored
 	PrefixNoColor
@@ -49,9 +52,6 @@ func (this TPrefixMask) getPrefixString(name string, level TLogLevel) string {
 	case PrefixName:
 		return name
 	case PrefixLevel:
-		// if level == LogInfo {
-		// 	return level.String() + " "
-		// }
 		return level.String()
 	case PrefixDate:
 		var date = now.Format(time.DateOnly)
@@ -78,9 +78,9 @@ func (this TPrefixMask) getPrefixString(name string, level TLogLevel) string {
 		}
 
 		// remove the redundant program entry path
-		var name = strings.TrimPrefix(info.Name(), fmt.Sprintf("%s/", constants.PackageEntryPath))
+		var fnName = strings.TrimPrefix(info.Name(), fmt.Sprintf("%s/", constants.PackageEntryPath))
 
-		return name
+		return fnName
 	}
 
 	log.Printf("Unknown prefix mask: %b\n", this)
