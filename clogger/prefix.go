@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 )
 
@@ -19,12 +20,15 @@ const (
 	PrefixDate
 	PrefixTime
 	PrefixFile
+	// The function info that called the log
+	PrefixCall
 )
 
 var PrefixOrder = []TPrefixMask{
 	PrefixDate,
 	PrefixTime,
 	PrefixFile,
+	PrefixCall,
 	PrefixLevel,
 	PrefixName,
 }
@@ -61,6 +65,18 @@ func (this TPrefixMask) getPrefixString(name string, level TLogLevel) string {
 		file = parts[len(parts)-1]
 
 		return fmt.Sprintf("%s:%d", file, line)
+	case PrefixCall:
+		var pc, _, _, ok = runtime.Caller(4)
+		var info = runtime.FuncForPC(pc)
+
+		if !ok || info == nil {
+			return "func.unknown"
+		}
+
+		// remove the redundant program entry path
+		var name = strings.TrimPrefix(info.Name(), fmt.Sprintf("%s/", constants.PackageEntryPath))
+
+		return name
 	}
 
 	log.Printf("Unknown prefix mask: %b\n", this)

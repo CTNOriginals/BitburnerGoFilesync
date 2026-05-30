@@ -29,7 +29,7 @@ func TestLogger() {
 		},
 
 		LogLevelPrefix: MLogLevelPrefix{
-			LogDebug: PrefixFile,
+			LogDebug: PrefixFile | PrefixCall,
 			LogError | LogFatal: PrefixLevel |
 				PrefixName |
 				PrefixTime |
