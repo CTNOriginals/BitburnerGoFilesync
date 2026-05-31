@@ -77,6 +77,11 @@ func (this *SClog) print(level TLogLevel, msg ...any) {
 		return
 	}
 
+	if level == LogMessage {
+		this.logger.Print(msg...)
+		return
+	}
+
 	var prefix = this.PrefixMask
 	if levelPrefix := this.LogLevelPrefix.Get(level); levelPrefix != nil {
 		prefix = *levelPrefix
@@ -112,6 +117,13 @@ func (this *SClog) Info(msg ...any) {
 }
 func (this *SClog) Infof(format string, args ...any) {
 	this.print(LogInfo, fmt.Sprintf(format, args...))
+}
+
+func (this *SClog) Message(msg ...any) {
+	this.print(LogMessage, msg...)
+}
+func (this *SClog) Messagef(format string, args ...any) {
+	this.print(LogMessage, fmt.Sprintf(format, args...))
 }
 
 func (this *SClog) Debug(msg ...any) {
