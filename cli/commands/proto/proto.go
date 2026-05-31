@@ -1,16 +1,20 @@
 package cmdproto
 
 import (
-	"log"
 	"path"
 	"strconv"
 	"strings"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
+	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )
+
+var clog = clogger.Default.Clone(clogger.SClog{
+	Name: "cmdproto",
+})
 
 var def = commands.Definition{
 	Name: "prototype",
@@ -52,7 +56,7 @@ var def = commands.Definition{
 	},
 
 	Execution: func(args commands.TInputList, self int) {
-		log.Printf("%v\n", args)
+		clog.Messagef("%v\n", args)
 	},
 }
 

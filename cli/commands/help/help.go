@@ -1,11 +1,13 @@
 package cmdhelp
 
 import (
-	"log"
 	"strings"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
+	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 )
+
+var clog = clogger.Default
 
 var def = commands.Definition{
 	Name: "help",
@@ -33,7 +35,7 @@ var def = commands.Definition{
 			" If your current input is a command that expects a value instead of a sub command name,",
 			" the Completion may list some possible values, but sometimes this is not possible.",
 		}
-		log.Printf("%s\n\n%s\n", strings.Join(instructions, "\n"), commands.List.StringRecurse())
+		clog.Infof("%s\n\n%s\n", strings.Join(instructions, "\n"), commands.List.StringRecurse())
 	},
 }
 

@@ -32,6 +32,28 @@ func (this *SClog) checkInit() {
 	}
 }
 
+func (this SClog) Clone(override SClog) SClog {
+	if override.Name != "" {
+		this.Name = override.Name
+	}
+	if override.PrefixMask != 0 {
+		this.PrefixMask = override.PrefixMask
+	}
+	if override.DefaultState != nil {
+		this.DefaultState = override.DefaultState
+	}
+	if override.LogLevelState != nil {
+		this.LogLevelState = override.LogLevelState
+	}
+	if override.LogLevelPrefix != nil {
+		this.LogLevelPrefix = override.LogLevelPrefix
+	}
+
+	this.logger = nil
+
+	return this
+}
+
 func (this *SClog) GetStackTrace(skip int) string {
 	var trace = make([]byte, 1<<16)
 	var traceSize = runtime.Stack(trace, false)

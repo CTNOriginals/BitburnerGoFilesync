@@ -8,8 +8,11 @@ import (
 	"strings"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli/commands"
+	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/chzyer/readline"
 )
+
+var clog = clogger.Default.Clone(clogger.SClog{})
 
 func CommandWatcher() {
 	var cli, err = readline.NewEx(&readline.Config{
@@ -20,7 +23,7 @@ func CommandWatcher() {
 	})
 
 	if err != nil {
-		log.Panicf("Commands readline error:\n%v", err)
+		clog.Fatalf("Commands readline error:\n%v", err)
 	}
 
 	var logWriter = log.Writer()
@@ -46,7 +49,7 @@ func CommandWatcher() {
 
 		var inputErr = ParseInput(line)
 		if inputErr != nil {
-			log.Printf("%s\n", inputErr)
+			clog.Errorf("%s\n", inputErr)
 			continue
 		}
 	}
