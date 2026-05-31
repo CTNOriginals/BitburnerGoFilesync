@@ -5,8 +5,13 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 )
+
+var clog = clogger.Default.Clone(clogger.SClog{
+	Name: "arguments",
+})
 
 type argDef struct {
 	Alias       []string

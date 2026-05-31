@@ -16,6 +16,10 @@ var testFunctions = map[string]func(){
 	"watcher": watcher.TestWatcher,
 }
 
+func Register(name string, fn func()) {
+	testFunctions[name] = fn
+}
+
 func DoTest(args ...string) {
 	log.Printf("Running debug with args: %v\n", args)
 
