@@ -91,8 +91,8 @@ WGO_INCLUDE := -file .go -file .toml
 run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
 	go run . $(args)
 
-debug: ##@run Run with the --test flag.
-	go run . $(args) --test 
+debug: ##@run Run with the --debug flag. 
+	go run . $(args) --debug $(debugargs) 
 
 test: ##@run go test.
 	go test -v ./...

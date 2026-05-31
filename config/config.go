@@ -14,12 +14,16 @@ type TConfigFilrPatterns struct {
 	Include []string
 	Exclude []string
 }
+type TConfigLogging struct {
+	NoColor bool
+}
 
 type TConfig struct {
 	Port             string
 	Directory        string
 	FileScanInterval int
 	FilePatterns     TConfigFilrPatterns
+	Logging          TConfigLogging
 }
 
 var Values = &TConfig{
@@ -29,6 +33,9 @@ var Values = &TConfig{
 	FilePatterns: TConfigFilrPatterns{
 		Include: []string{"*.js", "*.ts"},
 		Exclude: []string{"*.d.ts"},
+	},
+	Logging: TConfigLogging{
+		NoColor: false,
 	},
 }
 

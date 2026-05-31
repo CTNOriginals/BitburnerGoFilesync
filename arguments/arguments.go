@@ -256,7 +256,7 @@ var argumentList = argList{
 		Params: argParameters{},
 		Action: func(params []string) {
 			constants.Debug = true
-			test.DoTest()
+			test.DoTest(params...)
 			os.Exit(0)
 		},
 	},

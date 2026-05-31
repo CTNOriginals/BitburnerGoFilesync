@@ -1,11 +1,35 @@
 package test
 
 import (
+	"log"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
+	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 )
 
-func DoTest() {
-	websocket.TestClient()
+var testFunctions = map[string]func(){
+	"logger": clogger.TestLogger,
+	"client": websocket.TestClient,
+	"cli":    cli.TestCli,
+}
+
+func DoTest(args ...string) {
+	log.Printf("Running debug with args: %v\n", args)
+
+	for _, arg := range args {
+		var fn, exists = testFunctions[arg]
+
+		if !exists {
+			log.Printf("Unknown test function name: %s\n", arg)
+			continue
+		}
+
+		fn()
+	}
+
+	// websocket.TestClient()
+	// clogger.TestLogger()
 	// cli.TestCli()
 	// readlineDemo()
 }

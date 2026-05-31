@@ -68,6 +68,8 @@ The config file by default will be named `config.toml` and the initial content w
 | [FilePatterns] | Holds include and exclude file pattern matching fields which allow you to define which files to sync and which not to. | [Pattern matching rules](https://github.com/bmatcuk/doublestar?tab=readme-ov-file#patterns) |
 | - Include | Which files should be included. | `["*.js", "*.ts"]` |
 | - Exclude | Which files to ignore. This is checked before the include patterns.  | `["*.d.ts"]` |
+| [Logging] | Control what is and isnt logged |  |
+| - NoColor | Prevent the logger from applying ansi color coding to the log prefix. | `false` |
 
 ## How to build
 
