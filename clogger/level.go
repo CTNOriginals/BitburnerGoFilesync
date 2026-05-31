@@ -11,6 +11,8 @@ type TLogLevel ELogLevel
 
 const (
 	LogInfo TLogLevel = 1 << iota
+	// Special level: does not include a prefix
+	LogMessage
 	LogDebug
 	LogError
 	LogFatal
@@ -21,6 +23,7 @@ var LogLevelOrder = []TLogLevel{
 	LogFatal,
 	LogError,
 	LogInfo,
+	LogMessage,
 	LogDebug,
 }
 
