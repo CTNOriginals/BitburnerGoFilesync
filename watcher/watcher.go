@@ -7,12 +7,17 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 	"github.com/bmatcuk/doublestar/v4"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )
+
+var clog = clogger.Default.Clone(clogger.SClog{
+	Name: "watcher",
+})
 
 var FileStateMap MFileState = MFileState{}
 
