@@ -1,7 +1,6 @@
 package arguments
 
 import (
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -57,11 +56,11 @@ var argumentList = argList{
 				for _, param := range params {
 					var def, exists = onInitList.GetDefByAlias("--" + params[0])
 					if !exists {
-						log.Printf("Unknown argument flag: %s\n", param)
+						clog.Errorf("Unknown argument flag: %s\n", param)
 						continue
 					}
 
-					log.Println(def.String())
+					clog.Message(def.String())
 				}
 
 				os.Exit(0)
@@ -84,7 +83,7 @@ var argumentList = argList{
 				var desc = ctnstring.Repeat(" ", maxAliasSpace-len(alias))
 				desc += strings.Join(def.Description, "\n"+ctnstring.Repeat(" ", maxAliasSpace+2))
 
-				log.Printf("%s: %s\n\n", alias, desc)
+				clog.Messagef("%s: %s\n\n", alias, desc)
 			}
 
 			os.Exit(0)
@@ -98,7 +97,7 @@ var argumentList = argList{
 		Params: argParameters{},
 		Action: func(params []string) {
 			for _, arg := range onInitList {
-				log.Println(arg.String())
+				clog.Message(arg.String())
 			}
 
 			os.Exit(0)
@@ -118,7 +117,7 @@ var argumentList = argList{
 		},
 		Action: func(params []string) {
 			if len(params) == 0 {
-				log.Print("'--config' requires at least 1 parameter.\n")
+				clog.Error("'--config' requires at least 1 parameter.\n")
 				os.Exit(1)
 			}
 
@@ -138,12 +137,12 @@ var argumentList = argList{
 		},
 		Action: func(params []string) {
 			if len(params) == 0 {
-				log.Print("'--dir' requires at least 1 parameter.\n")
+				clog.Error("'--dir' requires at least 1 parameter.\n")
 				os.Exit(1)
 			}
 
 			if !ctnfile.PathExists(params[0]) {
-				log.Printf("'--dir' directory does not exist: %s\n", params[0])
+				clog.Errorf("'--dir' directory does not exist: %s\n", params[0])
 				os.Exit(1)
 			}
 
@@ -178,7 +177,7 @@ var argumentList = argList{
 		},
 		Action: func(params []string) {
 			if len(params) == 0 {
-				log.Print("'--port' requires at least 1 parameter.\n")
+				clog.Error("'--port' requires at least 1 parameter.\n")
 				os.Exit(1)
 			}
 
@@ -198,19 +197,19 @@ var argumentList = argList{
 		},
 		Action: func(params []string) {
 			if len(params) == 0 {
-				log.Println("'--scan-interval' requires at least 1 parameter.")
+				clog.Error("'--scan-interval' requires at least 1 parameter.")
 				os.Exit(1)
 			}
 
 			if !ctnstring.Validate(params[0], "1234567890") {
-				log.Println("'--scan-interval' only accepts number characters")
+				clog.Error("'--scan-interval' only accepts number characters")
 				os.Exit(1)
 			}
 
 			var num, err = strconv.ParseInt(params[0], 0, 64)
 
 			if err != nil {
-				log.Println("'--scan-interval'", err)
+				clog.Error("'--scan-interval'", err)
 				os.Exit(1)
 			}
 
@@ -224,16 +223,16 @@ var argumentList = argList{
 		},
 		Params: argParameters{},
 		Action: func(params []string) {
-			log.Printf("arguments TODO: Handle --get-definitions\n")
+			clog.Debugf("arguments TODO: Handle --get-definitions\n")
 			// var onResponse = func(message *websocket.Message) {
 			// 	if message.IsError {
-			// 		log.Println(message.Response)
+			// 		clog.Debug(message.Response)
 			// 		return
 			// 	}
 			//
 			// 	var content, ok = message.Response.(string)
 			// 	if !ok {
-			// 		log.Printf("'--get-definitions' expects a string response but received another type instead: %v", message.Response)
+			// 		clog.Errorf("'--get-definitions' expects a string response but received another type instead: %v", message.Response)
 			// 		return
 			// 	}
 			// 	ctnfile.WriteFile(config.Values.Directory+"/NetscriptDefinitions.d.ts", strings.Split(content, "\n"))

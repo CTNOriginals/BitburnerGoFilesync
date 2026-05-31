@@ -43,7 +43,8 @@ func parseStream() {
 	var tests = []string{
 		"--unkown foo bar",
 		// "--help",
-		"--port",
+		// "--port",
+		"--scan-interval",
 		"--wtf wtf", // exits after
 	}
 

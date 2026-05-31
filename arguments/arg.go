@@ -11,6 +11,9 @@ import (
 
 var clog = clogger.Default.Clone(clogger.SClog{
 	Name: "arguments",
+	LogLevelPrefix: clogger.MLogLevelPrefix{
+		clogger.LogError: clogger.PrefixFile | clogger.PrefixName,
+	},
 })
 
 type argDef struct {
