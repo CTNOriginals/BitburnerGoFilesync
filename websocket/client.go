@@ -35,13 +35,16 @@ func (this *SClient) Start(port string) {
 	}
 }
 
-func (this SClient) Close() {
+func (this *SClient) Close() {
 	if !this.Active() {
 		clog.Error("Unable to close the connection while it is nil\n")
 		return
 	}
 
-	this.Connection.Close()
+	if err := this.Connection.CloseHandler()(0, "exit"); err != nil {
+		clog.Errorf("Error while attempting to close the conntection: %v\n", err)
+		this.Connection.Close()
+	}
 }
 
 func (this *SClient) sender() {
