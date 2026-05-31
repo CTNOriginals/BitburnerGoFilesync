@@ -2,17 +2,21 @@ package watcher
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 	"github.com/bmatcuk/doublestar/v4"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )
+
+var clog = clogger.Default.Clone(clogger.SClog{
+	Name: "watcher",
+})
 
 var FileStateMap MFileState = MFileState{}
 
@@ -27,7 +31,7 @@ func Initialize() {
 }
 
 func FileScanner() {
-	log.Printf("Scanning files in: %s\n", config.Values.Directory)
+	clog.Infof("Scanning files in: %s\n", config.Values.Directory)
 
 	for {
 		scanFiles()
@@ -58,7 +62,7 @@ func scanFiles() {
 	newFiles := getUnregisteredFiles(config.Values.Directory)
 
 	for _, file := range newFiles {
-		log.Printf("new file: %s\n", file)
+		clog.Debugf("new file: %s\n", file)
 		FileEventHandlerMap.Handle(file, OnFileCreate)
 	}
 }
@@ -129,7 +133,7 @@ func patternMatch(pattern string, path string) bool {
 	match, err = doublestar.PathMatch(pattern, path)
 
 	if err != nil {
-		log.Printf("Pattern match error: %v (%s > %s = %t)\n", err, pattern, path, match)
+		clog.Errorf("Pattern match error: %v (%s > %s = %t)\n", err, pattern, path, match)
 		return false
 	}
 
