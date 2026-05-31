@@ -5,13 +5,15 @@ import (
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
 	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
+	"github.com/CTNOriginals/BitburnerGoFilesync/watcher"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 )
 
 var testFunctions = map[string]func(){
-	"logger": clogger.TestLogger,
-	"client": websocket.TestClient,
-	"cli":    cli.TestCli,
+	"logger":  clogger.TestLogger,
+	"client":  websocket.TestClient,
+	"cli":     cli.TestCli,
+	"watcher": watcher.TestWatcher,
 }
 
 func DoTest(args ...string) {
