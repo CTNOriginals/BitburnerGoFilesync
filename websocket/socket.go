@@ -33,7 +33,7 @@ func (this *SSocket) send(method TMethod, params any) *SMessage {
 		OnResponse: make(chan bool),
 	}
 
-	// log.Printf("Socket.send sending message: %v\n", *message)
+	clog.Debugf("Socket.send sending message: %v\n", *message)
 
 	this.Messages[id] = message
 	this.Channel <- message
@@ -41,7 +41,7 @@ func (this *SSocket) send(method TMethod, params any) *SMessage {
 	return message
 }
 
-func (this *SSocket) Receive(body json.RawMessage) {
+func (this *SSocket) receive(body json.RawMessage) {
 	var response SResponse
 	var err = json.Unmarshal(body, &response)
 
@@ -64,6 +64,8 @@ func (this *SSocket) Receive(body json.RawMessage) {
 		clog.Errorf("Response contained error: %v\n", response.Error)
 		return
 	}
+
+	clog.Debugf("Received message: %s\n", string(body))
 
 	message.OnResponse <- true
 }

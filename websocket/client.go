@@ -50,7 +50,6 @@ func (this *SClient) Close() {
 func (this *SClient) sender() {
 	for {
 		var message = <-this.Socket.Channel
-		clog.Debugf("sending message: %v\n", message)
 		this.Connection.WriteJSON(message.Request)
 	}
 }
@@ -63,8 +62,7 @@ func (this *SClient) listener() {
 			break
 		}
 
-		clog.Debugf("Received message: %s\n", string(message))
-		this.Socket.Receive(message)
+		this.Socket.receive(message)
 	}
 }
 
