@@ -2,7 +2,6 @@ package watcher
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -26,7 +25,7 @@ func (this FileInfo) GetInfo() os.FileInfo {
 	file, err := os.Stat(utils.GetAbsolutePath(this.Path))
 
 	if err != nil {
-		log.Printf("watchet/GetInfo os.Stat: %v\n", err)
+		clog.Errorf("watchet/GetInfo os.Stat: %v\n", err)
 		return this.Info
 	}
 
