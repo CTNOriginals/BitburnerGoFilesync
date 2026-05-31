@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -33,7 +32,7 @@ var HelperSubCommand = &Definition{
 		// list all posibilities downwards
 		filter = append(filter, args[len(args)-2].Def.Options.GetNamesRecursive()...)
 
-		log.Printf("%s\n", args[0].Def.StringRecurse(filter...))
+		clog.Messagef("%s\n", args[0].Def.StringRecurse(filter...))
 	},
 }
 

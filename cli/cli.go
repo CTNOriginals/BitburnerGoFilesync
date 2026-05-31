@@ -12,7 +12,7 @@ import (
 	"github.com/chzyer/readline"
 )
 
-var clog = clogger.Default
+var clog = clogger.Default.Clone(clogger.SClog{})
 
 func CommandWatcher() {
 	var cli, err = readline.NewEx(&readline.Config{
