@@ -33,7 +33,7 @@ func (this *SSocket) send(method TMethod, params any) *SMessage {
 		OnResponse: make(chan bool),
 	}
 
-	clog.Debugf("Socket.send sending message: %v\n", *message)
+	clog.Debugf("sending message: %v\n", *message)
 
 	this.Messages[id] = message
 	this.Channel <- message
