@@ -15,9 +15,11 @@ func init() {
 func TestArgs() {
 	clog.Info("\n-- Arguments Tests --\n")
 
-	definitions()
-	findDefinitions()
-	parseSafeArgs()
+	// definitions()
+	// printHelp()
+	// findDefinitions()
+	// parseSafeArgs()
+	parseStream()
 }
 
 func definitions() {
@@ -29,6 +31,25 @@ func definitions() {
 		}
 
 		clog.Messagef("%s\n", def.String())
+	}
+}
+
+func printHelp() {
+	var help, _ = argumentList.GetDefByAlias("--help")
+	help.Action([]string{})
+}
+
+func parseStream() {
+	var tests = []string{
+		"--unkown foo bar",
+		// "--help",
+		"--port",
+		"--wtf wtf", // exits after
+	}
+
+	for _, stream := range tests {
+		clog.Infof("%s\n", stream)
+		ParseArgs(strings.Split(stream, " "))
 	}
 }
 
@@ -60,7 +81,7 @@ func parseSafeArgs() {
 	ParseArgs([]string{
 		"--no-watcher",
 		"--no-server", "true",
-		"--include-ext", "js", "ts",
+		"--include-ext", "js", "ts", "test",
 	})
 
 	clog.Infof("  NoWatcher: %t\n", constants.NoWatcher)
