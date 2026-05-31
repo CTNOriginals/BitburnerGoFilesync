@@ -2,7 +2,6 @@ package websocket
 
 import (
 	"encoding/json"
-	"log"
 )
 
 type SSocket struct {
@@ -47,14 +46,14 @@ func (this *SSocket) Receive(body json.RawMessage) {
 	var err = json.Unmarshal(body, &response)
 
 	if err != nil {
-		log.Printf("Socket.Receive error while trying to unmarshal body: %v\n", err)
+		clog.Fatalf("Error while trying to unmarshal body: %v\n", err)
 		return
 	}
 
 	var message, exists = this.Messages[response.Id]
 
 	if !exists {
-		log.Printf("Socket.Receive message id does not exist: %d\n", response.Id)
+		clog.Errorf("Message id does not exist: %d\n", response.Id)
 		return
 	}
 
@@ -62,7 +61,7 @@ func (this *SSocket) Receive(body json.RawMessage) {
 
 	if response.Error != nil {
 		message.OnResponse <- false
-		log.Printf("Socket.Receive response contained error: %v\n", response.Error)
+		clog.Errorf("Response contained error: %v\n", response.Error)
 		return
 	}
 
@@ -73,7 +72,7 @@ func AwaitResponse[T any](message *SMessage) *T {
 	var success = <-message.OnResponse
 
 	if success == false {
-		log.Printf("Socket.AwaitResponse received response error: %v\n", message.Response)
+		clog.Errorf("Received response error: %v\n", message.Response)
 		return nil
 	}
 
@@ -81,7 +80,7 @@ func AwaitResponse[T any](message *SMessage) *T {
 	var err = json.Unmarshal(message.Response.Result, &result)
 
 	if err != nil {
-		log.Printf("Socket.AwaitResponse error while parsing response result: %v\n", err)
+		clog.Errorf("Error while parsing response result: %v\n", err)
 		return nil
 	}
 
