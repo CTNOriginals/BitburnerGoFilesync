@@ -1,7 +1,6 @@
 package config
 
 import (
-	"log"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -72,7 +71,7 @@ func Initialize() {
 	}
 
 	if _, err = toml.DecodeFile(constants.ConfigFilePath, &Values); err != nil {
-		log.Panicf("Config decode error:\n%v", err)
+		clog.Fatalf("Config decode error:\n%v", err)
 	}
 
 	validateConfigValues()
