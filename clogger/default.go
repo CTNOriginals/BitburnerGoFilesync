@@ -3,7 +3,7 @@ package clogger
 import "github.com/CTNOriginals/BitburnerGoFilesync/constants"
 
 var Default = SClog{
-	Name:       "main",
+	Name:       "default",
 	PrefixMask: PrefixCall,
 
 	LogLevelState: MLogLevelState{

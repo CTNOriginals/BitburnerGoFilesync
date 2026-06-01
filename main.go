@@ -39,18 +39,23 @@ import (
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/arguments"
 	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
+	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/watcher"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 )
 
-func main() {
-	startTime := time.Now()
-	log.Printf("\n\n---- FileSync START %s ----\n", startTime.Format(time.TimeOnly))
-	defer log.Printf("---- FileSync END %s ----\n", startTime.Format(time.TimeOnly))
+var clog = clogger.Default.Clone(clogger.SClog{
+	Name: "main",
+})
 
+func main() {
 	log.SetFlags(0)
+
+	var startTime = time.Now()
+	clog.Messagef("\n\n---- FileSync START %s ----\n", startTime.Format(time.TimeOnly))
+	defer clog.Messagef("---- FileSync END %s ----\n", startTime.Format(time.TimeOnly))
 
 	var args = os.Args
 
