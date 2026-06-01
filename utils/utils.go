@@ -1,9 +1,7 @@
 package utils
 
-func Expect[T any](val T, err error) T {
-	if err != nil {
-		panic(err)
-	}
+import "github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 
-	return val
-}
+var clog = clogger.Default.Clone(clogger.SClog{
+	Name: "utils",
+})
