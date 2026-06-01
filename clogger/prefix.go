@@ -9,10 +9,10 @@ import (
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
-	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
+	ctntype "github.com/CTNOriginals/CTNGoUtils/v2/types"
 )
 
-type EPrefixMask = utils.TBitMask
+type EPrefixMask = ctntype.TBitMask
 type TPrefixMask EPrefixMask
 
 const (

@@ -3,10 +3,10 @@ package clogger
 import (
 	"strings"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
+	ctntype "github.com/CTNOriginals/CTNGoUtils/v2/types"
 )
 
-type ELogLevel = utils.TBitMask
+type ELogLevel = ctntype.TBitMask
 type TLogLevel ELogLevel
 
 const (
