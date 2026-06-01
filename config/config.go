@@ -1,14 +1,24 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"strings"
 
 	"github.com/BurntSushi/toml"
+	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )
+
+var clog = clogger.Default.Clone(clogger.SClog{
+	Name: "config",
+
+	LogLevelState: clogger.MLogLevelState{
+		clogger.LogInfo | clogger.LogDebug: func() bool {
+			return constants.LogConfig
+		},
+	},
+})
 
 type TConfigFilrPatterns struct {
 	Include []string
@@ -44,10 +54,10 @@ func Initialize() {
 
 	var content []byte
 	if content, err = toml.Marshal(Values); err != nil {
-		log.Panicf("Default config values, marshal error:\n%v\n", err)
+		clog.Fatalf("Default config values, marshal error:\n%v\n", err)
 	}
 
-	logConfig(fmt.Sprintf("Defaults:\n%s\n", content))
+	clog.Debugf("Defaults:\n%s\n", content)
 
 	if !ctnfile.FileExists(constants.ConfigFilePath) {
 		var content, _ = toml.Marshal(Values)
@@ -58,19 +68,10 @@ func Initialize() {
 		log.Panicf("Config decode error:\n%v", err)
 	}
 
-	logConfig(fmt.Sprintf("Config file content:\n%+v\n", Values))
 	validateConfigValues()
-	logConfig(fmt.Sprintf("Config Values:\n%+v\n", Values))
+	clog.Debugf("Config Values:\n%+v\n", Values)
 }
 
 func validateConfigValues() {
 	ValidateBitburnerDirectory(Values.Directory)
-}
-
-func logConfig(msg string) {
-	if !constants.Debug || !constants.LogConfig {
-		return
-	}
-
-	log.Print(msg)
 }
