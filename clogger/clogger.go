@@ -23,7 +23,7 @@ type SClog struct {
 }
 
 func (this *SClog) initialize() {
-	this.logger = log.New(log.Default().Writer(), "", 0)
+	this.logger = log.Default()
 }
 
 func (this *SClog) checkInit() {

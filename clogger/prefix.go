@@ -7,12 +7,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
-	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
+	ctntype "github.com/CTNOriginals/CTNGoUtils/v2/types"
 )
 
-type EPrefixMask = utils.TBitMask
+// NOTE: this is a workaround to prevent an import cycle.
+// the config package needs to use the clogger package for logging,
+// therefore this package can not import the config value directly
+var ConfigValueNoColor *bool
+
+type EPrefixMask = ctntype.TBitMask
 type TPrefixMask EPrefixMask
 
 const (
@@ -121,7 +125,7 @@ func (this TPrefixMask) GetPrefix(name string, level TLogLevel) string {
 	var color, exists = LogLevelColors[level]
 
 	if !exists ||
-		config.Values.Logging.NoColor ||
+		(ConfigValueNoColor != nil && *ConfigValueNoColor == true) ||
 		this.Mask().Has(PrefixNoColor.Mask()) {
 		return fmt.Sprintf("%s", builder.String())
 	}

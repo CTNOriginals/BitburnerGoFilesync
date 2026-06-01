@@ -2,6 +2,10 @@ github.com/BurntSushi/toml v1.6.0 h1:dRaEfpa2VI55EwlIW72hMRHdWouJeRF7TPYhI+AUQjk
 github.com/BurntSushi/toml v1.6.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/CTNOriginals/CTNGoUtils/v2 v2.4.0 h1:BPXOQN8oa4ZgseASsmg+8npMep2d4ofsokvnvkaadMA=
 github.com/CTNOriginals/CTNGoUtils/v2 v2.4.0/go.mod h1:VAJt/7jTpvhkr78N8HmvC7OWBsUxPyV/ItXnPIzLpww=
+github.com/CTNOriginals/CTNGoUtils/v2 v2.4.4 h1:GoRXQknlm5gwiz+1VonzGBWfZeqyu6fr4so04QdQrMc=
+github.com/CTNOriginals/CTNGoUtils/v2 v2.4.4/go.mod h1:VAJt/7jTpvhkr78N8HmvC7OWBsUxPyV/ItXnPIzLpww=
+github.com/CTNOriginals/CTNGoUtils/v2 v2.5.0 h1:5jDRHYW7pqxkqKW1uhpxvYRg8qNcsN6lM+LcAYHTcjs=
+github.com/CTNOriginals/CTNGoUtils/v2 v2.5.0/go.mod h1:VAJt/7jTpvhkr78N8HmvC7OWBsUxPyV/ItXnPIzLpww=
 github.com/bmatcuk/doublestar/v4 v4.10.0 h1:zU9WiOla1YA122oLM6i4EXvGW62DvKZVxIe6TYWexEs=
 github.com/bmatcuk/doublestar/v4 v4.10.0/go.mod h1:xBQ8jztBU6kakFMg+8WGxn0c6z1fTSPVIjEY1Wr7jzc=
 github.com/chzyer/logex v1.2.1 h1:XHDu3E6q+gdHgsdTPH6ImJMIp436vR6MPtH8gP05QzM=

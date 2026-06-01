@@ -8,16 +8,21 @@ type SSocket struct {
 	Channel  chan *SMessage
 	Messages map[int]*SMessage
 
+	// BUG: if another client is started on the same game session
+	// the id's will desync
 	currentId int
+	isOpen    bool
 }
 
 func (this *SSocket) Open() {
 	this.Channel = make(chan *SMessage)
 	this.Messages = map[int]*SMessage{}
+	this.isOpen = true
 }
 func (this *SSocket) Close() {
 	close(this.Channel)
 	this.Channel = nil
+	this.isOpen = false
 }
 
 func (this *SSocket) getId() int {
@@ -27,6 +32,12 @@ func (this *SSocket) getId() int {
 }
 
 func (this *SSocket) send(method TMethod, params any) *SMessage {
+	if !this.isOpen {
+		clog.Error("Unable to send message while socket is closed.")
+		clog.Debug("TODO: make buffer for messages to send once socket opens.")
+		return nil
+	}
+
 	var id = this.getId()
 	var message = &SMessage{
 		Request:    NewRequest(id, method, params),

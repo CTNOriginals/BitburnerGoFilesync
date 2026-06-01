@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"log"
 	"path"
 	"runtime"
 	"strings"
@@ -31,7 +30,7 @@ func ValidateBitburnerDirectory(dir string) {
 
 	dir = path.Clean(dir)
 
-	log.Printf("Set the bitburner working directory to: %s\n", dir)
+	clog.Infof("Validated and set: %s\n", dir)
 
 	Values.Directory = dir
 }
