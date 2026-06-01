@@ -10,6 +10,13 @@ import (
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )
 
+func init() {
+	// BUG: this happens a little too late for some logs
+	// that already got printed, resulting in those logs
+	// containing color regardless of the setting.
+	clogger.ConfigValueNoColor = &Values.Logging.NoColor
+}
+
 var clog = clogger.Default.Clone(clogger.SClog{
 	Name: "config",
 
