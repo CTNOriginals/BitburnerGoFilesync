@@ -75,11 +75,13 @@ func main() {
 	if !constants.NoServer {
 		go websocket.Client.Start(config.Values.Port)
 		defer websocket.Client.Close()
-	} else if constants.KeepAlive {
-		for {
-			time.Sleep(time.Millisecond)
-		}
 	}
 
-	cli.CommandWatcher()
+	if !constants.NoCli {
+		go cli.CommandWatcher()
+	}
+
+	for {
+		time.Sleep(time.Second)
+	}
 }
