@@ -16,10 +16,11 @@ func TestArgs() {
 	clog.Info("\n-- Arguments Tests --\n")
 
 	// definitions()
-	// printHelp()
 	// findDefinitions()
 	// parseSafeArgs()
-	parseStream()
+	// parseStream()
+
+	printHelp()
 }
 
 func definitions() {
@@ -32,11 +33,6 @@ func definitions() {
 
 		clog.Messagef("%s\n", def.String())
 	}
-}
-
-func printHelp() {
-	var help, _ = argumentList.GetDefByAlias("--help")
-	help.Action([]string{})
 }
 
 func parseStream() {

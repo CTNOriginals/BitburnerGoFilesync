@@ -3,7 +3,6 @@ package arguments
 import (
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
@@ -53,37 +52,9 @@ var argumentList = argList{
 		},
 		Action: func(params []string) {
 			if len(params) > 0 {
-				for _, param := range params {
-					var def, exists = onInitList.GetDefByAlias("--" + params[0])
-					if !exists {
-						clog.Errorf("Unknown argument flag: %s\n", param)
-						continue
-					}
-
-					clog.Message(def.String())
-				}
-
-				os.Exit(0)
-				return
-			}
-
-			var maxAliasSpace = 0
-
-			// Precalculate the max amount of spaces any alias will ever take in
-			// to then be able to apply that space before the descrition of each argument
-			for _, def := range onInitList {
-				var length = len(strings.Join(def.Alias, ", "))
-				if length > maxAliasSpace {
-					maxAliasSpace = length
-				}
-			}
-
-			for _, def := range onInitList {
-				var alias = strings.Join(def.Alias, ", ")
-				var desc = ctnstring.Repeat(" ", maxAliasSpace-len(alias))
-				desc += strings.Join(def.Description, "\n"+ctnstring.Repeat(" ", maxAliasSpace+2))
-
-				clog.Messagef("%s: %s\n\n", alias, desc)
+				printHelpSelect(params...)
+			} else {
+				printHelp()
 			}
 
 			os.Exit(0)
