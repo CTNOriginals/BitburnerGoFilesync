@@ -74,6 +74,9 @@ func main() {
 
 	arguments.ParseSpecificArgs(args, false, "--config")
 
+	if !constants.NoCli {
+		go cli.CommandWatcher()
+	}
 	if !constants.NoWatcher {
 		watcher.Initialize()
 		go watcher.FileScanner()
@@ -82,10 +85,6 @@ func main() {
 	if !constants.NoServer {
 		go websocket.Client.Start(config.Values.Port)
 		defer websocket.Client.Close()
-	}
-
-	if !constants.NoCli {
-		go cli.CommandWatcher()
 	}
 
 	// make sure that all gorotines also terminate when runtime.Goexit is called

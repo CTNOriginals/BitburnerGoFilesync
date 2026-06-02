@@ -34,7 +34,6 @@ var FileEventHandlerMap = MFileEventHandler{
 
 func PushFile(file *FileInfo) {
 	var relPath = file.RelativePath()
-	// var content = utils.SanitizeFileContent(utils.GetFileContentByPath(relPath))
 	var content = utils.GetFileContentByPath(relPath)
 
 	websocket.Client.Socket.PushFile(websocket.Params_PushFile{

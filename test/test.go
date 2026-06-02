@@ -33,9 +33,4 @@ func DoTest(args ...string) {
 
 		go fn()
 	}
-
-	// websocket.TestClient()
-	// clogger.TestLogger()
-	// cli.TestCli()
-	// readlineDemo()
 }

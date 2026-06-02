@@ -122,7 +122,6 @@ func (this *SClog) print(level TLogLevel, msg ...any) {
 
 	msg = append([]any{prefixString}, msg...)
 
-	// Print out the message
 	this.logger.Print(msg...)
 
 	if level.Has(LogFatal) {

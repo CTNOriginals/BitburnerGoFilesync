@@ -12,7 +12,7 @@ import (
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 )
 
-// This list can be used inside the actions of arguments
+// NOTE: This list can be used inside the actions of arguments
 // to workaround the initialization cycle error.
 // It will be assigned once ParseArgs is called.
 var onInitList argList = nil
@@ -57,7 +57,6 @@ var argumentList = argList{
 				printHelpSelect(params...)
 			}
 
-			// runtime.Goexit()
 			runtime.Goexit()
 		},
 	},
@@ -190,31 +189,13 @@ var argumentList = argList{
 	},
 	{Alias: []string{"--get-definitions"},
 		Description: []string{
+			"Currently not functional.",
 			"Requests the NetscriptDefinitions.d.ts file when a connection is established.",
 			"The definitions file will be created in bitburners root directory.",
 		},
 		Params: argParameters{},
 		Action: func(params []string) {
-			clog.Debugf("arguments TODO: Handle --get-definitions\n")
-			// var onResponse = func(message *websocket.Message) {
-			// 	if message.IsError {
-			// 		clog.Debug(message.Response)
-			// 		return
-			// 	}
-			//
-			// 	var content, ok = message.Response.(string)
-			// 	if !ok {
-			// 		clog.Errorf("'--get-definitions' expects a string response but received another type instead: %v", message.Response)
-			// 		return
-			// 	}
-			// 	ctnfile.WriteFile(config.Values.Directory+"/NetscriptDefinitions.d.ts", strings.Split(content, "\n"))
-			// }
-			//
-			// var onConnect = func(_ *gorillaws.Conn) {
-			// websocket.SendRequest(rpcschema.GetDefinitionFile, onResponse)
-			// }
-
-			// websocket.OnConnectionCallbacks = append(websocket.OnConnectionCallbacks, onConnect)
+			clog.Error("TODO: Handle --get-definitions")
 		},
 	},
 

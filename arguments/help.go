@@ -89,5 +89,4 @@ func printHelpSelect(aliases ...string) {
 
 		clog.Message(def.String())
 	}
-
 }

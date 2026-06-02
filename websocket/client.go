@@ -73,7 +73,7 @@ func (this *SClient) onReady() {
 	this.Socket.Open()
 
 	if this.Ready != nil {
-		// unblock any scripts waiting on this signal
+		// Unblock any scripts waiting on this signal
 		close(this.Ready)
 	}
 
@@ -88,7 +88,7 @@ func (this *SClient) onConnect(w http.ResponseWriter, r *http.Request) {
 
 	var upgrader = wsgorilla.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
-			// accept any connection
+			// Accept any connection
 			return true
 		},
 	}
@@ -101,11 +101,6 @@ func (this *SClient) onConnect(w http.ResponseWriter, r *http.Request) {
 		clog.Fatalf("Error upgrading: %v\n", err)
 		return
 	}
-
-	// TODO: Integrate this into client
-	// for _, cb := range OnConnectionCallbacks {
-	// 	cb(this.Connection)
-	// }
 
 	this.onReady()
 }
