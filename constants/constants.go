@@ -17,10 +17,11 @@ var ConfigFilePath = fmt.Sprintf("%s/%s", WorkindDirectory, "config.toml")
 var Debug = false
 var LogConfig = false
 
-var NoWatcher = false
-var NoServer = false
-
-var KeepAlive = false
+var (
+	NoWatcher = false
+	NoServer  = false
+	NoCli     = false
+)
 
 func init() {
 	var pc, _, _, _ = runtime.Caller(0)
