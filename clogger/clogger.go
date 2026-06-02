@@ -32,6 +32,12 @@ func (this *SClog) checkInit() {
 	}
 }
 
+// Makes a copy of this and applies all non nill
+// fields in override to the copy and returns it.
+//
+// TODO: in any map field, apply the override keys that are present
+// and leave the ones that are not defined per key in that map.
+// Do make sure that no keys are added that conflict with existing ones.
 func (this SClog) Clone(override SClog) SClog {
 	if override.Name != "" {
 		this.Name = override.Name
