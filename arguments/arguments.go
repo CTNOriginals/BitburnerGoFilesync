@@ -51,10 +51,10 @@ var argumentList = argList{
 			},
 		},
 		Action: func(params []string) {
-			if len(params) > 0 {
-				printHelpSelect(params...)
-			} else {
+			if len(params) == 0 {
 				printHelp()
+			} else {
+				printHelpSelect(params...)
 			}
 
 			os.Exit(0)
