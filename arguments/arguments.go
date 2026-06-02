@@ -1,7 +1,7 @@
 package arguments
 
 import (
-	"os"
+	"runtime"
 	"strconv"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
@@ -57,7 +57,8 @@ var argumentList = argList{
 				printHelpSelect(params...)
 			}
 
-			os.Exit(0)
+			// runtime.Goexit()
+			runtime.Goexit()
 		},
 	},
 	{Alias: []string{"--full-help", "--fhelp"},
@@ -71,7 +72,7 @@ var argumentList = argList{
 				clog.Message(arg.String())
 			}
 
-			os.Exit(0)
+			runtime.Goexit()
 		},
 	},
 	{Alias: []string{"--config"},
@@ -89,7 +90,7 @@ var argumentList = argList{
 		Action: func(params []string) {
 			if len(params) == 0 {
 				clog.Error("'--config' requires at least 1 parameter.\n")
-				os.Exit(1)
+				runtime.Goexit()
 			}
 
 			constants.ConfigFilePath = params[0]
@@ -109,12 +110,12 @@ var argumentList = argList{
 		Action: func(params []string) {
 			if len(params) == 0 {
 				clog.Error("'--dir' requires at least 1 parameter.\n")
-				os.Exit(1)
+				runtime.Goexit()
 			}
 
 			if !ctnfile.PathExists(params[0]) {
 				clog.Errorf("'--dir' directory does not exist: %s\n", params[0])
-				os.Exit(1)
+				runtime.Goexit()
 			}
 
 			config.ValidateBitburnerDirectory(params[0])
@@ -149,7 +150,7 @@ var argumentList = argList{
 		Action: func(params []string) {
 			if len(params) == 0 {
 				clog.Error("'--port' requires at least 1 parameter.\n")
-				os.Exit(1)
+				runtime.Goexit()
 			}
 
 			config.Values.Port = params[0]
@@ -169,19 +170,19 @@ var argumentList = argList{
 		Action: func(params []string) {
 			if len(params) == 0 {
 				clog.Error("'--scan-interval' requires at least 1 parameter.")
-				os.Exit(1)
+				runtime.Goexit()
 			}
 
 			if !ctnstring.Validate(params[0], "1234567890") {
 				clog.Error("'--scan-interval' only accepts number characters")
-				os.Exit(1)
+				runtime.Goexit()
 			}
 
 			var num, err = strconv.ParseInt(params[0], 0, 64)
 
 			if err != nil {
 				clog.Error("'--scan-interval'", err)
-				os.Exit(1)
+				runtime.Goexit()
 			}
 
 			config.Values.FileScanInterval = int(num)
@@ -227,7 +228,7 @@ var argumentList = argList{
 		Action: func(params []string) {
 			constants.Debug = true
 			test.DoTest(params...)
-			os.Exit(0)
+			runtime.Goexit()
 		},
 	},
 	{Alias: []string{"--no-watcher"},

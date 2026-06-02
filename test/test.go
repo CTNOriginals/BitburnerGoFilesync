@@ -31,7 +31,7 @@ func DoTest(args ...string) {
 			continue
 		}
 
-		fn()
+		go fn()
 	}
 
 	// websocket.TestClient()

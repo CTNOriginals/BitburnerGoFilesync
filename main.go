@@ -54,8 +54,15 @@ func main() {
 	log.SetFlags(0)
 
 	var startTime = time.Now()
-	clog.Messagef("\n\n---- FileSync START %s ----\n", startTime.Format(time.TimeOnly))
-	defer clog.Messagef("---- FileSync END %s ----\n", startTime.Format(time.TimeOnly))
+	clog.Messagef("\n\n---- FileSync START %s ----\n", time.Now().Format(time.TimeOnly))
+	defer func() {
+		var now = time.Now()
+		clog.Messagef(
+			"---- FileSync END %s (%s) ----\n",
+			now.Format(time.TimeOnly),
+			time.Since(startTime).String(),
+		)
+	}()
 
 	var args = os.Args
 
@@ -80,6 +87,9 @@ func main() {
 	if !constants.NoCli {
 		go cli.CommandWatcher()
 	}
+
+	// make sure that all gorotines also terminate when runtime.Goexit is called
+	defer os.Exit(0)
 
 	for {
 		time.Sleep(time.Second)
