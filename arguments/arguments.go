@@ -252,7 +252,7 @@ var argumentList = argList{
 		},
 		Params: argParameters{},
 		Action: func(params []string) {
-			constants.NoServer = true
+			constants.NoCli = true
 		},
 	},
 }
