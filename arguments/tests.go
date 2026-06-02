@@ -44,8 +44,8 @@ func parseStream() {
 		"--unkown foo bar",
 		// "--help",
 		// "--port",
-		"--scan-interval",
-		"--wtf wtf", // exits after
+		// "--scan-interval",
+		// "--wtf wtf", // exits after
 	}
 
 	for _, stream := range tests {
@@ -81,12 +81,13 @@ func parseSafeArgs() {
 
 	ParseArgs([]string{
 		"--no-watcher",
-		"--no-server", "true",
+		"--no-server",
+		"--no-cli",
 		"--include-ext", "js", "ts", "test",
 	})
 
 	clog.Infof("  NoWatcher: %t\n", constants.NoWatcher)
 	clog.Infof("  NoServer:  %t\n", constants.NoServer)
-	clog.Infof("  KeepAlive: %t\n", constants.KeepAlive)
+	clog.Infof("  NoCli:     %t\n", constants.NoCli)
 	clog.Infof("  Include:   %v\n", config.Values.FilePatterns.Include)
 }

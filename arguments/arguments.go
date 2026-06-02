@@ -268,36 +268,22 @@ var argumentList = argList{
 			constants.NoWatcher = true
 		},
 	},
-	{Alias: []string{"--no-server"},
+	{Alias: []string{"--no-server", "--no-client", "--no-websocket"},
 		Description: []string{
 			"Prevents the program from creating a server and connecting to bitburner.",
 		},
-		Params: argParameters{
-			{Name: "keep-alive", Description: []string{
-				"Accepts: true, false",
-				"Usually when a server is ran, the program wont exit as it keeps evaluating it,",
-				"if this parameter is set to true, the program will still be prevented from exiting.",
-			}},
-		},
+		Params: argParameters{},
 		Action: func(params []string) {
 			constants.NoServer = true
-
-			if len(params) > 0 && params[0] == "true" {
-				constants.KeepAlive = true
-			}
 		},
 	},
-	// {Alias: []string{"--config"},
-	// 	Description: []string{
-	// 		"COMING SOON: Specify the location of the config file.",
-	// 	},
-	// 	Params: argParameters{
-	// 		{Name: "file", Description: []string{
-	// 			"The file path to the config",
-	// 		}},
-	// 	},
-	// 	Action: func(params []string) {
-	// 		println("TODO: Add a global config")
-	// 	},
-	// },
+	{Alias: []string{"--no-cli"},
+		Description: []string{
+			"Prevents the program running the cli.",
+		},
+		Params: argParameters{},
+		Action: func(params []string) {
+			constants.NoServer = true
+		},
+	},
 }
