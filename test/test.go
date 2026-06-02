@@ -31,6 +31,6 @@ func DoTest(args ...string) {
 			continue
 		}
 
-		go fn()
+		fn()
 	}
 }

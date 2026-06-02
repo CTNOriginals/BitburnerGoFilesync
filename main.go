@@ -54,7 +54,7 @@ func main() {
 	log.SetFlags(0)
 
 	var startTime = time.Now()
-	clog.Messagef("\n\n---- FileSync START %s ----\n", time.Now().Format(time.TimeOnly))
+	clog.Messagef("\n\n---- FileSync START %s ----\n", startTime.Format(time.TimeOnly))
 	defer func() {
 		var now = time.Now()
 		clog.Messagef(
@@ -62,6 +62,9 @@ func main() {
 			now.Format(time.TimeOnly),
 			time.Since(startTime).String(),
 		)
+
+		// Make sure that all gorotines also terminate when runtime.Goexit is called
+		os.Exit(0)
 	}()
 
 	var args = os.Args
@@ -86,9 +89,6 @@ func main() {
 		go websocket.Client.Start(config.Values.Port)
 		defer websocket.Client.Close()
 	}
-
-	// make sure that all gorotines also terminate when runtime.Goexit is called
-	defer os.Exit(0)
 
 	for {
 		time.Sleep(time.Second)

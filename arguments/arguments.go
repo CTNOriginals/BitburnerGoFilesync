@@ -201,15 +201,31 @@ var argumentList = argList{
 
 	{Alias: []string{"DEBUG ARGUMENTS"}},
 
-	{Alias: []string{"--test", "--debug"},
+	{Alias: []string{"--test"},
 		Description: []string{
-			"Runs the test function if it exists",
+			"Runs the test and with the provided inputs.",
 		},
-		Params: argParameters{},
+		Params: argParameters{
+			{Name: "packages",
+				Description: []string{
+					"Packages to run the test functions of.",
+					"Can be multiple seperated by spaces.",
+				},
+			},
+		},
 		Action: func(params []string) {
 			constants.Debug = true
 			test.DoTest(params...)
 			runtime.Goexit()
+		},
+	},
+	{Alias: []string{"--debug"},
+		Description: []string{
+			"Enables debug mode, mostly means that debug logs will be printed.",
+		},
+		Params: argParameters{},
+		Action: func(params []string) {
+			constants.Debug = true
 		},
 	},
 	{Alias: []string{"--no-watcher"},
