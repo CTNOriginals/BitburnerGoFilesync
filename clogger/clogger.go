@@ -5,6 +5,8 @@ import (
 	"log"
 	"runtime"
 	"strings"
+
+	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 )
 
 type FState func() bool
@@ -122,7 +124,20 @@ func (this *SClog) print(level TLogLevel, msg ...any) {
 
 	msg = append([]any{prefixString}, msg...)
 
-	this.logger.Print(msg...)
+	var builder strings.Builder
+	var message = fmt.Sprint(msg...)
+	var lines = strings.Split(message, "\n")
+
+	builder.WriteString(lines[0])
+
+	// Indent all extra lines after the initial by 2 spaces
+	if len(lines) > 1 {
+		builder.WriteRune('\n')
+		var body = strings.Join(lines[1:], "\n")
+		builder.WriteString(ctnstring.Indent(body, 2, " "))
+	}
+
+	this.logger.Print(builder.String())
 
 	if level.Has(LogFatal) {
 		var tracePrefixMask = PrefixDate |
