@@ -49,7 +49,7 @@ func CommandWatcher() {
 
 		var inputErr = ParseInput(line)
 		if inputErr != nil {
-			clog.Errorf("%s\n", inputErr)
+			clog.Errorf("%s", inputErr)
 			continue
 		}
 	}
