@@ -18,6 +18,8 @@ func TestLogger() {
 	clog.Fatalf("logger obj: \n%s", ctnstruct.ToString(clog))
 	clog.Debug()
 	clog.Messagef("-- Message --\n%s", ctnstruct.ToString(clog))
+
+	testAllFeatures()
 }
 
 func testAllFeatures() {

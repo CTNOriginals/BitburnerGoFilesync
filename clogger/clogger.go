@@ -126,6 +126,7 @@ func (this *SClog) print(level TLogLevel, msg ...any) {
 
 	var builder strings.Builder
 	var message = fmt.Sprint(msg...)
+	message = strings.TrimRight(message, "\n")
 	var lines = strings.Split(message, "\n")
 
 	builder.WriteString(lines[0])
