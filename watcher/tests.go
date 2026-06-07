@@ -51,28 +51,51 @@ func testPatterns() {
 		"foo/bar/",
 	}
 
-	for _, glob := range globs {
-		config.Values.FilePatterns.Include = []string{glob + include}
-		config.Values.FilePatterns.Exclude = []string{glob + exclude}
-
-		var results = make([]string, 0)
-
-		for _, dir := range dirs {
-			for _, file := range files {
-				var filepath = fmt.Sprintf("%s%s", dir, file)
-				var result = shouldIncludeFile(filepath)
-				results = append(results, fmt.Sprintf("%s: %t", filepath, result))
-			}
+	var paths []string
+	for _, dir := range dirs {
+		for _, file := range files {
+			paths = append(paths, fmt.Sprintf("%s%s", dir, file))
 		}
-
-		clog.Infof(
-			"[%s] [%s]\n%s",
-			strings.Join(config.Values.FilePatterns.Include, ", "),
-			strings.Join(config.Values.FilePatterns.Exclude, ", "),
-			strings.Join(results, "\n"),
-		)
 	}
 
+	var pathWidth int
+	for _, p := range paths {
+		if len(p) > pathWidth {
+			pathWidth = len(p)
+		}
+	}
+
+	var colWidth int
+	for _, glob := range globs {
+		if len(glob) > colWidth {
+			colWidth = len(glob)
+		}
+	}
+	if colWidth < 5 {
+		colWidth = 5
+	}
+
+	var line = fmt.Sprintf("%-*s  ", pathWidth, "Path\\Glob")
+	for _, glob := range globs {
+		line += fmt.Sprintf("  %-*s", colWidth, glob)
+	}
+	clog.Messagef("%s\n", line)
+
+	for _, p := range paths {
+		line = fmt.Sprintf("%-*s  ", pathWidth, p)
+		for _, glob := range globs {
+			config.Values.FilePatterns.Include = []string{glob + include}
+			config.Values.FilePatterns.Exclude = []string{glob + exclude}
+			var state = shouldIncludeFile(p)
+			var visible = fmt.Sprintf("%-*s", colWidth, fmt.Sprintf("%t", state))
+			if state {
+				line += fmt.Sprintf("  \x1b[34m%s\x1b[0m", visible)
+			} else {
+				line += fmt.Sprintf("  \x1b[31m%s\x1b[0m", visible)
+			}
+		}
+		clog.Messagef("%s\n", line)
+	}
 }
 
 func testFileStateMap() {
