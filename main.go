@@ -75,6 +75,8 @@ func main() {
 	arguments.ParseSpecificArgs(args, true, "--config")
 	config.Initialize()
 
+	clog.Debugf("Watching Directory: %s", config.Values.Directory)
+
 	arguments.ParseSpecificArgs(args, false, "--config")
 
 	if !constants.NoCli {

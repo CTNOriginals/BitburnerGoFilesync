@@ -43,7 +43,7 @@ func ForEachFileInDirRecursive(dir string, fn func(file os.FileInfo, dir string)
 }
 
 func GetAbsolutePath(path string) string {
-	return fmt.Sprintf("%s/%s", config.Values.Directory, path)
+	return fmt.Sprintf("%s%s%s", config.Values.Directory, string(os.PathSeparator), path)
 }
 
 // The path needs to be relative the the bitburner dir
