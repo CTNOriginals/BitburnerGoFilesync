@@ -1,6 +1,7 @@
 package watcher
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -30,25 +31,48 @@ func TestWatcher() {
 func testPatterns() {
 	clog.Message("\n-- Pattern Tests --\n")
 
-	// config.Values.FilePatterns.Include = []string{"*.js", "*.ts"}
-	// config.Values.FilePatterns.Exclude = []string{"*.d.ts"}
+	var include = ".ext"
+	var exclude = ".x.ext"
 
-	clog.Infof("Includes: [%s]", strings.Join(config.Values.FilePatterns.Include, ", "))
-	clog.Infof("Excludes: [%s]", strings.Join(config.Values.FilePatterns.Exclude, ", "))
-
-	var tests = []string{
-		"index.js",
-		"index.ts",
-		"index.d.ts",
-		"foo/bar.js",
-		"foo/bax.ts",
-		"foo/gor.d.ts",
+	var globs = []string{
+		"*",
+		"**",
+		"*/*",
+		"*/**",
+		"**/*",
+	}
+	var files = []string{
+		"file.ext",
+		"file.x.ext",
+	}
+	var dirs = []string{
+		"",
+		"foo/",
+		"foo/bar/",
 	}
 
-	for _, path := range tests {
-		var result = shouldIncludeFile(path)
-		clog.Infof("  %-30s -> %t\n", path, result)
+	for _, glob := range globs {
+		config.Values.FilePatterns.Include = []string{glob + include}
+		config.Values.FilePatterns.Exclude = []string{glob + exclude}
+
+		var results = make([]string, 0)
+
+		for _, dir := range dirs {
+			for _, file := range files {
+				var filepath = fmt.Sprintf("%s%s", dir, file)
+				var result = shouldIncludeFile(filepath)
+				results = append(results, fmt.Sprintf("%s: %t", filepath, result))
+			}
+		}
+
+		clog.Infof(
+			"[%s] [%s]\n%s",
+			strings.Join(config.Values.FilePatterns.Include, ", "),
+			strings.Join(config.Values.FilePatterns.Exclude, ", "),
+			strings.Join(results, "\n"),
+		)
 	}
+
 }
 
 func testFileStateMap() {
