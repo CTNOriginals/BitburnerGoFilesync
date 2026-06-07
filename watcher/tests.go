@@ -13,23 +13,36 @@ import (
 func TestWatcher() {
 	clog.Info("\n-- Watcher Tests --\n")
 
+	go websocket.Client.Start(config.Values.Port)
+	<-*websocket.Client.OnReadySub()
+
+	clog.Debug("OnReady!")
+
 	testPatterns()
 	testFileStateMap()
 	simulateEvents()
+
+	for {
+		time.Sleep(time.Second)
+	}
 }
 
 func testPatterns() {
 	clog.Message("\n-- Pattern Tests --\n")
 
-	config.Values.FilePatterns.Include = []string{"*.js", "*.ts"}
-	config.Values.FilePatterns.Exclude = []string{"*.d.ts"}
+	// config.Values.FilePatterns.Include = []string{"*.js", "*.ts"}
+	// config.Values.FilePatterns.Exclude = []string{"*.d.ts"}
+
+	clog.Infof("Includes: [%s]", strings.Join(config.Values.FilePatterns.Include, ", "))
+	clog.Infof("Excludes: [%s]", strings.Join(config.Values.FilePatterns.Exclude, ", "))
 
 	var tests = []string{
 		"index.js",
 		"index.ts",
 		"index.d.ts",
 		"foo/bar.js",
-		"foo/bar.d.ts",
+		"foo/bax.ts",
+		"foo/gor.d.ts",
 	}
 
 	for _, path := range tests {
@@ -76,12 +89,6 @@ func simulateEvents() {
 	os.WriteFile(filepath.Join(tempDir, "base.js"), []byte("base"), 0644)
 	os.WriteFile(filepath.Join(tempDir, "base.ts"), []byte("base"), 0644)
 
-	websocket.Client.Socket.Open()
-	go func() {
-		for range websocket.Client.Socket.Channel {
-		}
-	}()
-
 	var origDir = config.Values.Directory
 	var origState = FileStateMap
 	var origInclude = config.Values.FilePatterns.Include
@@ -97,7 +104,6 @@ func simulateEvents() {
 		config.Values.FilePatterns.Include = origInclude
 		config.Values.FilePatterns.Exclude = origExclude
 		FileStateMap = origState
-		websocket.Client.Socket.Close()
 	}()
 
 	Initialize()

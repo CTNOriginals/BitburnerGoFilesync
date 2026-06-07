@@ -108,19 +108,15 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 // according to the config values Include and Exclude patternd
 func shouldIncludeFile(path string) bool {
 	for _, pattern := range config.Values.FilePatterns.Exclude {
-		if !patternMatch(pattern, path) {
-			continue
+		if patternMatch(pattern, path) {
+			return false
 		}
-
-		return false
 	}
 
 	for _, pattern := range config.Values.FilePatterns.Include {
-		if !patternMatch(pattern, path) {
-			continue
+		if patternMatch(pattern, path) {
+			return true
 		}
-
-		return true
 	}
 
 	return len(config.Values.FilePatterns.Include) == 0
