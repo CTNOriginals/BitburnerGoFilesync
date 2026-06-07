@@ -53,6 +53,11 @@ func (this *SClient) Close() {
 func (this *SClient) sender() {
 	for {
 		var message = <-this.Socket.Channel
+
+		if this.Socket.Channel == nil {
+			break
+		}
+
 		this.Connection.WriteJSON(message.Request)
 	}
 }

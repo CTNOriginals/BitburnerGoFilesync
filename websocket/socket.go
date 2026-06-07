@@ -2,24 +2,35 @@ package websocket
 
 import (
 	"encoding/json"
+	"sync"
 )
 
 type SSocket struct {
 	Channel  chan *SMessage
 	Messages map[int]*SMessage
 
-	// BUG: if another client is started on the same game session
-	// the id's will desync
 	currentId int
 	isOpen    bool
+
+	mutex sync.Mutex
 }
 
 func (this *SSocket) Open() {
+	if this.isOpen {
+		clog.Errorf("Attempted to open an alrady open socket:\n%s", clog.GetStackTrace(0))
+		return
+	}
+
 	this.Channel = make(chan *SMessage)
 	this.Messages = map[int]*SMessage{}
 	this.isOpen = true
 }
 func (this *SSocket) Close() {
+	if !this.isOpen {
+		clog.Errorf("Attempted to close an alrady closed socket:\n%s", clog.GetStackTrace(0))
+		return
+	}
+
 	close(this.Channel)
 	this.Channel = nil
 	this.isOpen = false
@@ -32,6 +43,8 @@ func (this *SSocket) getId() int {
 }
 
 func (this *SSocket) send(method TMethod, params any) *SMessage {
+	this.mutex.Lock()
+
 	if !this.isOpen {
 		clog.Error("Unable to send message while socket is closed.")
 		clog.Debug("TODO: make buffer for messages to send once socket opens.")
@@ -49,10 +62,14 @@ func (this *SSocket) send(method TMethod, params any) *SMessage {
 	this.Messages[id] = message
 	this.Channel <- message
 
+	this.mutex.Unlock()
+
 	return message
 }
 
 func (this *SSocket) receive(body json.RawMessage) {
+	this.mutex.Lock()
+
 	var response SResponse
 	var err = json.Unmarshal(body, &response)
 
@@ -62,6 +79,7 @@ func (this *SSocket) receive(body json.RawMessage) {
 	}
 
 	var message, exists = this.Messages[response.Id]
+	clog.Debugf("Received message: %s", string(body))
 
 	if !exists {
 		clog.Errorf("Message id does not exist: %d\n", response.Id)
@@ -76,9 +94,9 @@ func (this *SSocket) receive(body json.RawMessage) {
 		return
 	}
 
-	clog.Debugf("Received message: %s\n", string(body))
-
 	message.OnResponse <- true
+
+	this.mutex.Unlock()
 }
 
 func AwaitResponse[T any](message *SMessage) *T {

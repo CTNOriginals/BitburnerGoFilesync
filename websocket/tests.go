@@ -9,7 +9,6 @@ func TestClient() {
 	go Client.Start(config.Values.Port)
 	defer Client.Close()
 
-	// block untill closed
 	<-*Client.OnReadySub()
 	clog.Debug("OnReady!")
 
