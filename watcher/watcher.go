@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
@@ -123,11 +124,26 @@ func shouldIncludeFile(path string) bool {
 	return len(config.Values.FilePatterns.Include) == 0
 }
 
+//	func patternMatch(pattern string, path string) bool {
+//		var match, err = doublestar.PathMatch(pattern, path)
+//
+//		if err != nil {
+//			clog.Errorf(
+//				"Pattern match error: %v (%s > %s = %t)\n",
+//				err,
+//				pattern,
+//				path,
+//				match,
+//			)
+//			return false
+//		}
+//
+//		return match
+//	}
 func patternMatch(pattern string, path string) bool {
 	var patternPath = fmt.Sprintf("%s%s%s", config.Values.Directory, string(filepath.Separator), pattern)
 
-	var match, err = doublestar.PathMatch(pattern, path)
-	// var match, err = doublestar.FilepathGlob(patternPath)
+	var match, err = doublestar.FilepathGlob(patternPath)
 	// var match, err = filepath.Glob(patternPath)
 
 	if err != nil {
@@ -136,14 +152,14 @@ func patternMatch(pattern string, path string) bool {
 			err,
 			patternPath,
 			path,
-			match,
-			// slices.Contains(match, path),
+			slices.Contains(match, path),
 		)
 		return false
 	}
 
-	// clog.Debugf("Pattern %s returns: \n%s", patternPath, strings.Join(match, "\n"))
+	if len(match) > 0 {
+		clog.Debugf("Pattern %s returns: \n%s", patternPath, strings.Join(match, "\n"))
+	}
 
-	return match
-	// return slices.Contains(match, utils.GetAbsolutePath(path))
+	return slices.Contains(match, utils.GetAbsolutePath(path))
 }
