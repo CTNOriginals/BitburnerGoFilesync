@@ -40,6 +40,7 @@ func testPatterns() {
 		"*/*",
 		"*/**",
 		"**/*",
+		"**/**",
 	}
 	var files = []string{
 		"file.ext",
