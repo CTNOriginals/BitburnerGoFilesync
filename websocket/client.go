@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"net/http"
+	"sync"
 
 	wsgorilla "github.com/gorilla/websocket"
 )
@@ -9,10 +10,12 @@ import (
 type SClient struct {
 	Connection *wsgorilla.Conn
 	Socket     SSocket
-	Ready      chan struct{}
+
+	onReadyNotify []*chan bool
+	mutex         sync.Mutex
 }
 
-func (this SClient) Active() bool {
+func (this *SClient) Active() bool {
 	return this.Connection != nil
 }
 
@@ -67,18 +70,36 @@ func (this *SClient) listener() {
 }
 
 func (this *SClient) onReady() {
+	this.mutex.Lock()
 	clog.Infof("Ready!")
-	this.Connection.SetCloseHandler(this.onClose)
 
+	this.Connection.SetCloseHandler(this.onClose)
 	this.Socket.Open()
 
-	if this.Ready != nil {
+	if len(this.onReadyNotify) > 0 {
 		// Unblock any scripts waiting on this signal
-		close(this.Ready)
+		for _, sub := range this.onReadyNotify {
+			*sub <- true
+		}
 	}
 
 	go this.sender()
 	go this.listener()
+	this.mutex.Unlock()
+}
+
+func (this *SClient) OnReadySub() *chan bool {
+	this.mutex.Lock()
+	if this.onReadyNotify == nil {
+		this.onReadyNotify = make([]*chan bool, 0)
+	}
+
+	var sub = make(chan bool)
+	this.onReadyNotify = append(this.onReadyNotify, &sub)
+
+	this.mutex.Unlock()
+
+	return &sub
 }
 
 func (this *SClient) onConnect(w http.ResponseWriter, r *http.Request) {

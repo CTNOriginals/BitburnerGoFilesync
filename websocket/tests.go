@@ -6,12 +6,12 @@ import (
 )
 
 func TestClient() {
-	Client.Ready = make(chan struct{})
 	go Client.Start(config.Values.Port)
 	defer Client.Close()
 
 	// block untill closed
-	<-Client.Ready
+	<-*Client.OnReadySub()
+	clog.Debug("OnReady!")
 
 	Client.Socket.GetAllFiles(Params_GetAllFiles{
 		Server: "home",
