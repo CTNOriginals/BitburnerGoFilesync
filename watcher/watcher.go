@@ -3,6 +3,8 @@ package watcher
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
@@ -123,15 +125,24 @@ func shouldIncludeFile(path string) bool {
 }
 
 func patternMatch(pattern string, path string) bool {
-	var match bool
-	var err error
+	var patternPath = fmt.Sprintf("%s%s%s", config.Values.Directory, string(filepath.Separator), pattern)
 
-	match, err = doublestar.PathMatch(pattern, path)
+	// match, err = doublestar.PathMatch(pattern, path)
+	var match, err = doublestar.FilepathGlob(patternPath)
+	// var match, err = filepath.Glob(patternPath)
 
 	if err != nil {
-		clog.Errorf("Pattern match error: %v (%s > %s = %t)\n", err, pattern, path, match)
+		clog.Errorf(
+			"Pattern match error: %v (%s > %s = %t)\n",
+			err,
+			patternPath,
+			path,
+			slices.Contains(match, path),
+		)
 		return false
 	}
 
-	return match
+	// clog.Debugf("Pattern %s returns: \n%s", patternPath, strings.Join(match, "\n"))
+
+	return slices.Contains(match, utils.GetAbsolutePath(path))
 }

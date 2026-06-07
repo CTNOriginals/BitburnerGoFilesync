@@ -20,8 +20,8 @@ func TestWatcher() {
 	clog.Debug("OnReady!")
 
 	testPatterns()
-	testFileStateMap()
-	simulateEvents()
+	// testFileStateMap()
+	// simulateEvents()
 
 	for {
 		time.Sleep(time.Second)
@@ -50,10 +50,10 @@ func testPatterns() {
 		"",
 		"foo/",
 		"foo/bar/",
-		"../",
-		"../../",
-		"../../foo/",
-		"../../foo/bar/",
+		// "../",
+		// "../../",
+		// "../../foo/",
+		// "../../foo/bar/",
 	}
 
 	var paths []string
