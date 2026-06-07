@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 	"time"
 
@@ -127,8 +126,8 @@ func shouldIncludeFile(path string) bool {
 func patternMatch(pattern string, path string) bool {
 	var patternPath = fmt.Sprintf("%s%s%s", config.Values.Directory, string(filepath.Separator), pattern)
 
-	// match, err = doublestar.PathMatch(pattern, path)
-	var match, err = doublestar.FilepathGlob(patternPath)
+	var match, err = doublestar.PathMatch(pattern, path)
+	// var match, err = doublestar.FilepathGlob(patternPath)
 	// var match, err = filepath.Glob(patternPath)
 
 	if err != nil {
@@ -137,12 +136,14 @@ func patternMatch(pattern string, path string) bool {
 			err,
 			patternPath,
 			path,
-			slices.Contains(match, path),
+			match,
+			// slices.Contains(match, path),
 		)
 		return false
 	}
 
 	// clog.Debugf("Pattern %s returns: \n%s", patternPath, strings.Join(match, "\n"))
 
-	return slices.Contains(match, utils.GetAbsolutePath(path))
+	return match
+	// return slices.Contains(match, utils.GetAbsolutePath(path))
 }
