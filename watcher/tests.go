@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 )
 
@@ -30,6 +31,9 @@ func TestWatcher() {
 
 func testPatterns() {
 	clog.Message("\n-- Pattern Tests --\n")
+	utils.ForEachFileInDirRecursive(config.Values.Directory, func(file os.FileInfo, dir string) {
+		clog.Debug(fmt.Sprintf("%s/%s", dir, file.Name()))
+	})
 
 	var include = ".ext"
 	var exclude = ".x.ext"
