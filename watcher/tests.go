@@ -50,6 +50,10 @@ func testPatterns() {
 		"",
 		"foo/",
 		"foo/bar/",
+		"../",
+		"../../",
+		"../../foo/",
+		"../../foo/bar/",
 	}
 
 	var paths []string
