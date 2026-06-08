@@ -78,6 +78,7 @@ func Initialize() {
 	clog.Debugf("Config Values:\n%+v\n", Values)
 }
 
+// TODO: validate file patterns
 func validateConfigValues() {
 	ValidateBitburnerDirectory(Values.Directory)
 }
