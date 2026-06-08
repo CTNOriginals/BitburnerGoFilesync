@@ -3,6 +3,7 @@ package watcher
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"slices"
 	"strings"
 	"time"
@@ -19,11 +20,22 @@ var clog = clogger.Default.Clone(clogger.SClog{
 	Name: "watcher",
 })
 
+var FilePatterns *SFilePatterns
 var FileStateMap MFileState = MFileState{}
 
 // Initialize all relevant files and store them
 // in a data object along with their current states.
 func Initialize() {
+	var err error
+
+	FilePatterns, err = NewFilePatterns(config.Values.FilePatterns.Include, config.Values.FilePatterns.Exclude)
+	clog.Debugf("file patterns: %s", *FilePatterns)
+
+	if err != nil {
+		clog.Fatalf("Error while attempting to create file patterns:\n%v", err)
+		runtime.Goexit()
+	}
+
 	// Register the existing files without calling the OnCreate event
 	// to prevent them from being sent over the websocket
 	for _, file := range getUnregisteredFiles(config.Values.Directory) {
@@ -72,8 +84,8 @@ func scanFiles() {
 // that are not present in FileStates and returns them.
 func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 	utils.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
-		var reldir = strings.Replace(dir, config.Values.Directory, "", 1)
 		// Relative path to bitburners root dir
+		var reldir = strings.Replace(dir, config.Values.Directory, "", 1)
 		var path string
 
 		if reldir == "" {
@@ -89,13 +101,13 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 			}
 		}
 
-		if !shouldIncludeFile(path) {
-			return
-		}
-
 		_, exists := FileStateMap[path]
 
 		if exists {
+			return
+		}
+
+		if !FilePatterns.IsValidPath(config.Values.Directory, path) {
 			return
 		}
 
@@ -108,19 +120,9 @@ func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
 // Check if the file path should be included
 // according to the config values Include and Exclude patternd
 func shouldIncludeFile(path string) bool {
-	for _, pattern := range config.Values.FilePatterns.Exclude {
-		if patternMatch(pattern, path) {
-			return false
-		}
-	}
+	return FilePatterns.IsValidPath(config.Values.Directory, path)
 
-	for _, pattern := range config.Values.FilePatterns.Include {
-		if patternMatch(pattern, path) {
-			return true
-		}
-	}
-
-	return len(config.Values.FilePatterns.Include) == 0
+	// return len(config.Values.FilePatterns.Include) == 0
 }
 
 //	func patternMatch(pattern string, path string) bool {

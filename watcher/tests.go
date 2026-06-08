@@ -8,19 +8,32 @@ import (
 	"time"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 )
 
 func TestWatcher() {
 	clog.Info("\n-- Watcher Tests --\n")
 
-	// go websocket.Client.Start(config.Values.Port)
-	// <-*websocket.Client.OnReadySub()
+	go websocket.Client.Start(config.Values.Port)
+	<-*websocket.Client.OnReadySub()
 
-	testInitialize()
+	// var dir = "/home/ctn/code/bitburner/testdir"
+	// var file = "foo.js"
+	// var info, _ = os.Stat(filepath.Join(dir, file))
+	// var dirarr, _ = os.ReadDir(filepath.Dir(dir))
+	// var dirinfo, _ = dirarr[4].Info()
+	//
+	// for {
+	// 	clog.Debugf("File: %s\nMod: %s", info.Name(), time.Since(info.ModTime()).String())
+	// 	clog.Debugf("Dir: %s\nMod: %s", dirinfo.Name(), time.Since(dirinfo.ModTime()).String())
+	// 	time.Sleep(time.Second)
+	// }
+
+	// testInitialize()
 	testPatterns()
-	// testFileStateMap()
-	// simulateEvents()
+	testFileStateMap()
+	simulateEvents()
 
 	for {
 		time.Sleep(time.Second)
@@ -119,6 +132,7 @@ func testPatterns() {
 		for _, glob := range globs {
 			config.Values.FilePatterns.Include = []string{glob + include}
 			config.Values.FilePatterns.Exclude = []string{glob + exclude}
+			Initialize()
 			var state = shouldIncludeFile(p)
 			var visible = fmt.Sprintf("%-*s", colWidth, fmt.Sprintf("%t", state))
 			if state {
@@ -133,6 +147,9 @@ func testPatterns() {
 
 func testFileStateMap() {
 	clog.Message("\n-- FileStateMap Tests --\n")
+
+	config.Values.FilePatterns.Include = []string{}
+	config.Values.FilePatterns.Exclude = []string{}
 
 	Initialize()
 

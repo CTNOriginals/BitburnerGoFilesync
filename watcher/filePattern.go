@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"github.com/bmatcuk/doublestar/v4"
 )
@@ -45,9 +46,14 @@ func NewFilePatterns(inc []string, exc []string) (*SFilePatterns, error) {
 	return &fp, err
 }
 
-// Sets the patterns again and clears the matches
-func (this *SFilePatterns) UpdatePatterns(inc []string, exc []string) error {
+// Clears the existing matches
+func (this *SFilePatterns) Refresh() {
 	this.matches = make(map[string][]string)
+}
+
+// Sets the patterns again and refreshes the results
+func (this *SFilePatterns) UpdatePatterns(inc []string, exc []string) error {
+	this.Refresh()
 	return this.setPatterns(inc, exc)
 }
 
@@ -79,18 +85,28 @@ func (this SFilePatterns) getValidPaths(dir string) []string {
 }
 
 func (this *SFilePatterns) GetValidPaths(dir string) []string {
+	// NOTE: this may be nice for performance,
+	// but currently too complex to implement
 	var matches, exists = this.matches[dir]
-
 	if exists {
 		return matches
 	}
-
 	this.matches[dir] = this.getValidPaths(dir)
-
 	return this.matches[dir]
+
+	return this.getValidPaths(dir)
 }
 
 func (this *SFilePatterns) IsValidPath(dir string, path string) bool {
 	var validPaths = this.GetValidPaths(dir)
+
+	if !strings.HasPrefix(path, dir) {
+		path = filepath.Join(dir, path)
+	}
+
+	// if !slices.Contains(validPaths, path) {
+	// 	clog.Debugf("Invalid path: %s", path)
+	// }
+
 	return slices.Contains(validPaths, path)
 }
