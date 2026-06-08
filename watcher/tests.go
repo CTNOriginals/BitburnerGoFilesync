@@ -20,8 +20,8 @@ func TestWatcher() {
 	clog.Debug("OnReady!")
 
 	testPatterns()
-	testFileStateMap()
-	simulateEvents()
+	// testFileStateMap()
+	// simulateEvents()
 
 	for {
 		time.Sleep(time.Second)
@@ -30,6 +30,10 @@ func TestWatcher() {
 
 func testPatterns() {
 	clog.Message("\n-- Pattern Tests --\n")
+	// // Log all the files that the program currently sees
+	// utils.ForEachFileInDirRecursive(config.Values.Directory, func(file os.FileInfo, dir string) {
+	// 	clog.Debug(fmt.Sprintf("%s/%s", dir, file.Name()))
+	// })
 
 	var include = ".ext"
 	var exclude = ".x.ext"
@@ -50,10 +54,10 @@ func testPatterns() {
 		"",
 		"foo/",
 		"foo/bar/",
-		"../",
-		"../../",
-		"../../foo/",
-		"../../foo/bar/",
+		// "../",
+		// "../../",
+		// "../../foo/",
+		// "../../foo/bar/",
 	}
 
 	var paths []string

@@ -3,6 +3,7 @@ package watcher
 import (
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 	"time"
 
@@ -122,16 +123,46 @@ func shouldIncludeFile(path string) bool {
 	return len(config.Values.FilePatterns.Include) == 0
 }
 
+//	func patternMatch(pattern string, path string) bool {
+//		var match, err = doublestar.PathMatch(pattern, path)
+//
+//		if err != nil {
+//			clog.Errorf(
+//				"Pattern match error: %v (%s > %s = %t)\n",
+//				err,
+//				pattern,
+//				path,
+//				match,
+//			)
+//			return false
+//		}
+//
+//		return match
+//	}
 func patternMatch(pattern string, path string) bool {
-	var match bool
-	var err error
+	var patternPath = fmt.Sprintf("%s%s%s", config.Values.Directory, string(os.PathSeparator), pattern)
 
-	match, err = doublestar.PathMatch(pattern, path)
+	var match, err = doublestar.FilepathGlob(patternPath)
+	// var match, err = filepath.Glob(patternPath)
 
 	if err != nil {
-		clog.Errorf("Pattern match error: %v (%s > %s = %t)\n", err, pattern, path, match)
+		clog.Errorf(
+			"Pattern match error: %v (%s > %s = %t)\n",
+			err,
+			patternPath,
+			path,
+			slices.Contains(match, path),
+		)
 		return false
 	}
 
-	return match
+	// if len(match) > 0 {
+	// 	clog.Debugf("Pattern %s returns: \n%s", patternPath, strings.Join(match, "\n"))
+	// }
+
+	var fullpath = utils.GetAbsolutePath(path)
+	fullpath = strings.ReplaceAll(fullpath, "\\", string(os.PathSeparator))
+	fullpath = strings.ReplaceAll(fullpath, "/", string(os.PathSeparator))
+
+	return slices.Contains(match, fullpath)
 }
