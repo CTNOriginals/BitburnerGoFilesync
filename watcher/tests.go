@@ -8,23 +8,51 @@ import (
 	"time"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
-	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
+	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 )
 
 func TestWatcher() {
 	clog.Info("\n-- Watcher Tests --\n")
 
-	go websocket.Client.Start(config.Values.Port)
-	<-*websocket.Client.OnReadySub()
+	// go websocket.Client.Start(config.Values.Port)
+	// <-*websocket.Client.OnReadySub()
 
-	clog.Debug("OnReady!")
-
+	testInitialize()
 	testPatterns()
 	// testFileStateMap()
 	// simulateEvents()
 
 	for {
 		time.Sleep(time.Second)
+	}
+}
+
+type sInitData struct {
+	Dir     string
+	Include []string
+	Exclude []string
+}
+
+func testInitialize() {
+	var tests = []sInitData{
+		{ // normal
+			Dir:     config.Values.Directory,
+			Include: []string{"**/*.ext"},
+			Exclude: []string{"**/*.x.ext"},
+		},
+		{ // invalid pattern
+			Dir:     config.Values.Directory,
+			Include: []string{"**/*.ext\\"}, // escape without next character
+			Exclude: []string{""},           // empty pattern
+		},
+	}
+
+	for _, test := range tests {
+		clog.Infof("Initialize test: \n%s", ctnstruct.ToString(test))
+		config.Values.Directory = test.Dir
+		config.Values.FilePatterns.Include = test.Include
+		config.Values.FilePatterns.Exclude = test.Exclude
+		Initialize()
 	}
 }
 
@@ -54,10 +82,6 @@ func testPatterns() {
 		"",
 		"foo/",
 		"foo/bar/",
-		// "../",
-		// "../../",
-		// "../../foo/",
-		// "../../foo/bar/",
 	}
 
 	var paths []string
