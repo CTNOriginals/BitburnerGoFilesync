@@ -156,9 +156,9 @@ func patternMatch(pattern string, path string) bool {
 		return false
 	}
 
-	if len(match) > 0 {
-		clog.Debugf("Pattern %s returns: \n%s", patternPath, strings.Join(match, "\n"))
-	}
+	// if len(match) > 0 {
+	// 	clog.Debugf("Pattern %s returns: \n%s", patternPath, strings.Join(match, "\n"))
+	// }
 
 	var fullpath = utils.GetAbsolutePath(path)
 	fullpath = strings.ReplaceAll(fullpath, "\\", string(os.PathSeparator))
