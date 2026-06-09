@@ -31,8 +31,14 @@ func (this SFilePatterns) validatePatterns() error {
 }
 
 func (this *SFilePatterns) setPatterns(inc []string, exc []string) error {
+	// If include is empty, include anything
+	if len(inc) == 0 {
+		inc = append(inc, "**/*")
+	}
+
 	this.include = inc
 	this.exclude = exc
+
 	return this.validatePatterns()
 }
 
@@ -104,9 +110,9 @@ func (this *SFilePatterns) IsValidPath(dir string, path string) bool {
 		path = filepath.Join(dir, path)
 	}
 
-	// if !slices.Contains(validPaths, path) {
-	// 	clog.Debugf("Invalid path: %s", path)
-	// }
+	if !slices.Contains(validPaths, path) {
+		clog.Errorf("Invalid: %s", path)
+	}
 
 	return slices.Contains(validPaths, path)
 }

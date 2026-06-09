@@ -28,6 +28,10 @@ var FileStateMap MFileState = MFileState{}
 func Initialize() {
 	var err error
 
+	// Reset in case this is not the first time
+	FilePatterns = nil
+	FileStateMap = make(MFileState)
+
 	FilePatterns, err = NewFilePatterns(config.Values.FilePatterns.Include, config.Values.FilePatterns.Exclude)
 	clog.Debugf("file patterns: %s", *FilePatterns)
 
