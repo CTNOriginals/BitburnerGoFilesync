@@ -2,25 +2,35 @@ package watcher
 
 import (
 	"os"
+	"path/filepath"
+	"runtime"
 )
 
 type SNode struct {
-	name      string
-	info      os.FileInfo
+	// The directory path that contains this node.
+	dir string
+
+	// The last know info of this node.
+	info os.FileInfo
+	// If an error occured while trying to get the info,
+	// it will be stored in here.
 	infoError error
 
 	children []*SNode
 }
 
-// Create a new node.
+// newNode Creates a new node from path.
+// It does not pre-populate the node's list of children.
 //
-// TODO: handle error
+// If an error occurs while getting the entries info,
+// the error will be stored in this node so that it
+// can be evaluated with the provided functions.
 func newNode(path string) *SNode {
-	var state, err = os.Stat(path)
+	var info, err = os.Stat(path)
 
 	var node = SNode{
-		name:      path,
-		info:      state,
+		dir:       filepath.Dir(path),
+		info:      info,
 		infoError: err,
 		children:  make([]*SNode, 0),
 	}
@@ -28,14 +38,19 @@ func newNode(path string) *SNode {
 	return &node
 }
 
+func (this SNode) GetPath() string {
+	return filepath.Join(this.dir, this.info.Name())
+}
+
 func (this SNode) getInfo() (os.FileInfo, *os.PathError) {
-	var info, err = os.Stat(this.name)
+	var info, err = os.Stat(this.GetPath())
 
 	if err != nil {
 		var pathError, isPathError = err.(*os.PathError)
 
 		if !isPathError {
-			clog.Fatalf("Reveived unknown error:\n%v", err)
+			clog.Fatalf("Received unknown error:\n%v", err)
+			runtime.Goexit()
 		}
 
 		return info, pathError
@@ -61,7 +76,7 @@ func (this SNode) IsDirectory() bool {
 
 func (this SNode) GetChildByName(name string) *SNode {
 	for _, child := range this.children {
-		if child.name == name {
+		if child.info.Name() == name {
 			return child
 		}
 	}
@@ -73,11 +88,11 @@ func (this SNode) GetChildByName(name string) *SNode {
 // Does not handle any infoError that may be returned.
 func (this *SNode) Update() {
 	this.info, this.infoError = this.getInfo()
-	this.name = this.info.Name()
+	// this.name = this.info.Name()
 }
 
-// Clean removes all children that no longer exist.
-func (this *SNode) Clean() {
+// CleanChildList removes all children that no longer exist.
+func (this *SNode) CleanChildList() {
 	for i := 0; i < len(this.children); i++ {
 		var child = this.children[i]
 
@@ -85,18 +100,6 @@ func (this *SNode) Clean() {
 			this.children = append(this.children[:i], this.children[i+1:]...)
 		}
 	}
-}
-
-func (this *SNode) addChild(entry os.DirEntry) {
-	var info, err = entry.Info()
-
-	var node = SNode{
-		name:      entry.Name(),
-		info:      info,
-		infoError: err,
-	}
-
-	this.children = append(this.children, &node)
 }
 
 // Looks for entries in this directory that do not yet
@@ -109,7 +112,7 @@ func (this *SNode) UpdateChildList() {
 		return
 	}
 
-	var entries, err = os.ReadDir(this.name)
+	var entries, err = os.ReadDir(this.GetPath())
 
 	for _, entry := range entries {
 		var child = this.GetChildByName(entry.Name())
@@ -118,11 +121,15 @@ func (this *SNode) UpdateChildList() {
 			continue
 		}
 
-		this.addChild(entry)
+		var node = newNode(filepath.Join(this.GetPath(), entry.Name()))
+
+		node.UpdateChildList()
+
+		this.children = append(this.children, node)
 	}
 
 	if err != nil {
-		clog.Errorf("Error while reading directory %s:\n%v", this.name, err)
+		clog.Errorf("Error while reading directory %s:\n%v", this.GetPath(), err)
 		clog.Debugf("Entries returned before error:\n%v", entries)
 	}
 }

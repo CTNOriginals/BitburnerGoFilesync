@@ -7,11 +7,14 @@ import (
 
 func TestWatcher() {
 	clog.Info("\n-- Watcher Tests --\n")
+
 	var node = newNode(config.Values.Directory)
 
 	if node.infoError != nil {
 		clog.Error(node.infoError)
 	}
+
+	node.UpdateChildList()
 
 	clog.Infof("Node:\n%s", ctnstruct.ToString(node))
 
