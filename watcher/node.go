@@ -98,23 +98,6 @@ func (this *SNode) Update() {
 func (this *SNode) SortChildren() {
 	slices.SortStableFunc(this.children, func(a *SNode, b *SNode) int {
 		var prio = int(a.info.Mode()) - int(b.info.Mode())
-
-		if prio != 0 {
-			return prio
-		}
-
-		var bchars = []rune(b.info.Name())
-
-		for i, achar := range []rune(a.info.Name()) {
-			var bchar = bchars[i]
-
-			prio = int(achar - bchar)
-
-			if prio != 0 {
-				break
-			}
-		}
-
 		return prio
 	})
 }
