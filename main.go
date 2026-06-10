@@ -11,6 +11,7 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
+	"github.com/CTNOriginals/BitburnerGoFilesync/watcher"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 )
 
@@ -51,7 +52,7 @@ func main() {
 
 	if !constants.NoWatcher {
 		// TODO:
-		// watcher.Initialize()
+		watcher.Initialize()
 		// go watcher.FileScanner()
 	}
 
