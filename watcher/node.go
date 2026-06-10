@@ -189,7 +189,14 @@ func (this SNode) StringRecursive() string {
 	var getName = func(node SNode) string {
 		var builder strings.Builder
 
-		builder.WriteString(node.info.Name())
+		var name = node.GetPath()
+		var rel, err = filepath.Rel(this.GetPath(), name)
+
+		if err != nil {
+			builder.WriteString(name)
+		} else {
+			builder.WriteString(rel)
+		}
 
 		if node.IsDirectory() {
 			builder.WriteRune('/')
