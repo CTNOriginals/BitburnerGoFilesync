@@ -126,3 +126,11 @@ func (this *SNode) UpdateChildList() {
 		clog.Debugf("Entries returned before error:\n%v", entries)
 	}
 }
+
+// Calls fn for each child in children.
+// Does not call fn for itself.
+func (this *SNode) Recursive(fn func(*SNode)) {
+	for _, child := range this.children {
+		fn(child)
+	}
+}
