@@ -1,9 +1,13 @@
 package watcher
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
+	"strings"
+	"time"
 )
 
 type SNode struct {
@@ -63,11 +67,14 @@ func (this SNode) Exists() bool {
 	return os.IsNotExist(this.infoError)
 }
 
-func (this SNode) IsModified() bool {
+func (this SNode) GetTimeSinceModify() time.Duration {
 	// TODO: figure out if we need to handle an error here.
 	var info, _ = this.getInfo()
+	return time.Since(info.ModTime())
+}
 
-	return this.info.ModTime() != info.ModTime()
+func (this SNode) IsModified() bool {
+	return this.GetTimeSinceModify() == 0
 }
 
 func (this SNode) IsDirectory() bool {
@@ -89,6 +96,32 @@ func (this SNode) GetChildByName(name string) *SNode {
 func (this *SNode) Update() {
 	this.info, this.infoError = this.getInfo()
 	// this.name = this.info.Name()
+}
+
+func (this *SNode) SortChildren() {
+	slices.SortStableFunc(this.children, func(a *SNode, b *SNode) int {
+		var prio = int(a.info.Mode()) - int(b.info.Mode())
+
+		if prio != 0 {
+			clog.Debugf("%s - %s: %d", b.info.Name(), a.info.Name(), prio)
+			return prio
+		}
+
+		var bchars = []rune(b.info.Name())
+
+		for i, achar := range []rune(a.info.Name()) {
+			var bchar = bchars[i]
+
+			prio = int(achar - bchar)
+
+			if prio != 0 {
+				break
+			}
+		}
+
+		clog.Debugf("%s - %s: %d", b.info.Name(), a.info.Name(), prio)
+		return prio
+	})
 }
 
 // CleanChildList removes all children that no longer exist.
@@ -128,16 +161,97 @@ func (this *SNode) UpdateChildList() {
 		this.children = append(this.children, node)
 	}
 
+	this.SortChildren()
+
 	if err != nil {
 		clog.Errorf("Error while reading directory %s:\n%v", this.GetPath(), err)
 		clog.Debugf("Entries returned before error:\n%v", entries)
 	}
 }
 
-// Calls fn for each child in children.
-// Does not call fn for itself.
-func (this *SNode) Recursive(fn func(*SNode)) {
+func (this *SNode) ForEachChild(fn func(child *SNode)) {
 	for _, child := range this.children {
 		fn(child)
 	}
+}
+
+// Calls fn for each child in children.
+// Does not call fn for itself.
+func (this *SNode) Recursive(fn func(child *SNode)) {
+	this.ForEachChild(func(child *SNode) {
+		fn(child)
+		child.Recursive(fn)
+	})
+}
+
+func (this SNode) String() string {
+	return fmt.Sprintf(
+		"%s %s %s",
+		this.info.Mode(),
+		time.Since(this.info.ModTime()).Round(time.Second),
+		this.info.Name(),
+	)
+}
+
+func (this SNode) StringRecursive() string {
+	var modeLines = []string{this.info.Mode().String()}
+	var timeLines = []string{this.GetTimeSinceModify().Round(time.Second).String()}
+	var nameLines = []string{}
+
+	var modeLineSize = len(modeLines[0])
+	var timeLineSize = len(timeLines[0])
+
+	var indent = 0
+	const gap = 2
+
+	var getName = func(node SNode) string {
+		var builder strings.Builder
+
+		builder.WriteString(strings.Repeat("| ", indent))
+		builder.WriteString(node.info.Name())
+
+		if node.IsDirectory() {
+			builder.WriteRune('/')
+			indent += 1
+		}
+
+		return builder.String()
+	}
+
+	nameLines = append(nameLines, getName(this))
+
+	this.Recursive(func(child *SNode) {
+		var mode = child.info.Mode().String()
+		var time = child.GetTimeSinceModify().Round(time.Second).String()
+
+		if len(mode) > modeLineSize {
+			modeLineSize = len(mode)
+		}
+		if len(time) > timeLineSize {
+			timeLineSize = len(time)
+		}
+
+		modeLines = append(modeLines, mode)
+		timeLines = append(timeLines, time)
+		nameLines = append(nameLines, getName(*child))
+	})
+
+	var builder strings.Builder
+
+	for i, name := range nameLines {
+		var mode = modeLines[i]
+		var time = timeLines[i]
+
+		if builder.Len() > 0 {
+			builder.WriteRune('\n')
+		}
+
+		builder.WriteString(mode)
+		builder.WriteString(strings.Repeat(" ", modeLineSize-len(mode)+gap))
+		builder.WriteString(time)
+		builder.WriteString(strings.Repeat(" ", timeLineSize-len(time)+gap))
+		builder.WriteString(name)
+	}
+
+	return builder.String()
 }

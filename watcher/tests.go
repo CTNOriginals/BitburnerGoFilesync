@@ -2,7 +2,6 @@ package watcher
 
 import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
-	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 )
 
 func TestWatcher() {
@@ -15,8 +14,12 @@ func TestWatcher() {
 	}
 
 	node.UpdateChildList()
+	// node.Recursive((*SNode).UpdateChildList)
+	node.ForEachChild(func(child *SNode) {
+		child.Recursive((*SNode).UpdateChildList)
+	})
 
-	clog.Infof("Node:\n%s", ctnstruct.ToString(node))
+	clog.Infof("Node:\n%s", node.StringRecursive())
 
 	// var arr = []string{"a", "b", "c", "d", "e"}
 
