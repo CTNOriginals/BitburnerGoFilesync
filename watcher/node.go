@@ -14,7 +14,7 @@ type SNode struct {
 
 // Create a new node.
 //
-// name is the file path to this node.
+// TODO: handle error
 func newNode(path string) *SNode {
 	var state, err = os.Stat(path)
 
