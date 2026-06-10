@@ -100,7 +100,6 @@ func (this *SNode) SortChildren() {
 		var prio = int(a.info.Mode()) - int(b.info.Mode())
 
 		if prio != 0 {
-			clog.Debugf("%s - %s: %d", b.info.Name(), a.info.Name(), prio)
 			return prio
 		}
 
@@ -116,7 +115,6 @@ func (this *SNode) SortChildren() {
 			}
 		}
 
-		clog.Debugf("%s - %s: %d", b.info.Name(), a.info.Name(), prio)
 		return prio
 	})
 }
@@ -203,18 +201,15 @@ func (this SNode) StringRecursive() string {
 	var modeLineSize = len(modeLines[0])
 	var timeLineSize = len(timeLines[0])
 
-	var indent = 0
 	const gap = 2
 
 	var getName = func(node SNode) string {
 		var builder strings.Builder
 
-		builder.WriteString(strings.Repeat("| ", indent))
 		builder.WriteString(node.info.Name())
 
 		if node.IsDirectory() {
 			builder.WriteRune('/')
-			indent += 1
 		}
 
 		return builder.String()
