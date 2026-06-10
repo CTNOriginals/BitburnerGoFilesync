@@ -64,17 +64,13 @@ func (this SNode) getInfo() (os.FileInfo, *os.PathError) {
 }
 
 func (this SNode) Exists() bool {
-	return os.IsNotExist(this.infoError)
-}
-
-func (this SNode) GetTimeSinceModify() time.Duration {
-	// TODO: figure out if we need to handle an error here.
-	var info, _ = this.getInfo()
-	return time.Since(info.ModTime())
+	return !os.IsNotExist(this.infoError)
 }
 
 func (this SNode) IsModified() bool {
-	return this.GetTimeSinceModify() == 0
+	// TODO: figure out if we need to handle an error here.
+	var info, _ = this.getInfo()
+	return this.info.ModTime() != info.ModTime()
 }
 
 func (this SNode) IsDirectory() bool {
@@ -95,7 +91,8 @@ func (this SNode) GetChildByName(name string) *SNode {
 // Does not handle any infoError that may be returned.
 func (this *SNode) Update() {
 	this.info, this.infoError = this.getInfo()
-	// this.name = this.info.Name()
+	// TODO: check if the name is different from what is stored
+	// and fire an event for it if it is.
 }
 
 func (this *SNode) SortChildren() {
@@ -182,6 +179,11 @@ func (this *SNode) Recursive(fn func(child *SNode)) {
 		fn(child)
 		child.Recursive(fn)
 	})
+}
+
+func (this SNode) GetTimeSinceModify() time.Duration {
+	var info, _ = this.getInfo()
+	return time.Since(info.ModTime())
 }
 
 func (this SNode) String() string {
