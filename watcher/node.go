@@ -128,6 +128,8 @@ func (this *SNode) CleanChildList() {
 // Looks for entries in this directory that do not yet
 // exist in children and adds them as a node to children.
 //
+// For each new node created, UpdateChildList will be called on that node.
+//
 // If an error occurs while reading this directory it logs the error
 // after processing the entries that did return before the error.
 func (this *SNode) UpdateChildList() {
