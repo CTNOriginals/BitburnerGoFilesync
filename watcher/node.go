@@ -89,8 +89,18 @@ func (this SNode) GetChildByName(name string) *SNode {
 
 // Updates the info and infoError for just this node.
 // Does not handle any infoError that may be returned.
+//
+// In case that the new info returns nil,
+// it will not override the existing info.
 func (this *SNode) Update() {
-	this.info, this.infoError = this.getInfo()
+	var info, err = this.getInfo()
+
+	this.infoError = err
+
+	if info != nil {
+		this.info = info
+	}
+
 	// TODO: check if the name is different from what is stored
 	// and fire an event for it if it is.
 }
