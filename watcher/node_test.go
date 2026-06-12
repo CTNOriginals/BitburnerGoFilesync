@@ -408,7 +408,7 @@ func TestCleanChildList(t *testing.T) {
 		t.Fatalf("expected %d children, got %d", origCount+1, len(node.children))
 	}
 
-	node.CleanChildList()
+	node.CleanChildListFunc((*SNode).Exists)
 
 	if len(node.children) != origCount {
 		t.Errorf("expected %d children after CleanChildList, got %d", origCount, len(node.children))

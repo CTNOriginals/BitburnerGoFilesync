@@ -112,6 +112,12 @@ func (this SNode) GetChildByName(name string) *SNode {
 	return nil
 }
 
+// Sets the pathFilter of this node and clear pathFilterCache.
+// Does NOT apply this filter to existing children,
+// to do that, run this function in [SNode.Recursive].
+//
+// To re-apply this pathFilter to the current list of children,
+// run [SNode.ApplyPathFilter].
 func (this *SNode) SetPathFilter(filter FPathFilter) {
 	this.pathFilter = filter
 	this.pathFilterCache = make([]string, 0)
@@ -140,17 +146,37 @@ func (this *SNode) SortChildren() {
 	})
 }
 
-// CleanChildList removes all children that no longer exist.
-func (this *SNode) CleanChildList() {
-	var clean = make([]*SNode, 0)
+func (this *SNode) removeChild(index int) {
+	this.children = slices.Delete(this.children, index, index+1)
+	// this.children = append(this.children[:index], this.children[index+1:]...)
+}
 
-	for _, child := range this.children {
-		if child.Exists() {
-			clean = append(clean, child)
+// Runs fn for each child in this and removes them if fn returns false.
+func (this *SNode) CleanChildListFunc(fn func(child *SNode) bool) {
+	for i := 0; i < len(this.children); i++ {
+		var child = this.children[i]
+
+		if fn(child) == false {
+			this.removeChild(i)
+			i -= 1
 		}
 	}
+}
 
-	this.children = clean
+// Applies the current pathFilter on all children
+// and removes the children that do not meet it.
+func (this *SNode) ApplyPathFilter() {
+	this.CleanChildListFunc(func(child *SNode) bool {
+		var childPath = child.GetPath()
+
+		if this.pathFilter == nil || this.pathFilter(childPath, child.info) {
+			return true
+		}
+
+		this.pathFilterCache = append(this.pathFilterCache, childPath)
+
+		return false
+	})
 }
 
 // Looks for entries in this directory that do not yet
@@ -215,7 +241,7 @@ func (this *SNode) ForEachChild(fn func(child *SNode)) {
 }
 
 // Calls fn for each child in children.
-func (this *SNode) Recursive(fn func(child *SNode), includeSelf bool) {
+func (this *SNode) Recursive(fn func(node *SNode), includeSelf bool) {
 	if includeSelf {
 		fn(this)
 	}
