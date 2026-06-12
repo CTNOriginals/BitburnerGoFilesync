@@ -40,6 +40,12 @@ type SNode struct {
 	infoError error
 
 	children []*SNode
+
+	// TODO:
+	// A function that runs when a new child is discovered.
+	// The child will only be added to children if pathFilterFn returns true.
+	// All children of this node will inherit this function recursively.
+	pathFilterFn func(path string) bool
 }
 
 // newNode Creates a new node from path.
@@ -87,7 +93,6 @@ func (this SNode) Exists() bool {
 }
 
 func (this SNode) IsModified() bool {
-	// TODO: figure out if we need to handle an error here.
 	var info, _ = this.getInfo()
 	return this.info.ModTime() != info.ModTime()
 }
@@ -120,9 +125,6 @@ func (this *SNode) Update() {
 	if info != nil {
 		this.info = info
 	}
-
-	// TODO: check if the name is different from what is stored
-	// and fire an event for it if it is.
 }
 
 func (this *SNode) SortChildren() {
