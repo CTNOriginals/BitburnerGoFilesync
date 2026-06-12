@@ -46,7 +46,7 @@ func (this SNode) GetPath() string {
 	return filepath.Join(this.dir, this.info.Name())
 }
 
-func (this SNode) getInfo() (os.FileInfo, *os.PathError) {
+func (this SNode) getInfo() (os.FileInfo, error) {
 	var info, err = os.Stat(this.GetPath())
 
 	if err != nil {
