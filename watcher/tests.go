@@ -99,7 +99,7 @@ func (tr *sTestRun) check(desc string, ok bool, details ...string) {
 	} else {
 		var detail = strings.Join(details, ", ")
 		if detail != "" {
-			clog.Messagef("  FAIL  %s  << %s >>", desc, detail)
+			clog.Errorf("FAIL  %s\n%s", desc, detail)
 		} else {
 			clog.Messagef("  FAIL  %s", desc)
 		}
@@ -421,7 +421,11 @@ func testUpdate(tr *sTestRun, baseDir string) {
 	dn.Update()
 	tr.check("update after deletion",
 		dn.info == nil && errors.Is(dn.infoError, os.ErrNotExist),
-		fmt.Sprintf("info=%v, infoError=%v", dn.info, dn.infoError))
+		fmt.Sprintf(
+			"info: %s\nerror: %s",
+			dn.String(),
+			dn.infoError.Error(),
+		))
 
 	tr.expectPanic("Update on nil-info node (GetPath panics)", func() {
 		newNode(mkPath(baseDir, "nonexistent")).Update()
