@@ -2,13 +2,12 @@ package watcher
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
-
-	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 )
 
 func TestWatcher() {
@@ -21,33 +20,23 @@ func TestWatcher() {
 		os.RemoveAll(baseDir)
 	}()
 
-	testNewNode(baseDir)
-	testGetPath(baseDir)
-	testExists(baseDir)
-	testIsModified(baseDir)
-	testIsDirectory(baseDir)
-	testChildren(baseDir)
-	testSort(baseDir)
-	testUpdate(baseDir)
-	testTimeSinceModify(baseDir)
-	testString(baseDir)
-	testStringRecursive(baseDir)
+	var grand sTestRun
+	grand.init("grand")
 
-	// return
-	var node = newNode(config.Values.Directory)
-	// var node = newNode(constants.WorkindDirectory)
+	runSection("newNode", testNewNode, &grand, baseDir)
+	runSection("GetPath", testGetPath, &grand, baseDir)
+	runSection("Exists", testExists, &grand, baseDir)
+	runSection("IsModified", testIsModified, &grand, baseDir)
+	runSection("IsDirectory", testIsDirectory, &grand, baseDir)
+	runSection("Children", testChildren, &grand, baseDir)
+	runSection("Sort", testSort, &grand, baseDir)
+	runSection("Update", testUpdate, &grand, baseDir)
+	runSection("TimeSinceModify", testTimeSinceModify, &grand, baseDir)
+	runSection("String", testString, &grand, baseDir)
+	runSection("StringRecursive", testStringRecursive, &grand, baseDir)
 
-	if node.infoError != nil {
-		clog.Error(node.infoError)
-	}
-
-	node.UpdateChildList()
-	// node.Recursive((*SNode).UpdateChildList)
-	node.ForEachChild(func(child *SNode) {
-		child.Recursive((*SNode).UpdateChildList)
-	})
-
-	clog.Infof("%s:\n%s", node.GetPath(), node.StringRecursive())
+	clog.Messagef("\n========== Grand Total: %d passed, %d failed, %d panicked ==========",
+		grand.passed, grand.failed, grand.panicked)
 }
 
 func setupTestEnv() string {
@@ -89,257 +78,271 @@ func mkPath(baseDir string, elems ...string) string {
 	return filepath.Join(append([]string{baseDir}, elems...)...)
 }
 
-func checkPASS(name string, ok bool) {
+type sTestRun struct {
+	section  string
+	passed   int
+	failed   int
+	panicked int
+}
+
+func (tr *sTestRun) init(section string) {
+	tr.section = section
+	tr.passed = 0
+	tr.failed = 0
+	tr.panicked = 0
+}
+
+func (tr *sTestRun) check(desc string, ok bool, details ...string) {
 	if ok {
-		clog.Infof("  PASS [%s]\n", name)
+		clog.Messagef("  PASS  %s", desc)
+		tr.passed++
 	} else {
-		clog.Errorf("  FAIL [%s]\n", name)
+		var detail = strings.Join(details, ", ")
+		if detail != "" {
+			clog.Messagef("  FAIL  %s  << %s >>", desc, detail)
+		} else {
+			clog.Messagef("  FAIL  %s", desc)
+		}
+		tr.failed++
 	}
 }
 
-func checkPanic(name string, fn func()) {
+func (tr *sTestRun) expectPanic(desc string, fn func()) {
 	defer func() {
 		if r := recover(); r != nil {
-			clog.Infof("  BUG CONFIRMED [%s]: %v\n", name, r)
+			clog.Messagef("  PASS  %s  (panic: %v)", desc, r)
+			tr.passed++
 		} else {
-			clog.Errorf("  BUG MISSED [%s]: expected panic but none occurred\n", name)
+			clog.Messagef("  FAIL  %s  (expected panic, none occurred)", desc)
+			tr.failed++
 		}
 	}()
 	fn()
 }
 
+func (tr *sTestRun) summary() {
+	clog.Messagef("-- %s: %d passed, %d failed, %d panicked --",
+		tr.section, tr.passed, tr.failed, tr.panicked)
+}
+
+func runSection(section string, fn func(*sTestRun, string), grand *sTestRun, baseDir string) {
+	var tr sTestRun
+	tr.init(section)
+	clog.Messagef("\n-- %s --\n", section)
+	fn(&tr, baseDir)
+	tr.summary()
+	grand.passed += tr.passed
+	grand.failed += tr.failed
+	grand.panicked += tr.panicked
+}
+
 // -- newNode --
 
-func testNewNode(baseDir string) {
-	clog.Message("\n-- newNode --\n")
+func testNewNode(tr *sTestRun, baseDir string) {
+	var regN = newNode(mkPath(baseDir, "regular.txt"))
+	tr.check("existing file",
+		regN.info != nil && regN.infoError == nil,
+		fmt.Sprintf("info=%v, infoError=%v", regN.info, regN.infoError))
 
-	checkPASS("existing file",
-		func() bool {
-			var n = newNode(mkPath(baseDir, "regular.txt"))
-			return n.info != nil && n.infoError == nil
-		}())
+	var subdirN = newNode(mkPath(baseDir, "subdir"))
+	tr.check("directory",
+		subdirN.info != nil && subdirN.infoError == nil && subdirN.info.IsDir(),
+		fmt.Sprintf("info=%v, infoError=%v", subdirN.info, subdirN.infoError))
 
-	checkPASS("directory",
-		func() bool {
-			var n = newNode(mkPath(baseDir, "subdir"))
-			return n.info != nil && n.infoError == nil && n.info.IsDir()
-		}())
+	var emptyN = newNode(mkPath(baseDir, "empty"))
+	tr.check("empty directory",
+		emptyN.info != nil && emptyN.infoError == nil && emptyN.info.IsDir(),
+		fmt.Sprintf("info=%v, infoError=%v", emptyN.info, emptyN.infoError))
 
-	checkPASS("empty directory",
-		func() bool {
-			var n = newNode(mkPath(baseDir, "empty"))
-			return n.info != nil && n.infoError == nil && n.info.IsDir()
-		}())
+	var symwkN = newNode(mkPath(baseDir, "symlink_working"))
+	tr.check("working symlink",
+		symwkN.info != nil && symwkN.infoError == nil,
+		fmt.Sprintf("info=%v, infoError=%v", symwkN.info, symwkN.infoError))
 
-	checkPASS("working symlink",
-		func() bool {
-			var n = newNode(mkPath(baseDir, "symlink_working"))
-			return n.info != nil && n.infoError == nil
-		}())
+	var utfN = newNode(mkPath(baseDir, "unicode_测试.txt"))
+	tr.check("unicode filename",
+		utfN.info != nil && utfN.infoError == nil,
+		fmt.Sprintf("info=%v, infoError=%v", utfN.info, utfN.infoError))
 
-	checkPASS("unicode filename",
-		func() bool {
-			var n = newNode(mkPath(baseDir, "unicode_测试.txt"))
-			return n.info != nil && n.infoError == nil
-		}())
+	var spacesN = newNode(mkPath(baseDir, "spaces in name.txt"))
+	tr.check("spaces in filename",
+		spacesN.info != nil && spacesN.infoError == nil,
+		fmt.Sprintf("info=%v, infoError=%v", spacesN.info, spacesN.infoError))
 
-	checkPASS("spaces in filename",
-		func() bool {
-			var n = newNode(mkPath(baseDir, "spaces in name.txt"))
-			return n.info != nil && n.infoError == nil
-		}())
+	var hiddenN = newNode(mkPath(baseDir, ".hidden"))
+	tr.check("hidden file",
+		hiddenN.info != nil && hiddenN.infoError == nil,
+		fmt.Sprintf("info=%v, infoError=%v", hiddenN.info, hiddenN.infoError))
 
-	checkPASS("hidden file",
-		func() bool {
-			var n = newNode(mkPath(baseDir, ".hidden"))
-			return n.info != nil && n.infoError == nil
-		}())
+	var rootN = newNode("/")
+	tr.check("root path",
+		rootN.info != nil && rootN.infoError == nil && rootN.info.IsDir(),
+		fmt.Sprintf("info=%v, infoError=%v", rootN.info, rootN.infoError))
 
-	checkPASS("root path",
-		func() bool {
-			var n = newNode("/")
-			return n.info != nil && n.infoError == nil && n.info.IsDir()
-		}())
+	var nonexistN = newNode(mkPath(baseDir, "nonexistent"))
+	tr.check("nonexistent path",
+		nonexistN.info == nil && errors.Is(nonexistN.infoError, os.ErrNotExist),
+		fmt.Sprintf("info=%v, infoError=%v", nonexistN.info, nonexistN.infoError))
 
-	checkPASS("nonexistent path",
-		func() bool {
-			var n = newNode(mkPath(baseDir, "nonexistent"))
-			return n.info == nil && errors.Is(n.infoError, os.ErrNotExist)
-		}())
+	var brokenN = newNode(mkPath(baseDir, "symlink_broken"))
+	tr.check("broken symlink",
+		brokenN.info == nil && errors.Is(brokenN.infoError, os.ErrNotExist),
+		fmt.Sprintf("info=%v, infoError=%v", brokenN.info, brokenN.infoError))
 
-	checkPASS("broken symlink",
-		func() bool {
-			var n = newNode(mkPath(baseDir, "symlink_broken"))
-			return n.info == nil && errors.Is(n.infoError, os.ErrNotExist)
-		}())
+	var loopN = newNode(mkPath(baseDir, "symlink_loop1"))
+	tr.check("symlink loop",
+		loopN.info == nil && errors.Is(loopN.infoError, syscall.ELOOP),
+		fmt.Sprintf("info=%v, infoError=%v", loopN.info, loopN.infoError))
 
-	checkPASS("symlink loop",
-		func() bool {
-			var n = newNode(mkPath(baseDir, "symlink_loop1"))
-			return n.info == nil && errors.Is(n.infoError, syscall.ELOOP)
-		}())
+	var trappedN = newNode(mkPath(baseDir, "noaccess_dir", "trapped.txt"))
+	tr.check("trapped inside noaccess dir (EACCES)",
+		trappedN.info == nil && errors.Is(trappedN.infoError, os.ErrPermission),
+		fmt.Sprintf("info=%v, infoError=%v", trappedN.info, trappedN.infoError))
 
-	checkPASS("trapped inside noaccess dir (EACCES)",
-		func() bool {
-			var n = newNode(mkPath(baseDir, "noaccess_dir", "trapped.txt"))
-			return n.info == nil && errors.Is(n.infoError, os.ErrPermission)
-		}())
+	var noaccfileN = newNode(mkPath(baseDir, "noaccess_file.txt"))
+	tr.check("noaccess file (owner can stat)",
+		noaccfileN.info != nil && noaccfileN.infoError == nil,
+		fmt.Sprintf("info=%v, infoError=%v", noaccfileN.info, noaccfileN.infoError))
 
-	checkPASS("noaccess file (owner can stat)",
-		func() bool {
-			var n = newNode(mkPath(baseDir, "noaccess_file.txt"))
-			return n.info != nil && n.infoError == nil
-		}())
+	var longN = newNode(mkPath(baseDir, strings.Repeat("a", 300)))
+	tr.check("path too long",
+		longN.info == nil && errors.Is(longN.infoError, syscall.ENAMETOOLONG),
+		fmt.Sprintf("info=%v, infoError=%v", longN.info, longN.infoError))
 
-	checkPASS("path too long",
-		func() bool {
-			var n = newNode(mkPath(baseDir, strings.Repeat("a", 300)))
-			return n.info == nil && errors.Is(n.infoError, syscall.ENAMETOOLONG)
-		}())
-
-	checkPASS("empty string path",
-		func() bool {
-			var n = newNode("")
-			return n.info == nil && n.infoError != nil
-		}())
+	var emptysN = newNode("")
+	tr.check("empty string path",
+		emptysN.info == nil && emptysN.infoError != nil,
+		fmt.Sprintf("info=%v, infoError=%v", emptysN.info, emptysN.infoError))
 }
 
 // -- GetPath --
 
-func testGetPath(baseDir string) {
-	clog.Message("\n-- GetPath --\n")
-
-	checkPASS("regular file",
+func testGetPath(tr *sTestRun, baseDir string) {
+	tr.check("regular file",
 		newNode(mkPath(baseDir, "regular.txt")).GetPath() == mkPath(baseDir, "regular.txt"))
 
-	checkPASS("directory",
+	tr.check("directory",
 		newNode(mkPath(baseDir, "subdir")).GetPath() == mkPath(baseDir, "subdir"))
 
-	checkPanic("nonexistent path", func() {
+	tr.expectPanic("nonexistent path", func() {
 		newNode(mkPath(baseDir, "nonexistent")).GetPath()
 	})
 
-	checkPanic("broken symlink", func() {
+	tr.expectPanic("broken symlink", func() {
 		newNode(mkPath(baseDir, "symlink_broken")).GetPath()
 	})
 
-	checkPanic("symlink loop", func() {
+	tr.expectPanic("symlink loop", func() {
 		newNode(mkPath(baseDir, "symlink_loop1")).GetPath()
 	})
 
-	checkPanic("empty string path", func() {
+	tr.expectPanic("empty string path", func() {
 		newNode("").GetPath()
 	})
 }
 
 // -- Exists --
 
-func testExists(baseDir string) {
-	clog.Message("\n-- Exists --\n")
-
-	checkPASS("valid file", newNode(mkPath(baseDir, "regular.txt")).Exists())
-	checkPASS("directory", newNode(mkPath(baseDir, "subdir")).Exists())
-	checkPASS("nonexistent", !newNode(mkPath(baseDir, "nonexistent")).Exists())
-	checkPASS("broken symlink", !newNode(mkPath(baseDir, "symlink_broken")).Exists())
-	checkPASS("symlink loop",
+func testExists(tr *sTestRun, baseDir string) {
+	tr.check("valid file", newNode(mkPath(baseDir, "regular.txt")).Exists())
+	tr.check("directory", newNode(mkPath(baseDir, "subdir")).Exists())
+	tr.check("nonexistent", !newNode(mkPath(baseDir, "nonexistent")).Exists())
+	tr.check("broken symlink", !newNode(mkPath(baseDir, "symlink_broken")).Exists())
+	tr.check("symlink loop",
 		newNode(mkPath(baseDir, "symlink_loop1")).Exists())
-	checkPASS("trapped inside noaccess (EACCES)",
+	tr.check("trapped inside noaccess (EACCES)",
 		newNode(mkPath(baseDir, "noaccess_dir", "trapped.txt")).Exists())
 }
 
 // -- IsModified --
 
-func testIsModified(baseDir string) {
-	clog.Message("\n-- IsModified --\n")
-
+func testIsModified(tr *sTestRun, baseDir string) {
 	var n = newNode(mkPath(baseDir, "regular.txt"))
-	checkPASS("no change", !n.IsModified())
+	tr.check("no change", !n.IsModified())
 
 	os.WriteFile(mkPath(baseDir, "regular.txt"), []byte("modified"), 0644)
-	checkPASS("content changed", n.IsModified())
+	tr.check("content changed", n.IsModified())
 
 	n.Update()
-	checkPASS("after update no change", !n.IsModified())
+	tr.check("after update no change", !n.IsModified())
 
 	time.Sleep(time.Millisecond)
 	os.Chtimes(mkPath(baseDir, "regular.txt"), time.Now(), time.Now())
-	checkPASS("touch file (modtime changed)", n.IsModified())
+	tr.check("touch file (modtime changed)", n.IsModified())
 
 	n.Update()
 	os.Chmod(mkPath(baseDir, "regular.txt"), 0600)
-	checkPASS("permission only (modtime unchanged)", !n.IsModified())
+	tr.check("permission only (modtime unchanged)", !n.IsModified())
 
 	var tmpPath = mkPath(baseDir, "_tmp_im_panic.txt")
 	os.WriteFile(tmpPath, []byte("x"), 0644)
 	var imNode = newNode(tmpPath)
 	os.Remove(tmpPath)
-	checkPanic("IsModified after deletion (getInfo returns nil)", func() {
+	tr.expectPanic("IsModified after deletion (getInfo returns nil)", func() {
 		imNode.IsModified()
 	})
 
-	checkPanic("IsModified on nonexistent node", func() {
+	tr.expectPanic("IsModified on nonexistent node", func() {
 		newNode(mkPath(baseDir, "nonexistent")).IsModified()
 	})
 }
 
 // -- IsDirectory --
 
-func testIsDirectory(baseDir string) {
-	clog.Message("\n-- IsDirectory --\n")
-
-	checkPASS("regular file", !newNode(mkPath(baseDir, "regular.txt")).IsDirectory())
-	checkPASS("subdir", newNode(mkPath(baseDir, "subdir")).IsDirectory())
-	checkPASS("empty dir", newNode(mkPath(baseDir, "empty")).IsDirectory())
-	checkPanic("nonexistent path", func() {
+func testIsDirectory(tr *sTestRun, baseDir string) {
+	tr.check("regular file", !newNode(mkPath(baseDir, "regular.txt")).IsDirectory())
+	tr.check("subdir", newNode(mkPath(baseDir, "subdir")).IsDirectory())
+	tr.check("empty dir", newNode(mkPath(baseDir, "empty")).IsDirectory())
+	tr.expectPanic("nonexistent path", func() {
 		newNode(mkPath(baseDir, "nonexistent")).IsDirectory()
 	})
 }
 
 // -- Children --
 
-func testChildren(baseDir string) {
-	clog.Message("\n-- Children --\n")
-
+func testChildren(tr *sTestRun, baseDir string) {
 	var dirNode = newNode(mkPath(baseDir, "subdir"))
 	dirNode.UpdateChildList()
-	checkPASS("UpdateChildList populates children", len(dirNode.children) == 1)
-	checkPASS("correct child name",
+	tr.check("UpdateChildList populates children", len(dirNode.children) == 1)
+	tr.check("correct child name",
 		dirNode.children[0].info.Name() == "nested.txt")
 
-	checkPASS("GetChildByName found", dirNode.GetChildByName("nested.txt") != nil)
-	checkPASS("GetChildByName not found", dirNode.GetChildByName("nosuch.txt") == nil)
+	tr.check("GetChildByName found", dirNode.GetChildByName("nested.txt") != nil)
+	tr.check("GetChildByName not found", dirNode.GetChildByName("nosuch.txt") == nil)
 
 	var count = 0
 	dirNode.ForEachChild(func(child *SNode) {
 		count++
 	})
-	checkPASS("ForEachChild count", count == 1)
+	tr.check("ForEachChild count", count == 1)
 
 	var recCount = 0
 	dirNode.Recursive(func(child *SNode) {
 		recCount++
 	})
-	checkPASS("Recursive count", recCount == 1)
+	tr.check("Recursive count", recCount == 1)
 
 	var emptyNode = newNode(mkPath(baseDir, "empty"))
 	emptyNode.UpdateChildList()
-	checkPASS("empty directory", len(emptyNode.children) == 0)
+	tr.check("empty directory", len(emptyNode.children) == 0)
 
 	var fileNode = newNode(mkPath(baseDir, "regular.txt"))
 	fileNode.UpdateChildList()
-	checkPASS("file UpdateChildList is no-op", len(fileNode.children) == 0)
+	tr.check("file UpdateChildList is no-op", len(fileNode.children) == 0)
 
 	var noaccNode = newNode(mkPath(baseDir, "noaccess_dir"))
 	noaccNode.UpdateChildList()
-	checkPASS("noaccess dir (EACCES on ReadDir)", len(noaccNode.children) == 0)
+	tr.check("noaccess dir (EACCES on ReadDir)", len(noaccNode.children) == 0)
 
 	os.WriteFile(mkPath(baseDir, "subdir", "newfile.txt"), []byte("new"), 0644)
 	dirNode.UpdateChildList()
-	checkPASS("added child appears", len(dirNode.children) == 2)
+	tr.check("added child appears", len(dirNode.children) == 2)
 
 	os.Remove(mkPath(baseDir, "subdir", "newfile.txt"))
+	// dirNode.Recursive((*SNode).Update)
 	dirNode.CleanChildList()
-	checkPASS("CleanChildList removes deleted child", len(dirNode.children) == 1)
+	tr.check("CleanChildList removes deleted child", len(dirNode.children) == 1,
+		fmt.Sprintf("len=%d", len(dirNode.children)))
 
 	var deepNode = newNode(mkPath(baseDir, "deep"))
 	deepNode.UpdateChildList()
@@ -347,25 +350,23 @@ func testChildren(baseDir string) {
 	deepNode.Recursive(func(child *SNode) {
 		deepCount++
 	})
-	checkPASS("deep nesting Recursive count", deepCount == 6)
+	tr.check("deep nesting Recursive count", deepCount == 6)
 
-	checkPanic("UpdateChildList on nonexistent node (GetPath panics)", func() {
+	tr.expectPanic("UpdateChildList on nonexistent node (GetPath panics)", func() {
 		newNode(mkPath(baseDir, "nonexistent")).UpdateChildList()
 	})
 
 	var parentWithNilChild = newNode(mkPath(baseDir, "empty"))
 	var nilInfoChild = newNode(mkPath(baseDir, "symlink_broken"))
 	parentWithNilChild.children = append(parentWithNilChild.children, nilInfoChild)
-	checkPanic("GetChildByName on child with nil info", func() {
+	tr.expectPanic("GetChildByName on child with nil info", func() {
 		parentWithNilChild.GetChildByName("anything")
 	})
 }
 
 // -- Sort --
 
-func testSort(baseDir string) {
-	clog.Message("\n-- Sort --\n")
-
+func testSort(tr *sTestRun, baseDir string) {
 	var sortDirPath = mkPath(baseDir, "sort_test")
 	os.MkdirAll(sortDirPath, 0755)
 	defer os.RemoveAll(sortDirPath)
@@ -383,7 +384,7 @@ func testSort(baseDir string) {
 		names = append(names, c.info.Name())
 	}
 
-	checkPASS("files before dirs, alphabetical",
+	tr.check("files before dirs, alphabetical",
 		len(names) == 3 &&
 			names[0] == "a_file.txt" &&
 			names[1] == "z_file.txt" &&
@@ -393,69 +394,63 @@ func testSort(baseDir string) {
 	var goodChild = newNode(mkPath(baseDir, "regular.txt"))
 	var nilChild = newNode(mkPath(baseDir, "nonexistent"))
 	badSort.children = append(badSort.children, goodChild, nilChild)
-	checkPanic("SortChildren with nil-info child", func() {
+	tr.expectPanic("SortChildren with nil-info child", func() {
 		badSort.SortChildren()
 	})
 }
 
 // -- Update --
 
-func testUpdate(baseDir string) {
-	clog.Message("\n-- Update --\n")
-
+func testUpdate(tr *sTestRun, baseDir string) {
 	var n = newNode(mkPath(baseDir, "regular.txt"))
 	n.Update()
-	checkPASS("update valid file", n.info != nil && n.infoError == nil)
+	tr.check("update valid file", n.info != nil && n.infoError == nil,
+		fmt.Sprintf("info=%v, infoError=%v", n.info, n.infoError))
 
 	var tmpPath = mkPath(baseDir, "_tmp_update.txt")
 	os.WriteFile(tmpPath, []byte("x"), 0644)
 	var dn = newNode(tmpPath)
 	os.Remove(tmpPath)
 	dn.Update()
-	checkPASS("update after deletion",
-		dn.info == nil && errors.Is(dn.infoError, os.ErrNotExist))
+	tr.check("update after deletion",
+		dn.info == nil && errors.Is(dn.infoError, os.ErrNotExist),
+		fmt.Sprintf("info=%v, infoError=%v", dn.info, dn.infoError))
 
-	checkPanic("Update on nil-info node (GetPath panics)", func() {
+	tr.expectPanic("Update on nil-info node (GetPath panics)", func() {
 		newNode(mkPath(baseDir, "nonexistent")).Update()
 	})
 }
 
 // -- GetTimeSinceModify --
 
-func testTimeSinceModify(baseDir string) {
-	clog.Message("\n-- GetTimeSinceModify --\n")
+func testTimeSinceModify(tr *sTestRun, baseDir string) {
+	tr.check("valid file", newNode(mkPath(baseDir, "regular.txt")).GetTimeSinceModify() > 0)
 
-	checkPASS("valid file", newNode(mkPath(baseDir, "regular.txt")).GetTimeSinceModify() > 0)
-
-	checkPanic("nonexistent node", func() {
+	tr.expectPanic("nonexistent node", func() {
 		newNode(mkPath(baseDir, "nonexistent")).GetTimeSinceModify()
 	})
 }
 
 // -- String --
 
-func testString(baseDir string) {
-	clog.Message("\n-- String --\n")
-
-	checkPASS("valid file", strings.Contains(newNode(mkPath(baseDir, "regular.txt")).String(), "regular.txt"))
-	checkPASS("directory", strings.Contains(newNode(mkPath(baseDir, "subdir")).String(), "subdir"))
-	checkPanic("nonexistent node", func() {
+func testString(tr *sTestRun, baseDir string) {
+	tr.check("valid file", strings.Contains(newNode(mkPath(baseDir, "regular.txt")).String(), "regular.txt"))
+	tr.check("directory", strings.Contains(newNode(mkPath(baseDir, "subdir")).String(), "subdir"))
+	tr.expectPanic("nonexistent node", func() {
 		newNode(mkPath(baseDir, "nonexistent")).String()
 	})
 }
 
 // -- StringRecursive --
 
-func testStringRecursive(baseDir string) {
-	clog.Message("\n-- StringRecursive --\n")
-
+func testStringRecursive(tr *sTestRun, baseDir string) {
 	var dirNode = newNode(mkPath(baseDir, "subdir"))
 	dirNode.UpdateChildList()
 	clog.Infof("  subdir tree:\n%s\n", dirNode.StringRecursive())
-	checkPASS("subdir tree", strings.Contains(dirNode.StringRecursive(), "nested.txt"))
+	tr.check("subdir tree", strings.Contains(dirNode.StringRecursive(), "nested.txt"))
 
 	var deepNode = newNode(mkPath(baseDir, "deep"))
 	deepNode.UpdateChildList()
 	clog.Infof("  deep tree:\n%s\n", deepNode.StringRecursive())
-	checkPASS("deep tree", strings.Contains(deepNode.StringRecursive(), "leaf.txt"))
+	tr.check("deep tree", strings.Contains(deepNode.StringRecursive(), "leaf.txt"))
 }
