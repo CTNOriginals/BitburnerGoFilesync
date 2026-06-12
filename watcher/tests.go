@@ -128,12 +128,19 @@ func (tr *sTestRun) summary() {
 func runSection(section string, fn func(*sTestRun, string), grand *sTestRun, baseDir string) {
 	var tr sTestRun
 	tr.init(section)
-	clog.Messagef("\n-- %s --\n", section)
+	clog.Messagef("-- %s --\n", section)
+
+	defer func() {
+		if r := recover(); r != nil {
+			clog.Fatalf("PANIC  %s: %v", section, r)
+		}
+		tr.summary()
+		grand.passed += tr.passed
+		grand.failed += tr.failed
+		grand.panicked += tr.panicked
+	}()
+
 	fn(&tr, baseDir)
-	tr.summary()
-	grand.passed += tr.passed
-	grand.failed += tr.failed
-	grand.panicked += tr.panicked
 }
 
 // -- newNode --
@@ -339,7 +346,7 @@ func testChildren(tr *sTestRun, baseDir string) {
 	tr.check("added child appears", len(dirNode.children) == 2)
 
 	os.Remove(mkPath(baseDir, "subdir", "newfile.txt"))
-	// dirNode.Recursive((*SNode).Update)
+	dirNode.ForEachChild((*SNode).Update)
 	dirNode.CleanChildList()
 	tr.check("CleanChildList removes deleted child", len(dirNode.children) == 1,
 		fmt.Sprintf("len=%d", len(dirNode.children)))
