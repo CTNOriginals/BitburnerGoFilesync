@@ -114,13 +114,15 @@ func (this *SNode) SortChildren() {
 
 // CleanChildList removes all children that no longer exist.
 func (this *SNode) CleanChildList() {
-	for i := 0; i < len(this.children); i++ {
-		var child = this.children[i]
+	var clean = make([]*SNode, 0)
 
-		if !child.Exists() {
-			this.children = append(this.children[:i], this.children[i+1:]...)
+	for _, child := range this.children {
+		if child.Exists() {
+			clean = append(clean, child)
 		}
 	}
+
+	this.children = clean
 }
 
 // Looks for entries in this directory that do not yet
