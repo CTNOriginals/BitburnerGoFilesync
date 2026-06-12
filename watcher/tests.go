@@ -420,7 +420,7 @@ func testUpdate(tr *sTestRun, baseDir string) {
 	os.Remove(tmpPath)
 	dn.Update()
 	tr.check("update after deletion",
-		dn.info == nil && errors.Is(dn.infoError, os.ErrNotExist),
+		dn.Exists() == false,
 		fmt.Sprintf(
 			"info: %s\nerror: %s",
 			dn.String(),
