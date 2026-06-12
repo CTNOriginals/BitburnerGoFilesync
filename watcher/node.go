@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+type FPathFilter func(path string, entry os.DirEntry) bool
+
 /*
 SNode can hold info about a file or directory.
 It essentially is a wrapper for the os package.
@@ -41,11 +43,11 @@ type SNode struct {
 
 	children []*SNode
 
-	// TODO:
 	// A function that runs when a new child is discovered.
 	// The child will only be added to children if pathFilterFn returns true.
 	// All children of this node will inherit this function recursively.
-	pathFilterFn func(path string) bool
+	pathFilter      FPathFilter
+	pathFilterCache []string
 }
 
 // newNode Creates a new node from path.
@@ -61,7 +63,6 @@ func newNode(path string) *SNode {
 		dir:       filepath.Dir(path),
 		info:      info,
 		infoError: err,
-		children:  make([]*SNode, 0),
 	}
 
 	return &node
@@ -109,6 +110,11 @@ func (this SNode) GetChildByName(name string) *SNode {
 	}
 
 	return nil
+}
+
+func (this *SNode) SetPathFilter(filter FPathFilter) {
+	this.pathFilter = filter
+	this.pathFilterCache = make([]string, 0)
 }
 
 // Updates the info and infoError for just this node.
@@ -162,14 +168,22 @@ func (this *SNode) UpdateChildList() {
 	var entries, err = os.ReadDir(this.GetPath())
 
 	for _, entry := range entries {
-		var child = this.GetChildByName(entry.Name())
-
-		if child != nil {
+		if this.GetChildByName(entry.Name()) != nil {
 			continue
 		}
 
-		var node = newNode(filepath.Join(this.GetPath(), entry.Name()))
+		var newPath = filepath.Join(this.GetPath(), entry.Name())
 
+		if this.pathFilter != nil &&
+			(slices.Contains(this.pathFilterCache, newPath) ||
+				this.pathFilter(newPath, entry) == false) {
+			this.pathFilterCache = append(this.pathFilterCache, newPath)
+			continue
+		}
+
+		var node = newNode(newPath)
+
+		node.SetPathFilter(this.pathFilter)
 		node.UpdateChildList()
 
 		this.children = append(this.children, node)
