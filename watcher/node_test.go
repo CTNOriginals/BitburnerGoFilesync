@@ -548,7 +548,7 @@ func TestRecursive(t *testing.T) {
 	var names []string
 	node.Recursive(func(child *SNode) {
 		names = append(names, child.info.Name())
-	})
+	}, false)
 
 	if !contains(names, "a.txt") {
 		t.Errorf("expected 'a.txt' to be visited in recursive traversal, got %v", names)
@@ -566,7 +566,7 @@ func TestRecursive_EmptyDir(t *testing.T) {
 	var count int
 	node.Recursive(func(child *SNode) {
 		count++
-	})
+	}, false)
 
 	if count != 0 {
 		t.Errorf("expected 0 recursive calls for empty dir, got %d", count)

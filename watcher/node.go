@@ -190,11 +190,14 @@ func (this *SNode) ForEachChild(fn func(child *SNode)) {
 }
 
 // Calls fn for each child in children.
-// Does not call fn for itself.
-func (this *SNode) Recursive(fn func(child *SNode)) {
+func (this *SNode) Recursive(fn func(child *SNode), includeSelf bool) {
+	if includeSelf {
+		fn(this)
+	}
+
 	this.ForEachChild(func(child *SNode) {
 		fn(child)
-		child.Recursive(fn)
+		child.Recursive(fn, false)
 	})
 }
 
@@ -236,8 +239,6 @@ func (this SNode) StringRecursive() string {
 		return builder.String()
 	}
 
-	nameLines = append(nameLines, getName(this))
-
 	this.Recursive(func(child *SNode) {
 		var mode = child.info.Mode().String()
 		var time = child.info.ModTime().Round(time.Second).String()
@@ -252,7 +253,7 @@ func (this SNode) StringRecursive() string {
 		modeLines = append(modeLines, mode)
 		timeLines = append(timeLines, time)
 		nameLines = append(nameLines, getName(*child))
-	})
+	}, true)
 
 	var builder strings.Builder
 

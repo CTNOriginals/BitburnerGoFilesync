@@ -1,8 +1,6 @@
 package watcher
 
-import (
-	"github.com/CTNOriginals/BitburnerGoFilesync/config"
-)
+import "github.com/CTNOriginals/BitburnerGoFilesync/config"
 
 func TestWatcher() {
 	clog.Info("\n-- Watcher Tests --\n")
@@ -14,11 +12,7 @@ func TestWatcher() {
 		clog.Error(node.infoError)
 	}
 
-	node.UpdateChildList()
-	// node.Recursive((*SNode).UpdateChildList)
-	node.ForEachChild(func(child *SNode) {
-		child.Recursive((*SNode).UpdateChildList)
-	})
+	node.Recursive((*SNode).UpdateChildList, true)
 
 	clog.Infof("%s:\n%s", node.GetPath(), node.StringRecursive())
 }
