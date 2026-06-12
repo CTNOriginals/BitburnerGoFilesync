@@ -10,6 +10,25 @@ import (
 	"time"
 )
 
+/*
+SNode can hold info about a file or directory.
+It essentially is a wrapper for the os package.
+
+It does not keep track of itself or its children in any way,
+the stored information remains unchanged until [SNode.Update] is called.
+
+When creating a [newNode], the node is will not pupulate its children,
+it is instead expected that [SNode.UpdateChildList] is called after creation.
+The only exception to this is when [SNode.UpdateChildList] creates a [newNode] internally,
+it will also call [SNode.UpdateChildList] on this new node.
+
+Most functions do not recurse into children,
+for this to happen, you may use [SNode.ForEachChild] or [SNode.Recursive],
+and pass in the function that should be ran on children.
+Example:
+
+	SNode.Recursive((*SNode).Update)
+*/
 type SNode struct {
 	// The directory path that contains this node.
 	dir string
@@ -89,6 +108,7 @@ func (this SNode) GetChildByName(name string) *SNode {
 
 // Updates the info and infoError for just this node.
 // Does not handle any infoError that may be returned.
+// Does not Update any children.
 //
 // In case that the new info returns nil,
 // it will not override the existing info.
