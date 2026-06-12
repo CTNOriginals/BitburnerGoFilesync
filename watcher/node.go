@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type FPathFilter func(path string, entry os.DirEntry) bool
+type FPathFilter func(path string, info os.FileInfo) bool
 
 /*
 SNode can hold info about a file or directory.
@@ -173,10 +173,21 @@ func (this *SNode) UpdateChildList() {
 		}
 
 		var newPath = filepath.Join(this.GetPath(), entry.Name())
+		var entryInfo, err = entry.Info()
+
+		if err != nil {
+			clog.Errorf(
+				"Unexpected error while updating '%s'\n'%s' will be skipped\nError: %v",
+				this.GetPath(),
+				entry.Name(),
+				err,
+			)
+			continue
+		}
 
 		if this.pathFilter != nil &&
 			(slices.Contains(this.pathFilterCache, newPath) ||
-				this.pathFilter(newPath, entry) == false) {
+				this.pathFilter(newPath, entryInfo) == false) {
 			this.pathFilterCache = append(this.pathFilterCache, newPath)
 			continue
 		}

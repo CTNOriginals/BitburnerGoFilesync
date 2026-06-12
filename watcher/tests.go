@@ -31,8 +31,8 @@ func TestWatcher() {
 	clog.Debugf("inc list:\n%s", strings.Join(incList, "\n"))
 	clog.Debugf("exc list:\n%s", strings.Join(excList, "\n"))
 
-	node.pathFilter = func(path string, entry os.DirEntry) bool {
-		if entry.IsDir() {
+	node.pathFilter = func(path string, info os.FileInfo) bool {
+		if info.IsDir() {
 			return true
 		}
 
