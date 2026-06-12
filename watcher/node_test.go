@@ -411,7 +411,110 @@ func TestCleanChildList(t *testing.T) {
 	node.CleanChildListFunc((*SNode).Exists)
 
 	if len(node.children) != origCount {
-		t.Errorf("expected %d children after CleanChildList, got %d", origCount, len(node.children))
+		t.Errorf("expected %d children after CleanChildListFunc, got %d", origCount, len(node.children))
+	}
+}
+
+func TestCleanChildListFunc_Custom(t *testing.T) {
+	dir := setupTestDir(t)
+	node := newNode(dir)
+	node.children = []*SNode{
+		newNode(filepath.Join(dir, "file.txt")),
+		newNode(filepath.Join(dir, "subdir")),
+		newNode(filepath.Join(dir, ".hidden")),
+	}
+
+	node.CleanChildListFunc(func(child *SNode) bool {
+		return !child.info.IsDir()
+	})
+
+	if len(node.children) != 2 {
+		t.Errorf("expected 2 children after removing dirs, got %d", len(node.children))
+	}
+	for _, child := range node.children {
+		if child.info.IsDir() {
+			t.Errorf("expected no directories after CleanChildListFunc")
+		}
+	}
+}
+
+// --- SetPathFilter / ApplyPathFilter ---
+
+func TestSetPathFilter(t *testing.T) {
+	dir := setupTestDir(t)
+	node := newNode(filepath.Join(dir, "subdir"))
+
+	filter := func(path string, info os.FileInfo) bool {
+		return strings.HasSuffix(path, ".txt")
+	}
+	node.SetPathFilter(filter)
+
+	if node.pathFilter == nil {
+		t.Error("expected pathFilter to be set")
+	}
+	if node.pathFilterCache == nil {
+		t.Fatal("expected pathFilterCache to be initialized")
+	}
+	if len(node.pathFilterCache) != 0 {
+		t.Errorf("expected empty cache after SetPathFilter, got %d entries", len(node.pathFilterCache))
+	}
+}
+
+func TestApplyPathFilter(t *testing.T) {
+	dir := setupTestDir(t)
+	node := newNode(dir)
+	node.children = []*SNode{
+		newNode(filepath.Join(dir, "file.txt")),
+		newNode(filepath.Join(dir, "subdir")),
+	}
+
+	node.SetPathFilter(func(path string, info os.FileInfo) bool {
+		return !info.IsDir()
+	})
+
+	node.ApplyPathFilter()
+
+	if len(node.children) != 1 {
+		t.Fatalf("expected 1 child after filter, got %d", len(node.children))
+	}
+	if node.children[0].info.Name() != "file.txt" {
+		t.Errorf("expected remaining child to be 'file.txt', got %q", node.children[0].info.Name())
+	}
+}
+
+func TestApplyPathFilter_NilFilter(t *testing.T) {
+	dir := setupTestDir(t)
+	node := newNode(dir)
+	node.children = []*SNode{
+		newNode(filepath.Join(dir, "file.txt")),
+		newNode(filepath.Join(dir, "subdir")),
+	}
+
+	node.ApplyPathFilter()
+
+	if len(node.children) != 2 {
+		t.Errorf("expected all 2 children to remain with nil filter, got %d", len(node.children))
+	}
+}
+
+func TestApplyPathFilter_CachesRejected(t *testing.T) {
+	dir := setupTestDir(t)
+	node := newNode(dir)
+	node.children = []*SNode{
+		newNode(filepath.Join(dir, "file.txt")),
+	}
+
+	node.SetPathFilter(func(path string, info os.FileInfo) bool {
+		return false
+	})
+
+	node.ApplyPathFilter()
+
+	if len(node.pathFilterCache) != 1 {
+		t.Errorf("expected 1 path in cache after rejection, got %d", len(node.pathFilterCache))
+	}
+	if len(node.children) != 0 {
+		t.Errorf("expected 0 children after all rejected, got %d", len(node.children))
 	}
 }
 
@@ -470,6 +573,53 @@ func TestUpdateChildList_EmptyDir(t *testing.T) {
 
 	if len(node.children) != 0 {
 		t.Errorf("expected 0 children for empty dir, got %d", len(node.children))
+	}
+}
+
+func TestUpdateChildList_WithPathFilter(t *testing.T) {
+	dir := setupTestDir(t)
+	subdir := filepath.Join(dir, "subdir")
+	node := newNode(subdir)
+
+	node.SetPathFilter(func(path string, info os.FileInfo) bool {
+		return strings.HasSuffix(path, ".txt")
+	})
+
+	node.UpdateChildList()
+
+	if child := node.GetChildByName("a.txt"); child == nil {
+		t.Error("expected 'a.txt' to pass filter and be added as child")
+	}
+	if child := node.GetChildByName("empty"); child != nil {
+		t.Error("expected 'empty' to be rejected by filter")
+	}
+}
+
+func TestUpdateChildList_WithPathFilter_CacheReuse(t *testing.T) {
+	dir := setupTestDir(t)
+	subdir := filepath.Join(dir, "subdir")
+	node := newNode(subdir)
+
+	var callCount int
+	node.SetPathFilter(func(path string, info os.FileInfo) bool {
+		callCount++
+		return false
+	})
+
+	node.UpdateChildList()
+
+	callCount = 0
+
+	mustWriteFile(t, filepath.Join(subdir, "newfile.txt"), []byte("new"), 0644)
+
+	node.UpdateChildList()
+
+	if callCount != 1 {
+		t.Errorf("expected filter called 1 time (for newfile.txt only), got %d", callCount)
+	}
+
+	if !contains(node.pathFilterCache, filepath.Join(subdir, "newfile.txt")) {
+		t.Error("expected newfile.txt to be in cache after rejection")
 	}
 }
 
@@ -570,6 +720,30 @@ func TestRecursive_EmptyDir(t *testing.T) {
 
 	if count != 0 {
 		t.Errorf("expected 0 recursive calls for empty dir, got %d", count)
+	}
+}
+
+func TestRecursive_IncludeSelf(t *testing.T) {
+	dir := setupTestDir(t)
+	node := newNode(filepath.Join(dir, "subdir"))
+	node.UpdateChildList()
+
+	var names []string
+	node.Recursive(func(n *SNode) {
+		names = append(names, n.info.Name())
+	}, true)
+
+	if !contains(names, "subdir") {
+		t.Errorf("expected 'subdir' (self) to be visited with includeSelf=true, got %v", names)
+	}
+	if !contains(names, "a.txt") {
+		t.Errorf("expected 'a.txt' to be visited, got %v", names)
+	}
+	if !contains(names, "empty") {
+		t.Errorf("expected 'empty' to be visited, got %v", names)
+	}
+	if len(names) != 3 {
+		t.Errorf("expected 3 total visited nodes, got %d: %v", len(names), names)
 	}
 }
 
