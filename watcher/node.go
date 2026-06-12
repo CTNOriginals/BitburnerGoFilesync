@@ -198,11 +198,6 @@ func (this *SNode) Recursive(fn func(child *SNode)) {
 	})
 }
 
-func (this SNode) GetTimeSinceModify() time.Duration {
-	var info, _ = this.getInfo()
-	return time.Since(info.ModTime())
-}
-
 func (this SNode) String() string {
 	return fmt.Sprintf(
 		"%s %s %s",
@@ -214,7 +209,7 @@ func (this SNode) String() string {
 
 func (this SNode) StringRecursive() string {
 	var modeLines = []string{this.info.Mode().String()}
-	var timeLines = []string{this.GetTimeSinceModify().Round(time.Second).String()}
+	var timeLines = []string{this.info.ModTime().Round(time.Second).String()}
 	var nameLines = []string{}
 
 	var modeLineSize = len(modeLines[0])
@@ -245,7 +240,7 @@ func (this SNode) StringRecursive() string {
 
 	this.Recursive(func(child *SNode) {
 		var mode = child.info.Mode().String()
-		var time = child.GetTimeSinceModify().Round(time.Second).String()
+		var time = child.info.ModTime().Round(time.Second).String()
 
 		if len(mode) > modeLineSize {
 			modeLineSize = len(mode)

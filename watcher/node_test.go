@@ -573,25 +573,6 @@ func TestRecursive_EmptyDir(t *testing.T) {
 	}
 }
 
-// --- GetTimeSinceModify ---
-
-func TestGetTimeSinceModify(t *testing.T) {
-	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "file.txt"))
-
-	dur := node.GetTimeSinceModify()
-	if dur < 0 {
-		t.Errorf("expected non-negative duration, got %v", dur)
-	}
-}
-
-func TestGetTimeSinceModify_NonExistent(t *testing.T) {
-	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "does_not_exist"))
-
-	assertPanic(t, func() { node.GetTimeSinceModify() })
-}
-
 // --- String ---
 
 func TestString(t *testing.T) {
