@@ -14,7 +14,10 @@ func TestWatcher() {
 	clog.Info("\n-- Watcher Tests --\n")
 
 	Initialize()
+	StartScanner()
+}
 
+func testFilter() {
 	var baseDir = config.Values.Directory
 	var entry = newEntry(baseDir)
 	// var entry = newEntry(constants.WorkindDirectory)

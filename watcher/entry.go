@@ -94,7 +94,16 @@ func (this SEntry) Exists() bool {
 }
 
 func (this SEntry) IsModified() bool {
-	var info, _ = this.getInfo()
+	var info, err = this.getInfo()
+
+	if err != nil {
+		if os.IsNotExist(err) {
+			return true
+		}
+
+		clog.Fatalf("An unknown error occured while trying to get file info, file: %s\n%v", this.GetPath(), err)
+	}
+
 	return this.info.ModTime() != info.ModTime()
 }
 
@@ -107,6 +116,18 @@ func (this SEntry) GetChildDirectories() []*SEntry {
 
 	for _, child := range this.children {
 		if child.IsDirectory() {
+			dirs = append(dirs, child)
+		}
+	}
+
+	return dirs
+}
+
+func (this SEntry) GetChildFiles() []*SEntry {
+	var dirs = make([]*SEntry, 0)
+
+	for _, child := range this.children {
+		if !child.IsDirectory() {
 			dirs = append(dirs, child)
 		}
 	}
@@ -275,7 +296,7 @@ func (this SEntry) String() string {
 
 func (this SEntry) StringRecursive() string {
 	var modeLines = []string{this.info.Mode().String()}
-	var timeLines = []string{this.info.ModTime().Round(time.Second).String()}
+	var timeLines = []string{time.Since(this.info.ModTime()).Round(time.Second).String()}
 	var nameLines = []string{}
 
 	var modeLineSize = len(modeLines[0])
@@ -304,7 +325,7 @@ func (this SEntry) StringRecursive() string {
 
 	this.Recursive(func(child *SEntry) {
 		var mode = child.info.Mode().String()
-		var time = child.info.ModTime().Round(time.Second).String()
+		var time = time.Since(child.info.ModTime()).Round(time.Second).String()
 
 		if len(mode) > modeLineSize {
 			modeLineSize = len(mode)
