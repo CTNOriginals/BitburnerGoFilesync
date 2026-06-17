@@ -14,11 +14,11 @@ func TestWatcher() {
 	clog.Info("\n-- Watcher Tests --\n")
 
 	var baseDir = config.Values.Directory
-	var node = newNode(baseDir)
-	// var node = newNode(constants.WorkindDirectory)
+	var entry = newEntry(baseDir)
+	// var entry = newEntry(constants.WorkindDirectory)
 
-	if node.infoError != nil {
-		clog.Error(node.infoError)
+	if entry.infoError != nil {
+		clog.Error(entry.infoError)
 	}
 
 	var inc = filepath.Join(baseDir, "**/*.ext")
@@ -31,8 +31,8 @@ func TestWatcher() {
 	clog.Debugf("inc list:\n%s", strings.Join(incList, "\n"))
 	clog.Debugf("exc list:\n%s", strings.Join(excList, "\n"))
 
-	node.Recursive((*SNode).UpdateChildList, true)
-	clog.Infof("%s:\n%s", node.GetPath(), node.StringRecursive())
+	entry.Recursive((*SEntry).UpdateChildList, true)
+	clog.Infof("%s:\n%s", entry.GetPath(), entry.StringRecursive())
 
 	var filter = func(path string, info os.FileInfo) bool {
 		if info.IsDir() {
@@ -54,10 +54,10 @@ func TestWatcher() {
 		return true
 	}
 
-	node.Recursive(func(child *SNode) {
+	entry.Recursive(func(child *SEntry) {
 		child.SetPathFilter(filter)
 	}, true)
 
-	node.Recursive((*SNode).ApplyPathFilter, true)
-	clog.Infof("%s:\n%s", node.GetPath(), node.StringRecursive())
+	entry.Recursive((*SEntry).ApplyPathFilter, true)
+	clog.Infof("%s:\n%s", entry.GetPath(), entry.StringRecursive())
 }

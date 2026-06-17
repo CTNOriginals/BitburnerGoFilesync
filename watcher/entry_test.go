@@ -67,65 +67,65 @@ func assertPanic(t *testing.T, fn func()) {
 	fn()
 }
 
-// --- newNode ---
+// --- newEntry ---
 
 func TestNewNode_File(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "file.txt"))
+	entry := newEntry(filepath.Join(dir, "file.txt"))
 
-	if node.info == nil {
+	if entry.info == nil {
 		t.Fatal("expected non-nil info for existing file")
 	}
-	if node.infoError != nil {
-		t.Fatalf("expected nil error, got %v", node.infoError)
+	if entry.infoError != nil {
+		t.Fatalf("expected nil error, got %v", entry.infoError)
 	}
-	if node.info.Name() != "file.txt" {
-		t.Errorf("expected name 'file.txt', got %q", node.info.Name())
+	if entry.info.Name() != "file.txt" {
+		t.Errorf("expected name 'file.txt', got %q", entry.info.Name())
 	}
 }
 
 func TestNewNode_Directory(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir"))
+	entry := newEntry(filepath.Join(dir, "subdir"))
 
-	if node.info == nil {
+	if entry.info == nil {
 		t.Fatal("expected non-nil info for existing directory")
 	}
-	if node.infoError != nil {
-		t.Fatalf("expected nil error, got %v", node.infoError)
+	if entry.infoError != nil {
+		t.Fatalf("expected nil error, got %v", entry.infoError)
 	}
-	if !node.info.IsDir() {
+	if !entry.info.IsDir() {
 		t.Error("expected IsDir to be true")
 	}
 }
 
 func TestNewNode_NonExistent(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "does_not_exist"))
+	entry := newEntry(filepath.Join(dir, "does_not_exist"))
 
-	if node.info != nil {
+	if entry.info != nil {
 		t.Error("expected nil info for non-existent path")
 	}
-	if node.infoError == nil {
+	if entry.infoError == nil {
 		t.Fatal("expected error for non-existent path")
 	}
-	if _, ok := node.infoError.(*os.PathError); !ok {
-		t.Errorf("expected *os.PathError, got %T", node.infoError)
+	if _, ok := entry.infoError.(*os.PathError); !ok {
+		t.Errorf("expected *os.PathError, got %T", entry.infoError)
 	}
-	if !os.IsNotExist(node.infoError) {
-		t.Errorf("expected not-exist error, got %v", node.infoError)
+	if !os.IsNotExist(entry.infoError) {
+		t.Errorf("expected not-exist error, got %v", entry.infoError)
 	}
 }
 
 func TestNewNode_NotADirectory(t *testing.T) {
 	dir := setupTestDir(t)
 	path := filepath.Join(dir, "notdir_test", "child")
-	node := newNode(path)
+	entry := newEntry(path)
 
-	if node.info != nil {
+	if entry.info != nil {
 		t.Error("expected nil info for ENOTDIR path")
 	}
-	if node.infoError == nil {
+	if entry.infoError == nil {
 		t.Fatal("expected error for ENOTDIR path")
 	}
 }
@@ -137,20 +137,20 @@ func TestNewNode_PermissionDenied(t *testing.T) {
 	mustChmod(t, noperm, 0000)
 
 	path := filepath.Join(noperm, "secret.txt")
-	node := newNode(path)
+	entry := newEntry(path)
 
-	if node.info != nil {
+	if entry.info != nil {
 		t.Error("expected nil info for permission-denied path")
 	}
-	if node.infoError == nil {
+	if entry.infoError == nil {
 		t.Fatal("expected error for permission-denied path")
 	}
-	if pathErr, ok := node.infoError.(*os.PathError); ok {
+	if pathErr, ok := entry.infoError.(*os.PathError); ok {
 		if !os.IsPermission(pathErr) {
 			t.Errorf("expected permission error, got %v", pathErr.Err)
 		}
 	} else {
-		t.Errorf("expected *os.PathError, got %T", node.infoError)
+		t.Errorf("expected *os.PathError, got %T", entry.infoError)
 	}
 }
 
@@ -160,12 +160,12 @@ func TestNewNode_SymlinkLoop(t *testing.T) {
 	}
 	dir := setupTestDir(t)
 	path := filepath.Join(dir, "chain", "link1")
-	node := newNode(path)
+	entry := newEntry(path)
 
-	if node.info != nil {
+	if entry.info != nil {
 		t.Error("expected nil info for symlink loop path")
 	}
-	if node.infoError == nil {
+	if entry.infoError == nil {
 		t.Fatal("expected error for symlink loop path")
 	}
 }
@@ -176,12 +176,12 @@ func TestNewNode_PathTooLong(t *testing.T) {
 	for len(longPath) < 4096 {
 		longPath = filepath.Join(longPath, "a")
 	}
-	node := newNode(longPath)
+	entry := newEntry(longPath)
 
-	if node.info != nil {
+	if entry.info != nil {
 		t.Error("expected nil info for path-too-long")
 	}
-	if node.infoError == nil {
+	if entry.infoError == nil {
 		t.Fatal("expected error for path-too-long")
 	}
 }
@@ -190,18 +190,18 @@ func TestNewNode_PathTooLong(t *testing.T) {
 
 func TestExists_Existing(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "file.txt"))
+	entry := newEntry(filepath.Join(dir, "file.txt"))
 
-	if !node.Exists() {
+	if !entry.Exists() {
 		t.Error("expected Exists() to be true for existing file")
 	}
 }
 
 func TestExists_NonExistent(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "does_not_exist"))
+	entry := newEntry(filepath.Join(dir, "does_not_exist"))
 
-	if node.Exists() {
+	if entry.Exists() {
 		t.Error("expected Exists() to be false for non-existent path")
 	}
 }
@@ -210,55 +210,55 @@ func TestExists_NonExistent(t *testing.T) {
 
 func TestIsDirectory_File(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "file.txt"))
+	entry := newEntry(filepath.Join(dir, "file.txt"))
 
-	if node.IsDirectory() {
+	if entry.IsDirectory() {
 		t.Error("expected IsDirectory to be false for a file")
 	}
 }
 
 func TestIsDirectory_Directory(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir"))
+	entry := newEntry(filepath.Join(dir, "subdir"))
 
-	if !node.IsDirectory() {
+	if !entry.IsDirectory() {
 		t.Error("expected IsDirectory to be true for a directory")
 	}
 }
 
 func TestIsDirectory_NonExistent(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "does_not_exist"))
+	entry := newEntry(filepath.Join(dir, "does_not_exist"))
 
-	assertPanic(t, func() { node.IsDirectory() })
+	assertPanic(t, func() { entry.IsDirectory() })
 }
 
 // --- GetPath ---
 
 func TestGetPath(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "file.txt"))
+	entry := newEntry(filepath.Join(dir, "file.txt"))
 
 	expected := filepath.Join(dir, "file.txt")
-	if got := node.GetPath(); got != expected {
+	if got := entry.GetPath(); got != expected {
 		t.Errorf("expected %q, got %q", expected, got)
 	}
 }
 
 func TestGetPath_NonExistent(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "does_not_exist"))
+	entry := newEntry(filepath.Join(dir, "does_not_exist"))
 
-	assertPanic(t, func() { node.GetPath() })
+	assertPanic(t, func() { entry.GetPath() })
 }
 
 // --- IsModified ---
 
 func TestIsModified_Unchanged(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "file.txt"))
+	entry := newEntry(filepath.Join(dir, "file.txt"))
 
-	if node.IsModified() {
+	if entry.IsModified() {
 		t.Error("expected IsModified to be false for unchanged file")
 	}
 }
@@ -266,79 +266,79 @@ func TestIsModified_Unchanged(t *testing.T) {
 func TestIsModified_Changed(t *testing.T) {
 	dir := setupTestDir(t)
 	path := filepath.Join(dir, "file.txt")
-	node := newNode(path)
+	entry := newEntry(path)
 
 	time.Sleep(10 * time.Millisecond)
 
 	mustWriteFile(t, path, []byte("modified"), 0644)
 
-	if !node.IsModified() {
+	if !entry.IsModified() {
 		t.Error("expected IsModified to be true after file modification")
 	}
 }
 
 func TestIsModified_NonExistent(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "does_not_exist"))
+	entry := newEntry(filepath.Join(dir, "does_not_exist"))
 
-	assertPanic(t, func() { node.IsModified() })
+	assertPanic(t, func() { entry.IsModified() })
 }
 
 // --- Update ---
 
 func TestUpdate_NoChange(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "file.txt"))
+	entry := newEntry(filepath.Join(dir, "file.txt"))
 
-	node.Update()
+	entry.Update()
 
-	if node.infoError != nil {
-		t.Errorf("expected nil infoError after Update on unchanged file, got %v", node.infoError)
+	if entry.infoError != nil {
+		t.Errorf("expected nil infoError after Update on unchanged file, got %v", entry.infoError)
 	}
 }
 
 func TestUpdate_AfterModify(t *testing.T) {
 	dir := setupTestDir(t)
 	path := filepath.Join(dir, "file.txt")
-	node := newNode(path)
+	entry := newEntry(path)
 
-	origModTime := node.info.ModTime()
+	origModTime := entry.info.ModTime()
 
 	time.Sleep(10 * time.Millisecond)
 	mustWriteFile(t, path, []byte("modified"), 0644)
 
-	node.Update()
+	entry.Update()
 
-	if node.info.ModTime() == origModTime {
+	if entry.info.ModTime() == origModTime {
 		t.Error("expected ModTime to change after Update")
 	}
-	if node.infoError != nil {
-		t.Errorf("expected nil infoError, got %v", node.infoError)
+	if entry.infoError != nil {
+		t.Errorf("expected nil infoError, got %v", entry.infoError)
 	}
 }
 
 func TestUpdate_AfterDelete(t *testing.T) {
 	dir := setupTestDir(t)
 	path := filepath.Join(dir, "file.txt")
-	node := newNode(path)
+	entry := newEntry(path)
 
-	origName := node.info.Name()
+	origName := entry.info.Name()
 
 	os.Remove(path)
 
-	node.Update()
+	entry.Update()
 
-	if node.infoError == nil {
+	if entry.infoError == nil {
 		t.Error("expected infoError after file deletion")
 	}
-	if !os.IsNotExist(node.infoError) {
-		t.Errorf("expected not-exist error, got %v", node.infoError)
+	if !os.IsNotExist(entry.infoError) {
+		t.Errorf("expected not-exist error, got %v", entry.infoError)
 	}
-	if node.info == nil {
+	if entry.info == nil {
 		t.Fatal("expected info to be preserved after Update with error")
 	}
-	if node.info.Name() != origName {
-		t.Errorf("expected name %q to be preserved, got %q", origName, node.info.Name())
+	if entry.info.Name() != origName {
+		t.Errorf("expected name %q to be preserved, got %q", origName, entry.info.Name())
 	}
 }
 
@@ -346,23 +346,23 @@ func TestUpdate_PermissionDenied(t *testing.T) {
 	dir := setupTestDir(t)
 	noperm := filepath.Join(dir, "noperm")
 	path := filepath.Join(noperm, "secret.txt")
-	node := newNode(path)
+	entry := newEntry(path)
 
-	origName := node.info.Name()
+	origName := entry.info.Name()
 
 	t.Cleanup(func() { os.Chmod(noperm, 0755) })
 	mustChmod(t, noperm, 0000)
 
-	node.Update()
+	entry.Update()
 
-	if node.infoError == nil {
+	if entry.infoError == nil {
 		t.Error("expected infoError after permission denied")
 	}
-	if node.info == nil {
+	if entry.info == nil {
 		t.Fatal("expected info to be preserved")
 	}
-	if node.info.Name() != origName {
-		t.Errorf("expected name %q to be preserved, got %q", origName, node.info.Name())
+	if entry.info.Name() != origName {
+		t.Errorf("expected name %q to be preserved, got %q", origName, entry.info.Name())
 	}
 }
 
@@ -370,24 +370,24 @@ func TestUpdate_PermissionDenied(t *testing.T) {
 
 func TestSortChildren(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(dir)
-	node.children = []*SNode{
-		newNode(filepath.Join(dir, "subdir")),
-		newNode(filepath.Join(dir, "file.txt")),
-		newNode(filepath.Join(dir, ".hidden")),
+	entry := newEntry(dir)
+	entry.children = []*SEntry{
+		newEntry(filepath.Join(dir, "subdir")),
+		newEntry(filepath.Join(dir, "file.txt")),
+		newEntry(filepath.Join(dir, ".hidden")),
 	}
 
-	node.SortChildren()
+	entry.SortChildren()
 
-	if len(node.children) != 3 {
-		t.Fatalf("expected 3 children, got %d", len(node.children))
+	if len(entry.children) != 3 {
+		t.Fatalf("expected 3 children, got %d", len(entry.children))
 	}
 
-	if node.children[0].info.IsDir() {
+	if entry.children[0].info.IsDir() {
 		t.Error("expected first child after sort to be a file (lower mode value)")
 	}
 
-	if !node.children[len(node.children)-1].info.IsDir() {
+	if !entry.children[len(entry.children)-1].info.IsDir() {
 		t.Error("expected last child after sort to be a directory (higher mode value)")
 	}
 }
@@ -396,42 +396,42 @@ func TestSortChildren(t *testing.T) {
 
 func TestCleanChildList(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir"))
-	node.UpdateChildList()
+	entry := newEntry(filepath.Join(dir, "subdir"))
+	entry.UpdateChildList()
 
-	origCount := len(node.children)
+	origCount := len(entry.children)
 
-	nonExistentChild := newNode(filepath.Join(dir, "subdir", "nonexistent_cleanup_test"))
-	node.children = append(node.children, nonExistentChild)
+	nonExistentChild := newEntry(filepath.Join(dir, "subdir", "nonexistent_cleanup_test"))
+	entry.children = append(entry.children, nonExistentChild)
 
-	if len(node.children) != origCount+1 {
-		t.Fatalf("expected %d children, got %d", origCount+1, len(node.children))
+	if len(entry.children) != origCount+1 {
+		t.Fatalf("expected %d children, got %d", origCount+1, len(entry.children))
 	}
 
-	node.CleanChildListFunc((*SNode).Exists)
+	entry.CleanChildListFunc((*SEntry).Exists)
 
-	if len(node.children) != origCount {
-		t.Errorf("expected %d children after CleanChildListFunc, got %d", origCount, len(node.children))
+	if len(entry.children) != origCount {
+		t.Errorf("expected %d children after CleanChildListFunc, got %d", origCount, len(entry.children))
 	}
 }
 
 func TestCleanChildListFunc_Custom(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(dir)
-	node.children = []*SNode{
-		newNode(filepath.Join(dir, "file.txt")),
-		newNode(filepath.Join(dir, "subdir")),
-		newNode(filepath.Join(dir, ".hidden")),
+	entry := newEntry(dir)
+	entry.children = []*SEntry{
+		newEntry(filepath.Join(dir, "file.txt")),
+		newEntry(filepath.Join(dir, "subdir")),
+		newEntry(filepath.Join(dir, ".hidden")),
 	}
 
-	node.CleanChildListFunc(func(child *SNode) bool {
+	entry.CleanChildListFunc(func(child *SEntry) bool {
 		return !child.info.IsDir()
 	})
 
-	if len(node.children) != 2 {
-		t.Errorf("expected 2 children after removing dirs, got %d", len(node.children))
+	if len(entry.children) != 2 {
+		t.Errorf("expected 2 children after removing dirs, got %d", len(entry.children))
 	}
-	for _, child := range node.children {
+	for _, child := range entry.children {
 		if child.info.IsDir() {
 			t.Errorf("expected no directories after CleanChildListFunc")
 		}
@@ -442,79 +442,79 @@ func TestCleanChildListFunc_Custom(t *testing.T) {
 
 func TestSetPathFilter(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir"))
+	entry := newEntry(filepath.Join(dir, "subdir"))
 
 	filter := func(path string, info os.FileInfo) bool {
 		return strings.HasSuffix(path, ".txt")
 	}
-	node.SetPathFilter(filter)
+	entry.SetPathFilter(filter)
 
-	if node.pathFilter == nil {
+	if entry.pathFilter == nil {
 		t.Error("expected pathFilter to be set")
 	}
-	if node.pathFilterCache == nil {
+	if entry.pathFilterCache == nil {
 		t.Fatal("expected pathFilterCache to be initialized")
 	}
-	if len(node.pathFilterCache) != 0 {
-		t.Errorf("expected empty cache after SetPathFilter, got %d entries", len(node.pathFilterCache))
+	if len(entry.pathFilterCache) != 0 {
+		t.Errorf("expected empty cache after SetPathFilter, got %d entries", len(entry.pathFilterCache))
 	}
 }
 
 func TestApplyPathFilter(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(dir)
-	node.children = []*SNode{
-		newNode(filepath.Join(dir, "file.txt")),
-		newNode(filepath.Join(dir, "subdir")),
+	entry := newEntry(dir)
+	entry.children = []*SEntry{
+		newEntry(filepath.Join(dir, "file.txt")),
+		newEntry(filepath.Join(dir, "subdir")),
 	}
 
-	node.SetPathFilter(func(path string, info os.FileInfo) bool {
+	entry.SetPathFilter(func(path string, info os.FileInfo) bool {
 		return !info.IsDir()
 	})
 
-	node.ApplyPathFilter()
+	entry.ApplyPathFilter()
 
-	if len(node.children) != 1 {
-		t.Fatalf("expected 1 child after filter, got %d", len(node.children))
+	if len(entry.children) != 1 {
+		t.Fatalf("expected 1 child after filter, got %d", len(entry.children))
 	}
-	if node.children[0].info.Name() != "file.txt" {
-		t.Errorf("expected remaining child to be 'file.txt', got %q", node.children[0].info.Name())
+	if entry.children[0].info.Name() != "file.txt" {
+		t.Errorf("expected remaining child to be 'file.txt', got %q", entry.children[0].info.Name())
 	}
 }
 
 func TestApplyPathFilter_NilFilter(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(dir)
-	node.children = []*SNode{
-		newNode(filepath.Join(dir, "file.txt")),
-		newNode(filepath.Join(dir, "subdir")),
+	entry := newEntry(dir)
+	entry.children = []*SEntry{
+		newEntry(filepath.Join(dir, "file.txt")),
+		newEntry(filepath.Join(dir, "subdir")),
 	}
 
-	node.ApplyPathFilter()
+	entry.ApplyPathFilter()
 
-	if len(node.children) != 2 {
-		t.Errorf("expected all 2 children to remain with nil filter, got %d", len(node.children))
+	if len(entry.children) != 2 {
+		t.Errorf("expected all 2 children to remain with nil filter, got %d", len(entry.children))
 	}
 }
 
 func TestApplyPathFilter_CachesRejected(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(dir)
-	node.children = []*SNode{
-		newNode(filepath.Join(dir, "file.txt")),
+	entry := newEntry(dir)
+	entry.children = []*SEntry{
+		newEntry(filepath.Join(dir, "file.txt")),
 	}
 
-	node.SetPathFilter(func(path string, info os.FileInfo) bool {
+	entry.SetPathFilter(func(path string, info os.FileInfo) bool {
 		return false
 	})
 
-	node.ApplyPathFilter()
+	entry.ApplyPathFilter()
 
-	if len(node.pathFilterCache) != 1 {
-		t.Errorf("expected 1 path in cache after rejection, got %d", len(node.pathFilterCache))
+	if len(entry.pathFilterCache) != 1 {
+		t.Errorf("expected 1 path in cache after rejection, got %d", len(entry.pathFilterCache))
 	}
-	if len(node.children) != 0 {
-		t.Errorf("expected 0 children after all rejected, got %d", len(node.children))
+	if len(entry.children) != 0 {
+		t.Errorf("expected 0 children after all rejected, got %d", len(entry.children))
 	}
 }
 
@@ -523,74 +523,74 @@ func TestApplyPathFilter_CachesRejected(t *testing.T) {
 func TestUpdateChildList_NewEntries(t *testing.T) {
 	dir := setupTestDir(t)
 	subdir := filepath.Join(dir, "subdir")
-	node := newNode(subdir)
-	node.UpdateChildList()
+	entry := newEntry(subdir)
+	entry.UpdateChildList()
 
 	mustWriteFile(t, filepath.Join(subdir, "newfile.txt"), []byte("new"), 0644)
 
-	node.UpdateChildList()
+	entry.UpdateChildList()
 
-	if child := node.GetChildByName("newfile.txt"); child == nil {
+	if child := entry.GetChildByName("newfile.txt"); child == nil {
 		t.Error("expected new child to be found after UpdateChildList")
 	}
 }
 
 func TestUpdateChildList_OnFile(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "file.txt"))
+	entry := newEntry(filepath.Join(dir, "file.txt"))
 
-	node.UpdateChildList()
+	entry.UpdateChildList()
 
-	if len(node.children) != 0 {
-		t.Errorf("expected 0 children for file node, got %d", len(node.children))
+	if len(entry.children) != 0 {
+		t.Errorf("expected 0 children for file entry, got %d", len(entry.children))
 	}
 }
 
 func TestUpdateChildList_PermissionDenied(t *testing.T) {
 	dir := setupTestDir(t)
 	path := filepath.Join(dir, "subdir")
-	node := newNode(path)
-	node.UpdateChildList()
+	entry := newEntry(path)
+	entry.UpdateChildList()
 
-	if len(node.children) != 2 {
-		t.Fatalf("expected 2 children initially, got %d", len(node.children))
+	if len(entry.children) != 2 {
+		t.Fatalf("expected 2 children initially, got %d", len(entry.children))
 	}
 
 	t.Cleanup(func() { os.Chmod(path, 0755) })
 	mustChmod(t, path, 0000)
 
-	node.UpdateChildList()
+	entry.UpdateChildList()
 
-	if len(node.children) != 2 {
-		t.Errorf("expected 2 children preserved after permission error, got %d", len(node.children))
+	if len(entry.children) != 2 {
+		t.Errorf("expected 2 children preserved after permission error, got %d", len(entry.children))
 	}
 }
 
 func TestUpdateChildList_EmptyDir(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir", "empty"))
-	node.UpdateChildList()
+	entry := newEntry(filepath.Join(dir, "subdir", "empty"))
+	entry.UpdateChildList()
 
-	if len(node.children) != 0 {
-		t.Errorf("expected 0 children for empty dir, got %d", len(node.children))
+	if len(entry.children) != 0 {
+		t.Errorf("expected 0 children for empty dir, got %d", len(entry.children))
 	}
 }
 
 func TestUpdateChildList_WithPathFilter(t *testing.T) {
 	dir := setupTestDir(t)
 	subdir := filepath.Join(dir, "subdir")
-	node := newNode(subdir)
+	entry := newEntry(subdir)
 
-	node.SetPathFilter(func(path string, info os.FileInfo) bool {
+	entry.SetPathFilter(func(path string, info os.FileInfo) bool {
 		return strings.HasSuffix(path, ".txt")
 	})
 
-	node.UpdateChildList()
+	entry.UpdateChildList()
 
-	if child := node.GetChildByName("a.txt"); child == nil {
+	if child := entry.GetChildByName("a.txt"); child == nil {
 		t.Error("expected 'a.txt' to pass filter and be added as child")
 	}
-	if child := node.GetChildByName("empty"); child != nil {
+	if child := entry.GetChildByName("empty"); child != nil {
 		t.Error("expected 'empty' to be rejected by filter")
 	}
 }
@@ -598,27 +598,27 @@ func TestUpdateChildList_WithPathFilter(t *testing.T) {
 func TestUpdateChildList_WithPathFilter_CacheReuse(t *testing.T) {
 	dir := setupTestDir(t)
 	subdir := filepath.Join(dir, "subdir")
-	node := newNode(subdir)
+	entry := newEntry(subdir)
 
 	var callCount int
-	node.SetPathFilter(func(path string, info os.FileInfo) bool {
+	entry.SetPathFilter(func(path string, info os.FileInfo) bool {
 		callCount++
 		return false
 	})
 
-	node.UpdateChildList()
+	entry.UpdateChildList()
 
 	callCount = 0
 
 	mustWriteFile(t, filepath.Join(subdir, "newfile.txt"), []byte("new"), 0644)
 
-	node.UpdateChildList()
+	entry.UpdateChildList()
 
 	if callCount != 1 {
 		t.Errorf("expected filter called 1 time (for newfile.txt only), got %d", callCount)
 	}
 
-	if !contains(node.pathFilterCache, filepath.Join(subdir, "newfile.txt")) {
+	if !contains(entry.pathFilterCache, filepath.Join(subdir, "newfile.txt")) {
 		t.Error("expected newfile.txt to be in cache after rejection")
 	}
 }
@@ -627,10 +627,10 @@ func TestUpdateChildList_WithPathFilter_CacheReuse(t *testing.T) {
 
 func TestGetChildByName_Found(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir"))
-	node.UpdateChildList()
+	entry := newEntry(filepath.Join(dir, "subdir"))
+	entry.UpdateChildList()
 
-	child := node.GetChildByName("a.txt")
+	child := entry.GetChildByName("a.txt")
 	if child == nil {
 		t.Fatal("expected to find child 'a.txt'")
 	}
@@ -638,20 +638,20 @@ func TestGetChildByName_Found(t *testing.T) {
 
 func TestGetChildByName_NotFound(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir"))
-	node.UpdateChildList()
+	entry := newEntry(filepath.Join(dir, "subdir"))
+	entry.UpdateChildList()
 
-	if child := node.GetChildByName("nonexistent.txt"); child != nil {
+	if child := entry.GetChildByName("nonexistent.txt"); child != nil {
 		t.Errorf("expected nil, got %v", child)
 	}
 }
 
 func TestGetChildByName_EmptyName(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir"))
-	node.UpdateChildList()
+	entry := newEntry(filepath.Join(dir, "subdir"))
+	entry.UpdateChildList()
 
-	if child := node.GetChildByName(""); child != nil {
+	if child := entry.GetChildByName(""); child != nil {
 		t.Errorf("expected nil for empty name, got %v", child)
 	}
 }
@@ -660,11 +660,11 @@ func TestGetChildByName_EmptyName(t *testing.T) {
 
 func TestForEachChild(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir"))
-	node.UpdateChildList()
+	entry := newEntry(filepath.Join(dir, "subdir"))
+	entry.UpdateChildList()
 
 	var count int
-	node.ForEachChild(func(child *SNode) {
+	entry.ForEachChild(func(child *SEntry) {
 		count++
 	})
 
@@ -675,11 +675,11 @@ func TestForEachChild(t *testing.T) {
 
 func TestForEachChild_Empty(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir", "empty"))
-	node.UpdateChildList()
+	entry := newEntry(filepath.Join(dir, "subdir", "empty"))
+	entry.UpdateChildList()
 
 	var count int
-	node.ForEachChild(func(child *SNode) {
+	entry.ForEachChild(func(child *SEntry) {
 		count++
 	})
 
@@ -692,11 +692,11 @@ func TestForEachChild_Empty(t *testing.T) {
 
 func TestRecursive(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir"))
-	node.UpdateChildList()
+	entry := newEntry(filepath.Join(dir, "subdir"))
+	entry.UpdateChildList()
 
 	var names []string
-	node.Recursive(func(child *SNode) {
+	entry.Recursive(func(child *SEntry) {
 		names = append(names, child.info.Name())
 	}, false)
 
@@ -710,11 +710,11 @@ func TestRecursive(t *testing.T) {
 
 func TestRecursive_EmptyDir(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir", "empty"))
-	node.UpdateChildList()
+	entry := newEntry(filepath.Join(dir, "subdir", "empty"))
+	entry.UpdateChildList()
 
 	var count int
-	node.Recursive(func(child *SNode) {
+	entry.Recursive(func(child *SEntry) {
 		count++
 	}, false)
 
@@ -725,11 +725,11 @@ func TestRecursive_EmptyDir(t *testing.T) {
 
 func TestRecursive_IncludeSelf(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir"))
-	node.UpdateChildList()
+	entry := newEntry(filepath.Join(dir, "subdir"))
+	entry.UpdateChildList()
 
 	var names []string
-	node.Recursive(func(n *SNode) {
+	entry.Recursive(func(n *SEntry) {
 		names = append(names, n.info.Name())
 	}, true)
 
@@ -743,7 +743,7 @@ func TestRecursive_IncludeSelf(t *testing.T) {
 		t.Errorf("expected 'empty' to be visited, got %v", names)
 	}
 	if len(names) != 3 {
-		t.Errorf("expected 3 total visited nodes, got %d: %v", len(names), names)
+		t.Errorf("expected 3 total visited entries, got %d: %v", len(names), names)
 	}
 }
 
@@ -751,9 +751,9 @@ func TestRecursive_IncludeSelf(t *testing.T) {
 
 func TestString(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "file.txt"))
+	entry := newEntry(filepath.Join(dir, "file.txt"))
 
-	result := node.String()
+	result := entry.String()
 	if !strings.Contains(result, "file.txt") {
 		t.Errorf("expected String output to contain 'file.txt', got: %s", result)
 	}
@@ -765,19 +765,19 @@ func TestString(t *testing.T) {
 
 func TestString_NonExistent(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "does_not_exist"))
+	entry := newEntry(filepath.Join(dir, "does_not_exist"))
 
-	assertPanic(t, func() { node.String() })
+	assertPanic(t, func() { entry.String() })
 }
 
 // --- StringRecursive ---
 
 func TestStringRecursive(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir"))
-	node.UpdateChildList()
+	entry := newEntry(filepath.Join(dir, "subdir"))
+	entry.UpdateChildList()
 
-	result := node.StringRecursive()
+	result := entry.StringRecursive()
 	if !strings.Contains(result, "a.txt") {
 		t.Errorf("expected output to contain 'a.txt', got:\n%s", result)
 	}
@@ -788,10 +788,10 @@ func TestStringRecursive(t *testing.T) {
 
 func TestStringRecursive_EmptyDir(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "subdir", "empty"))
-	node.UpdateChildList()
+	entry := newEntry(filepath.Join(dir, "subdir", "empty"))
+	entry.UpdateChildList()
 
-	result := node.StringRecursive()
+	result := entry.StringRecursive()
 	if result == "" {
 		t.Error("expected non-empty output for empty dir, got empty string")
 	}
@@ -799,9 +799,9 @@ func TestStringRecursive_EmptyDir(t *testing.T) {
 
 func TestStringRecursive_NonExistent(t *testing.T) {
 	dir := setupTestDir(t)
-	node := newNode(filepath.Join(dir, "does_not_exist"))
+	entry := newEntry(filepath.Join(dir, "does_not_exist"))
 
-	assertPanic(t, func() { node.StringRecursive() })
+	assertPanic(t, func() { entry.StringRecursive() })
 }
 
 // --- helpers ---
