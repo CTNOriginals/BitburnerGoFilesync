@@ -36,6 +36,10 @@ func Initialize() {
 	}
 
 	generatePatternPaths()
+	entry.SetPathFilter(filePatternFilter)
+
+	entry.Update()
+	entry.UpdateChildList()
 
 	DirEntry = entry
 }
