@@ -35,6 +35,8 @@ func Initialize() {
 		runtime.Goexit()
 	}
 
+	generatePatternPaths()
+
 	DirEntry = entry
 }
 

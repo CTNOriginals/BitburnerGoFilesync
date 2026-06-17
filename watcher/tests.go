@@ -13,6 +13,8 @@ import (
 func TestWatcher() {
 	clog.Info("\n-- Watcher Tests --\n")
 
+	Initialize()
+
 	var baseDir = config.Values.Directory
 	var entry = newEntry(baseDir)
 	// var entry = newEntry(constants.WorkindDirectory)
