@@ -102,6 +102,18 @@ func (this SNode) IsDirectory() bool {
 	return this.info.IsDir()
 }
 
+func (this SNode) GetChildDirectories() []*SNode {
+	var dirs = make([]*SNode, 0)
+
+	for _, child := range this.children {
+		if child.IsDirectory() {
+			dirs = append(dirs, child)
+		}
+	}
+
+	return dirs
+}
+
 func (this SNode) GetChildByName(name string) *SNode {
 	for _, child := range this.children {
 		if child.info.Name() == name {
