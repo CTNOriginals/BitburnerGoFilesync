@@ -76,6 +76,8 @@ func (this *SClient) listener() {
 
 func (this *SClient) onReady() {
 	this.mutex.Lock()
+	defer this.mutex.Unlock()
+
 	clog.Infof("Ready!")
 
 	this.Connection.SetCloseHandler(this.onClose)
@@ -90,19 +92,18 @@ func (this *SClient) onReady() {
 
 	go this.sender()
 	go this.listener()
-	this.mutex.Unlock()
 }
 
 func (this *SClient) OnReadySub() *chan bool {
 	this.mutex.Lock()
+	defer this.mutex.Unlock()
+
 	if this.onReadyNotify == nil {
 		this.onReadyNotify = make([]*chan bool, 0)
 	}
 
 	var sub = make(chan bool)
 	this.onReadyNotify = append(this.onReadyNotify, &sub)
-
-	this.mutex.Unlock()
 
 	return &sub
 }

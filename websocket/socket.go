@@ -44,6 +44,7 @@ func (this *SSocket) getId() int {
 
 func (this *SSocket) send(method TMethod, params any) *SMessage {
 	this.mutex.Lock()
+	defer this.mutex.Unlock()
 
 	if !this.isOpen {
 		clog.Error("Unable to send message while socket is closed.")
@@ -62,13 +63,12 @@ func (this *SSocket) send(method TMethod, params any) *SMessage {
 	this.Messages[id] = message
 	this.Channel <- message
 
-	this.mutex.Unlock()
-
 	return message
 }
 
 func (this *SSocket) receive(body json.RawMessage) {
 	this.mutex.Lock()
+	defer this.mutex.Unlock()
 
 	var response SResponse
 	var err = json.Unmarshal(body, &response)
@@ -95,8 +95,6 @@ func (this *SSocket) receive(body json.RawMessage) {
 	}
 
 	message.OnResponse <- true
-
-	this.mutex.Unlock()
 }
 
 func AwaitResponse[T any](message *SMessage) *T {
