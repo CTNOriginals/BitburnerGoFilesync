@@ -3,7 +3,6 @@ package watcher
 import (
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
@@ -50,5 +49,5 @@ func testFileEvents() {
 		clog.Error(err)
 	}
 
-	time.Sleep(time.Second * 3)
+	// time.Sleep(time.Second * 2)
 }
