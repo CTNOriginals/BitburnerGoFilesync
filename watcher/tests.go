@@ -5,16 +5,57 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
+	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 	"github.com/bmatcuk/doublestar/v4"
 )
 
 func TestWatcher() {
 	clog.Info("\n-- Watcher Tests --\n")
 
+	testFileEvents()
+
+	time.Sleep(time.Minute * 5)
+}
+
+func testFileEvents() {
+
+	var dirpath = filepath.Join(config.Values.Directory, "watcher")
+	var newPath = filepath.Join(dirpath, "new.ext")
+	var modPath = filepath.Join(dirpath, "mod.ext")
+	var delPath = filepath.Join(dirpath, "del.ext")
+
+	clog.Debugf("paths: \n%s\n%s\n%s\n%s\n", dirpath, newPath, modPath, delPath)
+
+	var err = os.MkdirAll(dirpath, os.ModePerm)
+
+	if err != nil {
+		clog.Error(err)
+	}
+
+	ctnfile.WriteFile(modPath, []string{"not modefied"})
+	ctnfile.WriteFile(delPath, []string{"bout to be gone"})
+
 	Initialize()
-	StartScanner()
+	go StartScanner()
+
+	time.Sleep(time.Second)
+
+	ctnfile.WriteFile(newPath, []string{"brand new"})
+	ctnfile.WriteFile(modPath, []string{"has been modified"})
+	os.Remove(delPath)
+
+	defer func() {
+		err = os.RemoveAll(dirpath)
+
+		if err != nil {
+			clog.Error(err)
+		}
+	}()
+
+	time.Sleep(time.Minute)
 }
 
 func testFilter() {
