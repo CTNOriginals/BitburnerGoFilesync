@@ -3,6 +3,8 @@ package utils
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
@@ -42,8 +44,12 @@ func ForEachFileInDirRecursive(dir string, fn func(file os.FileInfo, dir string)
 	})
 }
 
+func GetRelativePath(path string) string {
+	return strings.TrimPrefix(path, config.Values.Directory)
+}
+
 func GetAbsolutePath(path string) string {
-	return fmt.Sprintf("%s/%s", config.Values.Directory, path)
+	return filepath.Join(config.Values.Directory, path)
 }
 
 // The path needs to be relative the the bitburner dir
