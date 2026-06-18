@@ -30,9 +30,9 @@ func scan() {
 
 }
 
-// func onFileModify(info os.FileInfo) {
-// 	clog.Debugf("TODO: Push file: %s", entry.GetPath())
-// }
-// func onFileDelete(info os.FileInfo) {
-// 	clog.Debugf("TODO: Delete file: %s", entry.GetPath())
-// }
+func onFileModify(file *SFileData) {
+	clog.Debugf("TODO: Push file: %s", file.Path)
+}
+func onFileDelete(file *SFileData) {
+	clog.Debugf("TODO: Delete file: %s", file.Path)
+}
