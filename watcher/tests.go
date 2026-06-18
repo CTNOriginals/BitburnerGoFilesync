@@ -26,6 +26,13 @@ func testFileEvents() {
 	// clog.Debugf("paths: \n%s\n%s\n%s\n%s\n", testpath, newPath, modPath, delPath)
 
 	var err = os.MkdirAll(testpath, os.ModePerm)
+	defer func() {
+		var err = os.RemoveAll(testpath)
+
+		if err != nil {
+			clog.Error(err)
+		}
+	}()
 
 	if err != nil {
 		clog.Error(err)
@@ -40,17 +47,13 @@ func testFileEvents() {
 
 	ctnfile.WriteFile(newPath, []string{"brand new"})
 	ctnfile.WriteFile(modPath, []string{"has been modified"})
-	os.Remove(delPath)
 
-	defer func() {
-		var err = os.RemoveAll(testpath)
+	err = os.Remove(delPath)
+	if err != nil {
+		clog.Error(err)
+	}
 
-		if err != nil {
-			clog.Error(err)
-		}
-	}()
-
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Second * 3)
 }
 
 func testFilter() {
@@ -72,7 +75,7 @@ func testFilter() {
 	clog.Debugf("inc list:\n%s", strings.Join(incList, "\n"))
 	clog.Debugf("exc list:\n%s", strings.Join(excList, "\n"))
 
-	entry.Recursive((*SEntry).UpdateChildList, true)
+	entry.Recursive(func(entry *SEntry) { entry.UpdateChildList() }, true)
 	clog.Infof("%s:\n%s", entry.GetPath(), entry.StringRecursive())
 
 	var filter = func(path string, info os.FileInfo) bool {

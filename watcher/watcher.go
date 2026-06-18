@@ -38,7 +38,6 @@ func Initialize() {
 
 	generatePatternPaths()
 	entry.SetPathFilter(filePatternFilter)
-
 	entry.UpdateChildList()
 
 	Entry = entry
@@ -57,27 +56,52 @@ func StartScanner() {
 }
 
 func scan() {
-	var modified = make([]*SEntry, 0)
-
 	Entry.Recursive(func(entry *SEntry) {
-		if (entry.IsDirectory() && entry.IsModified()) == false {
+		if !entry.IsDirectory() {
 			return
 		}
 
-		entry.ForEachChild(func(child *SEntry) {
-			// clog.Debugf("%s > %s", entry.String(), child.String())
-			if child.IsModified() {
-				modified = append(modified, child)
+		for _, child := range entry.children {
+			if child.IsDirectory() || !child.IsModified() {
+				continue
 			}
+
+			if child.Exists() {
+				onFileModify(child)
+			} else {
+				onFileDelete(child)
+			}
+		}
+
+		var newEntries = entry.UpdateChildList()
+
+		for _, child := range newEntries {
+			onFileModify(child)
+		}
+	}, true)
+
+	// time.Sleep(time.Second)
+
+	// Update and clean every entry
+	// Entry.Recursive((*SEntry).Update, true)
+	Entry.Recursive(func(entry *SEntry) {
+		// clog.Debugf("Updating %s", entry.info.Name())
+		entry.Update()
+
+		entry.CleanChildListFunc(func(child *SEntry) bool {
+			child.Update()
+			return child.Exists()
 		})
 	}, true)
 
-	if len(modified) == 0 {
-		return
-	}
+	// clog.Message("-- end --")
+}
 
-	for _, file := range modified {
-		clog.Debugf("Modified: %s", file.GetPath())
-	}
-	clog.Debug("----\n ")
+// NOTE: Same as modify
+// func onFileCreate(entry *SEntry) {}
+func onFileModify(entry *SEntry) {
+	clog.Debugf("TODO: Push file: %s", entry.GetPath())
+}
+func onFileDelete(entry *SEntry) {
+	clog.Debugf("TODO: Delete file: %s", entry.GetPath())
 }

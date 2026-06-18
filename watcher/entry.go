@@ -72,7 +72,7 @@ func (this SEntry) GetPath() string {
 	return filepath.Join(this.dir, this.info.Name())
 }
 
-func (this SEntry) getInfo() (os.FileInfo, error) {
+func (this SEntry) GetInfo() (os.FileInfo, error) {
 	var info, err = os.Stat(this.GetPath())
 
 	if err != nil {
@@ -94,16 +94,19 @@ func (this SEntry) Exists() bool {
 }
 
 // Returns true if the current modify time is different from the stored one.
-// Also returns true if the file no longer exists.
-func (this SEntry) IsModified() bool {
-	var info, err = this.getInfo()
+// Also returns true if the file no longer exists and stores the error in infoError.
+func (this *SEntry) IsModified() bool {
+	var info, err = this.GetInfo()
 
 	if err != nil {
+		this.infoError = err
+
 		if os.IsNotExist(err) {
 			return true
 		}
 
 		clog.Fatalf("An unknown error occured while trying to get file info, file: %s\n%v", this.GetPath(), err)
+		runtime.Goexit()
 	}
 
 	return this.info.ModTime() != info.ModTime()
@@ -165,7 +168,7 @@ func (this *SEntry) SetPathFilter(filter FPathFilter) {
 // In case that the new info returns nil,
 // it will not override the existing info.
 func (this *SEntry) Update() {
-	var info, err = this.getInfo()
+	var info, err = this.GetInfo()
 
 	this.infoError = err
 
@@ -221,11 +224,12 @@ func (this *SEntry) ApplyPathFilter() {
 //
 // If an error occurs while reading this directory it logs the error
 // after processing the entries that did return before the error.
-func (this *SEntry) UpdateChildList() {
+func (this *SEntry) UpdateChildList() []*SEntry {
 	if !this.IsDirectory() {
-		return
+		return nil
 	}
 
+	var newEntries = make([]*SEntry, 0)
 	var subEntries, err = os.ReadDir(this.GetPath())
 
 	for _, subEntry := range subEntries {
@@ -254,9 +258,11 @@ func (this *SEntry) UpdateChildList() {
 		}
 
 		var entry = newEntry(newPath)
-
 		entry.SetPathFilter(this.pathFilter)
-		entry.UpdateChildList()
+		var newSubEntries = entry.UpdateChildList()
+
+		newEntries = append(newEntries, entry)
+		newEntries = append(newEntries, newSubEntries...)
 
 		this.children = append(this.children, entry)
 	}
@@ -267,6 +273,8 @@ func (this *SEntry) UpdateChildList() {
 		clog.Errorf("Error while reading directory %s:\n%v", this.GetPath(), err)
 		clog.Debugf("Entries returned before error:\n%v", subEntries)
 	}
+
+	return newEntries
 }
 
 func (this *SEntry) ForEachChild(fn func(child *SEntry)) {
