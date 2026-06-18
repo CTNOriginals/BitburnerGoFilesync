@@ -3,13 +3,13 @@ package watcher
 import (
 	"os"
 	"path/filepath"
-	"slices"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/bmatcuk/doublestar/v4"
 )
 
 var patternPaths config.TConfigFilrPatterns
+var pathCache map[string]bool
 
 func generatePatternPaths() {
 	var patterns = config.Values.FilePatterns
@@ -17,6 +17,7 @@ func generatePatternPaths() {
 
 	patternPaths.Include = make([]string, len(patterns.Include))
 	patternPaths.Exclude = make([]string, len(patterns.Exclude))
+	pathCache = make(map[string]bool)
 
 	for i, inc := range patterns.Include {
 		patternPaths.Include[i] = filepath.Join(dir, inc)
@@ -31,28 +32,21 @@ func generatePatternPaths() {
 	}
 }
 
-func getPatternMatches() []string {
-	var matches = config.TConfigFilrPatterns{
-		Include: make([]string, 0),
-		Exclude: make([]string, 0),
-	}
-
-	for _, exc := range patternPaths.Exclude {
-		var list, _ = doublestar.FilepathGlob(exc)
-		matches.Exclude = append(matches.Exclude, list...)
+func updatePathCache() {
+	var cacheList = func(list []string, state bool) {
+		for _, path := range list {
+			pathCache[path] = state
+		}
 	}
 
 	for _, inc := range patternPaths.Include {
 		var list, _ = doublestar.FilepathGlob(inc)
-
-		for _, match := range list {
-			if !slices.Contains(matches.Exclude, match) && !slices.Contains(matches.Include, match) {
-				matches.Include = append(matches.Include, match)
-			}
-		}
+		cacheList(list, true)
 	}
-
-	return matches.Include
+	for _, exc := range patternPaths.Exclude {
+		var list, _ = doublestar.FilepathGlob(exc)
+		cacheList(list, false)
+	}
 }
 
 func filePatternFilter(path string, info os.FileInfo) bool {
@@ -60,7 +54,27 @@ func filePatternFilter(path string, info os.FileInfo) bool {
 		return true
 	}
 
-	var matches = getPatternMatches()
+	var cachedState, exists = pathCache[path]
 
-	return slices.Contains(matches, path)
+	if exists {
+		return cachedState
+	}
+
+	updatePathCache()
+
+	cachedState, exists = pathCache[path]
+
+	if exists {
+		return cachedState
+	}
+
+	// NOTE: this may not be an error worthy case
+	// as include and exclude can be set to not catch all patterns
+	// so that all non-described file paths are concidered to be excluded
+	// TODO: test this
+	clog.Errorf("Path did not get added to filter cache after updating it. The path will be excluded: %s", path)
+
+	pathCache[path] = false
+
+	return false
 }
