@@ -14,22 +14,18 @@ import (
 
 func TestWatcher() {
 	clog.Info("\n-- Watcher Tests --\n")
-
 	testFileEvents()
-
-	time.Sleep(time.Minute * 5)
 }
 
 func testFileEvents() {
+	var testpath = filepath.Join(config.Values.Directory, "watcher")
+	var newPath = filepath.Join(testpath, "new.ext")
+	var modPath = filepath.Join(testpath, "mod.ext")
+	var delPath = filepath.Join(testpath, "del.ext")
 
-	var dirpath = filepath.Join(config.Values.Directory, "watcher")
-	var newPath = filepath.Join(dirpath, "new.ext")
-	var modPath = filepath.Join(dirpath, "mod.ext")
-	var delPath = filepath.Join(dirpath, "del.ext")
+	// clog.Debugf("paths: \n%s\n%s\n%s\n%s\n", testpath, newPath, modPath, delPath)
 
-	clog.Debugf("paths: \n%s\n%s\n%s\n%s\n", dirpath, newPath, modPath, delPath)
-
-	var err = os.MkdirAll(dirpath, os.ModePerm)
+	var err = os.MkdirAll(testpath, os.ModePerm)
 
 	if err != nil {
 		clog.Error(err)
@@ -38,24 +34,23 @@ func testFileEvents() {
 	ctnfile.WriteFile(modPath, []string{"not modefied"})
 	ctnfile.WriteFile(delPath, []string{"bout to be gone"})
 
+	// time.Sleep(time.Second * 2)
 	Initialize()
 	go StartScanner()
-
-	time.Sleep(time.Second)
 
 	ctnfile.WriteFile(newPath, []string{"brand new"})
 	ctnfile.WriteFile(modPath, []string{"has been modified"})
 	os.Remove(delPath)
 
 	defer func() {
-		err = os.RemoveAll(dirpath)
+		var err = os.RemoveAll(testpath)
 
 		if err != nil {
 			clog.Error(err)
 		}
 	}()
 
-	time.Sleep(time.Minute)
+	time.Sleep(time.Second * 2)
 }
 
 func testFilter() {
