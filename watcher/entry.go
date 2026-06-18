@@ -93,6 +93,8 @@ func (this SEntry) Exists() bool {
 	return !os.IsNotExist(this.infoError)
 }
 
+// Returns true if the current modify time is different from the stored one.
+// Also returns true if the file no longer exists.
 func (this SEntry) IsModified() bool {
 	var info, err = this.getInfo()
 
