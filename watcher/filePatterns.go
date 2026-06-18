@@ -65,12 +65,6 @@ func filePatternFilter(path string) bool {
 		return cachedState
 	}
 
-	// NOTE: this may not be an error worthy case
-	// as include and exclude can be set to not catch all patterns
-	// so that all non-described file paths are concidered to be excluded
-	// TODO: test this
-	clog.Errorf("Path did not get added to filter cache after updating it. The path will be excluded: %s", path)
-
 	pathCache[path] = false
 
 	return false
