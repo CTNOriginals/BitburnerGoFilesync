@@ -7,6 +7,8 @@ import (
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 )
 
 var clog = clogger.Default.Clone(clogger.SClog{
@@ -113,12 +115,23 @@ func scan() {
 	}
 }
 
+func pushFile(path string) {
+	websocket.Client.Socket.PushFile(websocket.Params_PushFile{
+		Filename: utils.ToBitburnerPath(path),
+		Content:  string(utils.GetFileContentByPath(path)),
+		Server:   "home",
+	}, nil)
+}
+
 func onFileCreate(path string) {
-	clog.Debugf("TODO: Create file: %s", path)
+	pushFile(path)
 }
 func onFileModify(path string) {
-	clog.Debugf("TODO: Push file: %s", path)
+	pushFile(path)
 }
 func onFileDelete(path string) {
-	clog.Debugf("TODO: Delete file: %s", path)
+	websocket.Client.Socket.DeleteFile(websocket.Params_DeleteFile{
+		Filename: utils.ToBitburnerPath(path),
+		Server:   "home",
+	}, nil)
 }
