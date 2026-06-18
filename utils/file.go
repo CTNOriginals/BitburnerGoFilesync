@@ -52,6 +52,12 @@ func GetAbsolutePath(path string) string {
 	return filepath.Join(config.Values.Directory, path)
 }
 
+func ToBitburnerPath(path string) string {
+	path = filepath.ToSlash(path)
+	path = GetRelativePath(path)
+	return path
+}
+
 // The path needs to be relative the the bitburner dir
 func GetFileContentByPath(path string) []byte {
 	if !ctnfile.FileExists(path) {
