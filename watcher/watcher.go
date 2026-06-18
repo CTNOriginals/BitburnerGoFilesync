@@ -1,7 +1,6 @@
 package watcher
 
 import (
-	"os"
 	"runtime"
 	"time"
 
@@ -14,14 +13,12 @@ var clog = clogger.Default.Clone(clogger.SClog{
 })
 
 var Entry *SEntry
-var Directories *SEntry
 
 func Initialize() {
 	var dir = config.Values.Directory
 	clog.Debugf("Watcher Initialize, dir: %s", dir)
 
 	var entry = newEntry(dir)
-	var dirEntries = newEntry(dir)
 
 	if entry.infoError != nil {
 		if !entry.Exists() {
@@ -41,18 +38,12 @@ func Initialize() {
 
 	generatePatternPaths()
 	entry.SetPathFilter(filePatternFilter)
-	dirEntries.SetPathFilter(func(_ string, info os.FileInfo) bool {
-		return info.IsDir()
-	})
 
 	entry.UpdateChildList()
-	dirEntries.UpdateChildList()
 
 	Entry = entry
-	Directories = dirEntries
 
 	clog.Debug(entry.StringRecursive())
-	clog.Debug(dirEntries.StringRecursive())
 }
 
 func StartScanner() {
@@ -81,8 +72,6 @@ func scan() {
 		})
 	}, true)
 
-	clog.Debug("----\n ")
-
 	if len(modified) == 0 {
 		return
 	}
@@ -90,4 +79,5 @@ func scan() {
 	for _, file := range modified {
 		clog.Debugf("Modified: %s", file.GetPath())
 	}
+	clog.Debug("----\n ")
 }
