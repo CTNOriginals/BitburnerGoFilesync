@@ -73,9 +73,11 @@ func getNewEntries(dir string, fn func(path string)) {
 
 		var _, exists = fileStateMap[path]
 
-		if !exists {
-			fn(path)
+		if exists || !filePatternFilter(path) {
+			continue
 		}
+
+		fn(path)
 	}
 
 	if err != nil {

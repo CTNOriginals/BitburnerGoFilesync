@@ -1,7 +1,6 @@
 package watcher
 
 import (
-	"os"
 	"path/filepath"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
@@ -47,13 +46,11 @@ func updatePathCache() {
 		var list, _ = doublestar.FilepathGlob(exc)
 		cacheList(list, false)
 	}
+
+	// clog.Debugf("Updated cache:\n%s", strings.Join(strings.Split(fmt.Sprintf("%v", pathCache), " /home/ctn/code/bitburner/testdir/"), "\n"))
 }
 
-func filePatternFilter(path string, info os.FileInfo) bool {
-	if info.IsDir() {
-		return true
-	}
-
+func filePatternFilter(path string) bool {
 	var cachedState, exists = pathCache[path]
 
 	if exists {

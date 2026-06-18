@@ -3,6 +3,7 @@ package watcher
 import (
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
@@ -16,6 +17,7 @@ func TestWatcher() {
 func testFileEvents() {
 	var testpath = filepath.Join(config.Values.Directory, "watcher")
 	var newPath = filepath.Join(testpath, "new.ext")
+	var newExPath = filepath.Join(testpath, "new.x.ext")
 	var modPath = filepath.Join(testpath, "mod.ext")
 	var delPath = filepath.Join(testpath, "del.ext")
 
@@ -42,6 +44,7 @@ func testFileEvents() {
 	go StartScanner()
 
 	ctnfile.WriteFile(newPath, []string{"brand new"})
+	ctnfile.WriteFile(newExPath, []string{"new but excluded"})
 	ctnfile.WriteFile(modPath, []string{"has been modified"})
 
 	err = os.Remove(delPath)
@@ -49,5 +52,5 @@ func testFileEvents() {
 		clog.Error(err)
 	}
 
-	// time.Sleep(time.Second * 2)
+	time.Sleep(time.Second * 2)
 }
