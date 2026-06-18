@@ -54,12 +54,10 @@ func GetAbsolutePath(path string) string {
 
 // The path needs to be relative the the bitburner dir
 func GetFileContentByPath(path string) []byte {
-	var filePath = GetAbsolutePath(path)
-
-	if !ctnfile.FileExists(filePath) {
-		clog.Errorf("File does not exist: %s\n", filePath)
+	if !ctnfile.FileExists(path) {
+		clog.Errorf("File does not exist: %s\n", path)
 		return []byte{}
 	}
 
-	return ctnfile.GetFileBytes(filePath)
+	return ctnfile.GetFileBytes(path)
 }
