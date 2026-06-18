@@ -14,6 +14,8 @@ var clog = clogger.Default.Clone(clogger.SClog{
 func Initialize() {
 	var dir = config.Values.Directory
 	clog.Debugf("Watcher Initialize, dir: %s", dir)
+
+	generatePatternPaths()
 }
 
 func StartScanner() {
