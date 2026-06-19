@@ -49,9 +49,10 @@ func main() {
 	if !constants.NoCli {
 		go cli.CommandWatcher()
 	}
+
 	if !constants.NoWatcher {
 		watcher.Initialize()
-		go watcher.FileScanner()
+		go watcher.StartScanner()
 	}
 
 	if !constants.NoServer {
