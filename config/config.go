@@ -49,8 +49,8 @@ var Values = &TConfig{
 	Directory:        "./",
 	FileScanInterval: 1000,
 	FilePatterns: TConfigFilrPatterns{
-		Include: []string{"*.js", "*.ts"},
-		Exclude: []string{"*.d.ts"},
+		Include: []string{"**/*.js", "**/*.ts"},
+		Exclude: []string{"**/*.d.ts"},
 	},
 	Logging: TConfigLogging{
 		NoColor: false,
