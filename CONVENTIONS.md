@@ -2,13 +2,6 @@
 
 These arent strict rules, just a description of how the code is generally written so you know what to expect when reading through it or contributing.
 
-## Receiver name
-
-Always `this`:
-```go
-func (this *SClient) Active() bool { return this.Connection != nil }
-```
-
 ## Type prefixes
 
 Theres a loose system of prefixes that tell you what kind of type youre looking at:
@@ -27,14 +20,19 @@ That said, not every type follows this. Some packages just dont use prefixes at 
 
 Pointer receiver if the method mutates anything or if the type holds a mutex or a channel. Value receiver otherwise:
 ```go
-func (this *SSocket) send(method TMethod, params any) *SMessage  // pointer: mutates
-func (this SClog) Clone(override SClog) SClog                    // value: returns a copy
-func (this argDef) String() string                               // value: read-only
+func (this *MFileState) Push(path string) error // pointer: mutates
+func (this SClog) Clone(override SClog) SClog   // value: returns a copy
+func (this TList) String() string               // value: read-only
 ```
 
 ## Variable declarations
 
-`var` is the go-to:
+Avoid creating single character variables and instead make the variable name descriptive for its use.  
+The exception to this is of course some universal conventions like `i`, `j`, `k` ... in for loops.
+
+Use `var` over `:=`.
+It is generally harder to spot a single `:` to find the point of decleration.  
+The keyword `var` is usually also colored differently which makes spotting it even easier.
 ```go
 var str strings.Builder
 var info, err = os.Stat(path)
@@ -44,6 +42,18 @@ var info, err = os.Stat(path)
 for i, arg := range args { }
 if idx := strings.LastIndex(partial, "/"); idx >= 0 { }
 ```
+
+## Receiver name
+
+Always use `this`.
+There is no reason (currently known to me) not to use `this` as the receiver.  
+```go
+func (this *SClient) Active() bool { return this.Connection != nil }
+```
+The benefits:
+- You dont have to think of another good and descriptive variable name.
+- You never have to question what the receiver is for this function.
+
 
 ## Error handling
 
@@ -70,24 +80,12 @@ return builder.String()
 ```
 `str +=` should be avoided.
 
-## Imports
-
-Stdlib first, blank line, then everything else. Each group sorted:
-```go
-import (
-    "os"
-    "time"
-
-    "github.com/CTNOriginals/BitburnerGoFilesync/clogger"
-    "github.com/gorilla/websocket"
-)
-```
-
 ## Package structure
 
 The entry file of a package is named after it - `config/config.go`, `watcher/watcher.go`, that kind of thing.
 
-Sub-packages that implement CLI commands register themselves through `init()` by calling `commands.List.Push(&def)`. The `init.go` file at the project root imports them with a blank identifier to trigger all of that.
+Sub-packages that implement CLI commands register themselves through `init()` by calling `commands.List.Push(&def)`.  
+The `init.go` file at the project root imports them with a blank identifier to trigger all of that.
 
 ## Annotations
 
