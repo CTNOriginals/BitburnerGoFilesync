@@ -118,10 +118,11 @@ func AwaitResponse[T any](message *SMessage) *T {
 
 func call[TResult any](this *SSocket, method TMethod, params any, callback func(*TResult)) {
 	var message = this.send(method, params)
-	if callback == nil {
-		return
+	var response = AwaitResponse[TResult](message)
+
+	if callback != nil {
+		callback(response)
 	}
-	callback(AwaitResponse[TResult](message))
 }
 
 func (this *SSocket) PushFile(p Params_PushFile, cb func(*Result_PushFile)) {
