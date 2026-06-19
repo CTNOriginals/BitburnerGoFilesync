@@ -16,6 +16,7 @@ func (this *MFileState) Push(path string) error {
 	}
 
 	(*this)[path] = info.ModTime()
+
 	return nil
 }
 
@@ -48,5 +49,4 @@ func (this MFileState) GetNewEntries(dir string, fn func(path string)) {
 	for _, subDir := range subDirs {
 		this.GetNewEntries(subDir, fn)
 	}
-
 }

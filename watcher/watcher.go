@@ -20,7 +20,7 @@ var fileStateMap MFileState
 func Initialize() {
 	rootDir = config.Values.Directory
 	fileStateMap = make(MFileState)
-	clog.Debugf("Watcher Initialize, dir: %s", rootDir)
+	clog.Infof("Watcher Initialize, dir: %s", rootDir)
 
 	generatePatternPaths()
 	fileStateMap.GetNewEntries(rootDir, func(path string) {
@@ -85,15 +85,15 @@ func pushFile(path string) {
 }
 
 func onFileCreate(path string) {
-	clog.Debugf("On File Create: %s", path)
+	clog.Infof("On Create: %s", path)
 	pushFile(path)
 }
 func onFileModify(path string) {
-	clog.Debugf("On File Modify: %s", path)
+	clog.Infof("On Modify: %s", path)
 	pushFile(path)
 }
 func onFileDelete(path string) {
-	clog.Debugf("On File Delete: %s", path)
+	clog.Infof("On Delete: %s", path)
 	websocket.Client.Socket.DeleteFile(websocket.Params_DeleteFile{
 		Filename: utils.ToBitburnerPath(path),
 		Server:   "home",

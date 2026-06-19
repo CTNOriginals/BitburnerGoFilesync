@@ -29,12 +29,6 @@ func generatePatternPaths() {
 	if len(patterns.Include) == 0 {
 		patternPaths.Include = append(patternPaths.Include, filepath.Join(dir, "**/*"))
 	}
-
-	// clog.Debugf(
-	// 	"Generated path patterns:\nInclude:\n%s\nExclude:\n%s",
-	// 	strings.Join(patternPaths.Include, "\n"),
-	// 	strings.Join(patternPaths.Exclude, "\n"),
-	// )
 }
 
 func updatePathCache() {
@@ -52,11 +46,6 @@ func updatePathCache() {
 		var list, _ = doublestar.FilepathGlob(exc)
 		cacheList(list, false)
 	}
-
-	// clog.Debugf(
-	// 	"Updated cache:\n%s",
-	// 	strings.Join(strings.Split(fmt.Sprintf("%v", pathCache), " /home/ctn/code/bitburner/testdir/"), "\n"),
-	// )
 }
 
 func filePatternFilter(path string) bool {

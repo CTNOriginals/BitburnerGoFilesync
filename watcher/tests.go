@@ -22,8 +22,6 @@ func testFileEvents() {
 	var modPath = filepath.Join(testpath, "mod.ts")
 	var delPath = filepath.Join(testpath, "del.ts")
 
-	// clog.Debugf("paths: \n%s\n%s\n%s\n%s\n", testpath, newPath, modPath, delPath)
-
 	var err = os.MkdirAll(testpath, os.ModePerm)
 	defer func() {
 		var err = os.RemoveAll(testpath)
