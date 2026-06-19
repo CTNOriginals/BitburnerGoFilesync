@@ -11,8 +11,8 @@ func TestCli() {
 	clog.Infof("Commands:\n%s\n", commands.List.StringRecurse())
 
 	testSegments()
-	// cliCommands()
-	// cliHelp()
+	cliCommands()
+	cliHelp()
 
 	CommandWatcher()
 }

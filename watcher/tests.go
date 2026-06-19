@@ -39,6 +39,7 @@ func testFileEvents() {
 
 	if !websocket.Client.Active() {
 		go websocket.Client.Start(config.Values.Port)
+		defer websocket.Client.Close()
 	}
 
 	Initialize()
