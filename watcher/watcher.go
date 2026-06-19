@@ -6,7 +6,6 @@ import (
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
-	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 )
 
@@ -42,7 +41,7 @@ func StartScanner() {
 				return
 			}
 
-			onFileCreate(path)
+			fileEventHandler.Emit(OnFileCreate, path)
 		})
 
 		scan()
@@ -62,7 +61,7 @@ func scan() {
 				clog.Errorf("Unknown error on path %s:\n%v", path, err)
 			}
 
-			onFileDelete(path)
+			fileEventHandler.Emit(OnFileDelete, path)
 			delete(fileStateMap, path)
 			continue
 		}
@@ -71,31 +70,7 @@ func scan() {
 			continue
 		}
 
-		onFileModify(path)
+		fileEventHandler.Emit(OnFileModify, path)
 		fileStateMap[path] = info.ModTime()
 	}
-}
-
-func pushFile(path string) {
-	websocket.Client.Socket.PushFile(websocket.Params_PushFile{
-		Filename: utils.ToBitburnerPath(path),
-		Content:  string(utils.GetFileContentByPath(path)),
-		Server:   "home",
-	}, nil)
-}
-
-func onFileCreate(path string) {
-	clog.Infof("On Create: %s", path)
-	pushFile(path)
-}
-func onFileModify(path string) {
-	clog.Infof("On Modify: %s", path)
-	pushFile(path)
-}
-func onFileDelete(path string) {
-	clog.Infof("On Delete: %s", path)
-	websocket.Client.Socket.DeleteFile(websocket.Params_DeleteFile{
-		Filename: utils.ToBitburnerPath(path),
-		Server:   "home",
-	}, nil)
 }
