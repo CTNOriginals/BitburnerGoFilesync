@@ -2,7 +2,6 @@ package watcher
 
 import (
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
@@ -16,36 +15,27 @@ var clog = clogger.Default.Clone(clogger.SClog{
 })
 
 var rootDir string
-var fileStateMap map[string]time.Time
+var fileStateMap MFileState
 
 func Initialize() {
 	rootDir = config.Values.Directory
-	fileStateMap = make(map[string]time.Time)
+	fileStateMap = make(MFileState)
 	clog.Debugf("Watcher Initialize, dir: %s", rootDir)
 
 	generatePatternPaths()
-
-	getNewEntries(rootDir, func(path string) {
-		registerFilePath(path)
+	fileStateMap.GetNewEntries(rootDir, func(path string) {
+		var err = fileStateMap.Push(path)
+		if err != nil {
+			clog.Errorf("Encountered an unexpected error while getting file info %s:\n%v", path, err)
+		}
 	})
-}
-
-func registerFilePath(path string) error {
-	var info, err = os.Stat(path)
-
-	if err != nil {
-		return err
-	}
-
-	fileStateMap[path] = info.ModTime()
-	return nil
 }
 
 func StartScanner() {
 	<-*websocket.Client.OnReadySub()
 	for {
-		getNewEntries(rootDir, func(path string) {
-			var err = registerFilePath(path)
+		fileStateMap.GetNewEntries(rootDir, func(path string) {
+			var err = fileStateMap.Push(path)
 
 			if err != nil {
 				clog.Errorf("Encountered an unexpected error while getting file info %s:\n%v", path, err)
@@ -55,50 +45,12 @@ func StartScanner() {
 			onFileCreate(path)
 		})
 
-		// var loglines = make([]string, 0)
-		// for path, modtime := range fileStateMap {
-		// 	loglines = append(loglines, fmt.Sprintf("%s: %s", path, time.Since(modtime).Round(time.Second)))
-		// }
-		// clog.Debug("\n", strings.Join(loglines, "\n"))
-
 		scan()
 
 		if config.Values.FileScanInterval > 0 {
 			time.Sleep(time.Millisecond * time.Duration(config.Values.FileScanInterval))
 		}
 	}
-}
-
-func getNewEntries(dir string, fn func(path string)) {
-	var entries, err = os.ReadDir(dir)
-	var subDirs = make([]string, 0)
-
-	for _, entry := range entries {
-		var path = filepath.Join(dir, entry.Name())
-
-		if entry.IsDir() {
-			subDirs = append(subDirs, path)
-			continue
-		}
-
-		var _, exists = fileStateMap[path]
-
-		if exists || !filePatternFilter(path) {
-			continue
-		}
-
-		fn(path)
-	}
-
-	if err != nil {
-		clog.Errorf("Encountered and error while reading directory %s:\n%v", dir, err)
-		clog.Debugf("Entries returned before error: %v", entries)
-	}
-
-	for _, subDir := range subDirs {
-		getNewEntries(subDir, fn)
-	}
-
 }
 
 func scan() {
