@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )
 
@@ -16,10 +17,10 @@ func TestWatcher() {
 
 func testFileEvents() {
 	var testpath = filepath.Join(config.Values.Directory, "watcher")
-	var newPath = filepath.Join(testpath, "new.ext")
-	var newExPath = filepath.Join(testpath, "new.x.ext")
-	var modPath = filepath.Join(testpath, "mod.ext")
-	var delPath = filepath.Join(testpath, "del.ext")
+	var newPath = filepath.Join(testpath, "new.ts")
+	var newExPath = filepath.Join(testpath, "new.d.ts")
+	var modPath = filepath.Join(testpath, "mod.ts")
+	var delPath = filepath.Join(testpath, "del.ts")
 
 	// clog.Debugf("paths: \n%s\n%s\n%s\n%s\n", testpath, newPath, modPath, delPath)
 
@@ -37,20 +38,27 @@ func testFileEvents() {
 	}
 
 	ctnfile.WriteFile(modPath, []string{"not modefied"})
-	ctnfile.WriteFile(delPath, []string{"bout to be gone"})
 
-	// time.Sleep(time.Second * 2)
+	if !websocket.Client.Active() {
+		go websocket.Client.Start(config.Values.Port)
+	}
+
 	Initialize()
 	go StartScanner()
 
+	<-*websocket.Client.OnReadySub()
+
+	ctnfile.WriteFile(delPath, []string{"bout to be gone"})
 	ctnfile.WriteFile(newPath, []string{"brand new"})
 	ctnfile.WriteFile(newExPath, []string{"new but excluded"})
 	ctnfile.WriteFile(modPath, []string{"has been modified"})
+
+	time.Sleep(time.Second * 1)
 
 	err = os.Remove(delPath)
 	if err != nil {
 		clog.Error(err)
 	}
 
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Second * 4)
 }

@@ -51,9 +51,8 @@ func main() {
 	}
 
 	if !constants.NoWatcher {
-		// TODO:
 		watcher.Initialize()
-		// go watcher.FileScanner()
+		go watcher.StartScanner()
 	}
 
 	if !constants.NoServer {

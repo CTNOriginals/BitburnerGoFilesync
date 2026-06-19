@@ -24,6 +24,7 @@ func Initialize() {
 	clog.Debugf("Watcher Initialize, dir: %s", rootDir)
 
 	generatePatternPaths()
+
 	getNewEntries(rootDir, func(path string) {
 		registerFilePath(path)
 	})
@@ -41,6 +42,7 @@ func registerFilePath(path string) error {
 }
 
 func StartScanner() {
+	<-*websocket.Client.OnReadySub()
 	for {
 		getNewEntries(rootDir, func(path string) {
 			var err = registerFilePath(path)
@@ -52,6 +54,12 @@ func StartScanner() {
 
 			onFileCreate(path)
 		})
+
+		// var loglines = make([]string, 0)
+		// for path, modtime := range fileStateMap {
+		// 	loglines = append(loglines, fmt.Sprintf("%s: %s", path, time.Since(modtime).Round(time.Second)))
+		// }
+		// clog.Debug("\n", strings.Join(loglines, "\n"))
 
 		scan()
 
@@ -90,6 +98,7 @@ func getNewEntries(dir string, fn func(path string)) {
 	for _, subDir := range subDirs {
 		getNewEntries(subDir, fn)
 	}
+
 }
 
 func scan() {
@@ -124,12 +133,15 @@ func pushFile(path string) {
 }
 
 func onFileCreate(path string) {
+	clog.Debugf("On File Create: %s", path)
 	pushFile(path)
 }
 func onFileModify(path string) {
+	clog.Debugf("On File Modify: %s", path)
 	pushFile(path)
 }
 func onFileDelete(path string) {
+	clog.Debugf("On File Delete: %s", path)
 	websocket.Client.Socket.DeleteFile(websocket.Params_DeleteFile{
 		Filename: utils.ToBitburnerPath(path),
 		Server:   "home",
