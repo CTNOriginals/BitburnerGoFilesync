@@ -9,7 +9,7 @@ import (
 
 type SClient struct {
 	Connection *wsgorilla.Conn
-	Socket     SSocket
+	Socket     *SSocket
 
 	onReadyNotify []*chan bool
 	mutex         sync.Mutex
@@ -79,6 +79,9 @@ func (this *SClient) onReady() {
 	defer this.mutex.Unlock()
 
 	clog.Infof("Ready!")
+	if this.Socket == nil {
+		this.Socket = &SSocket{}
+	}
 
 	this.Connection.SetCloseHandler(this.onClose)
 	this.Socket.Open()
