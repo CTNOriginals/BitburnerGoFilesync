@@ -106,13 +106,13 @@ wrunstdin: ##@run Run a make wrun with wgoargs -stdin.
 .PHONY: build-win build-linux build-mac build
 
 build-win: ##@build Build for windows. Binary will be located at ./build/
-	GOOS=windows GOARCH=amd64 go build -o ./build/BitburnerGoFilesync_win.exe ./main.go
+	GOOS=windows GOARCH=amd64 go build -o ./build/BitburnerGoFilesync_win.exe .
 
 build-linux: ##@build Build for linux. Binary will be located at ./build/
-	GOOS=linux GOARCH=amd64 go build -o ./build/BitburnerGoFilesync_linux ./main.go
+	GOOS=linux GOARCH=amd64 go build -o ./build/BitburnerGoFilesync_linux .
 
 build-mac: ##@build Build for linux. Binary will be located at ./build/
-	GOOS=darwin GOARCH=amd64 go build -o ./build/BitburnerGoFilesync_mac ./main.go
+	GOOS=darwin GOARCH=amd64 go build -o ./build/BitburnerGoFilesync_mac .
 
 build: ##@build Build for both windows and linux. Binary will be located at ./build/
 	$(MAKE) build-win
