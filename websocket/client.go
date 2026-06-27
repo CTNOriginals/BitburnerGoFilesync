@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"net/http"
+	"slices"
 	"sync"
 
 	wsgorilla "github.com/gorilla/websocket"
@@ -78,7 +79,6 @@ func (this *SClient) onReady() {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
 
-	clog.Infof("Ready!")
 	if this.Socket == nil {
 		this.Socket = &SSocket{}
 	}
@@ -88,13 +88,17 @@ func (this *SClient) onReady() {
 
 	if len(this.onReadyNotify) > 0 {
 		// Unblock any scripts waiting on this signal
-		for _, sub := range this.onReadyNotify {
+		for i, sub := range this.onReadyNotify {
 			*sub <- true
+			close(*sub)
+			this.onReadyNotify = slices.Delete(this.onReadyNotify, i, i+1)
 		}
 	}
 
 	go this.sender()
 	go this.listener()
+
+	clog.Infof("Ready!")
 }
 
 func (this *SClient) OnReadySub() *chan bool {

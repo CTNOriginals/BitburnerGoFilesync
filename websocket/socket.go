@@ -31,9 +31,9 @@ func (this *SSocket) Close() {
 		return
 	}
 
+	this.isOpen = false
 	close(this.Channel)
 	this.Channel = nil
-	this.isOpen = false
 }
 
 func (this *SSocket) getId() int {
