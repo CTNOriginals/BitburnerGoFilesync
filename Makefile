@@ -86,16 +86,16 @@ git-graph: ##@git Log decorated graph
 # -- Run --
 .PHONY: run debug test wrun
 
-WGO_INCLUDE := -file .go -file .toml
+WGO_INCLUDE := -file .go -file .toml -file Makefile
 
 run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
 	go run . $(args)
 
-debug: ##@run Run with --test $(testargs. 
-	go run . $(args) --test $(testargs) 
+debug: ##@run Run with --test $(testargs).
+	go run . $(args) --test $(testargs)
 
-test: ##@run go test.
-	go test -v ./...
+test: ##@run go test $(args); for all packaged that contain at least 1 *_test.go script.
+	go test $(args) $$(go list -f '{{if len .TestGoFiles}}{{.ImportPath}}{{end}}' ./...)
 
 wrun: ##@run Run a make target and restart on file change. make wrun <wgoargs="args..."> target=[TARGET]. Requires wgo: https://github.com/bokwoon95/wgo
 	wgo $(WGO_INCLUDE) $(wgoargs) $(MAKE) $(target)
