@@ -1,16 +1,48 @@
 package watcher
 
-type FileEvent int
+import (
+	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
+)
+
+type EFileEvent int
 
 const (
-	OnFileModify FileEvent = iota
-	OnFileCreate
+	OnFileCreate EFileEvent = iota
+	OnFileModify
+	// TODO: OnFileMove
+	// TODO: OnFileRename
 	OnFileDelete
 )
 
-type MFileEventHandler map[FileEvent]func(file *FileInfo)
+type MEventHandler map[EFileEvent]func(path string)
 
-func (this MFileEventHandler) Handle(file *FileInfo, event FileEvent) {
-	fn := this[event]
-	fn(file)
+func (this MEventHandler) Emit(event EFileEvent, path string) {
+	this[event](path)
+}
+
+var fileEventHandler = MEventHandler{
+	OnFileCreate: func(path string) {
+		clog.Infof("On File Create: %s", path)
+		pushFile(path)
+	},
+	OnFileModify: func(path string) {
+		clog.Infof("On File Modify: %s", path)
+		pushFile(path)
+	},
+	OnFileDelete: func(path string) {
+		clog.Infof("On File Delete: %s", path)
+		websocket.Client.Socket.DeleteFile(websocket.Params_DeleteFile{
+			Filename: utils.ToBitburnerPath(path),
+			Server:   "home",
+		}, nil)
+	},
+}
+
+func pushFile(path string) {
+	websocket.Client.Socket.PushFile(websocket.Params_PushFile{
+		Filename: utils.ToBitburnerPath(path),
+		Content:  string(utils.GetFileContentByPath(path)),
+		Server:   "home",
+	}, nil)
 }

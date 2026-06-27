@@ -30,7 +30,7 @@ func ValidateBitburnerDirectory(dir string) {
 
 	dir = path.Clean(dir)
 
-	fmt.Printf("Set the bitburner working directory to: %s\n", dir)
+	clog.Infof("Validated and set: %s\n", dir)
 
 	Values.Directory = dir
 }

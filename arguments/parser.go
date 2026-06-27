@@ -1,7 +1,6 @@
 package arguments
 
 import (
-	"fmt"
 	"slices"
 )
 
@@ -74,7 +73,7 @@ func ParseArgs(args []string) {
 		var def, exists = argumentList.GetDefByAlias(stream.Alias)
 
 		if !exists {
-			fmt.Printf("Unknown argument flag: %s\n", stream.Alias)
+			clog.Errorf("Unknown argument flag: %s\n", stream.Alias)
 			continue
 		}
 

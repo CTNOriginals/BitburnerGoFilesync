@@ -1,17 +1,39 @@
 package config
 
 import (
-	"fmt"
+	"runtime"
 	"strings"
 
 	"github.com/BurntSushi/toml"
+	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
+	"github.com/bmatcuk/doublestar/v4"
 )
+
+func init() {
+	// BUG: this happens a little too late for some logs
+	// that already got printed, resulting in those logs
+	// containing color regardless of the setting.
+	clogger.ConfigValueNoColor = &Values.Logging.NoColor
+}
+
+var clog = clogger.Default.Clone(clogger.SClog{
+	Name: "config",
+
+	LogLevelState: clogger.MLogLevelState{
+		clogger.LogInfo | clogger.LogDebug: func() bool {
+			return constants.LogConfig
+		},
+	},
+})
 
 type TConfigFilrPatterns struct {
 	Include []string
 	Exclude []string
+}
+type TConfigLogging struct {
+	NoColor bool
 }
 
 type TConfig struct {
@@ -19,6 +41,7 @@ type TConfig struct {
 	Directory        string
 	FileScanInterval int
 	FilePatterns     TConfigFilrPatterns
+	Logging          TConfigLogging
 }
 
 var Values = &TConfig{
@@ -26,8 +49,11 @@ var Values = &TConfig{
 	Directory:        "./",
 	FileScanInterval: 1000,
 	FilePatterns: TConfigFilrPatterns{
-		Include: []string{"*.js", "*.ts"},
-		Exclude: []string{"*.d.ts"},
+		Include: []string{"**/*.js", "**/*.ts"},
+		Exclude: []string{"**/*.d.ts"},
+	},
+	Logging: TConfigLogging{
+		NoColor: false,
 	},
 }
 
@@ -36,10 +62,10 @@ func Initialize() {
 
 	var content []byte
 	if content, err = toml.Marshal(Values); err != nil {
-		panic(fmt.Sprintf("Default config values, marshal error:\n%v\n", err))
+		clog.Fatalf("Default config values, marshal error:\n%v\n", err)
 	}
 
-	log(fmt.Sprintf("Defaults:\n%s\n", content))
+	clog.Debugf("Defaults:\n%s\n", content)
 
 	if !ctnfile.FileExists(constants.ConfigFilePath) {
 		var content, _ = toml.Marshal(Values)
@@ -47,22 +73,26 @@ func Initialize() {
 	}
 
 	if _, err = toml.DecodeFile(constants.ConfigFilePath, &Values); err != nil {
-		panic(fmt.Sprintf("Config decode error:\n%v", err))
+		clog.Fatalf("Config decode error:\n%v", err)
 	}
 
-	log(fmt.Sprintf("Config file content:\n%+v\n", Values))
 	validateConfigValues()
-	log(fmt.Sprintf("Config Values:\n%+v\n", Values))
+	clog.Debugf("Config Values:\n%+v\n", Values)
 }
 
 func validateConfigValues() {
 	ValidateBitburnerDirectory(Values.Directory)
-}
 
-func log(msg string) {
-	if !constants.Debug || !constants.LogConfig {
-		return
+	var invalidPatterns = make([]string, 0)
+
+	for _, pattern := range append(Values.FilePatterns.Include, Values.FilePatterns.Exclude...) {
+		if !doublestar.ValidatePathPattern(pattern) {
+			invalidPatterns = append(invalidPatterns, pattern)
+		}
 	}
 
-	print(msg)
+	if len(invalidPatterns) > 0 {
+		clog.Fatalf("The following file pattens are invalid:\n%s", strings.Join(invalidPatterns, "\n"))
+		runtime.Goexit()
+	}
 }

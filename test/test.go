@@ -1,26 +1,36 @@
 package test
 
 import (
-	"fmt"
+	"log"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/config"
-	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
+	"github.com/CTNOriginals/BitburnerGoFilesync/cli"
+	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
+	"github.com/CTNOriginals/BitburnerGoFilesync/watcher"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 )
 
-func DoTest() {
-	// config.Initialize()
-	println("\n")
-	fmt.Printf("%s: %v\n", "Port", config.Values.Port)
-	fmt.Printf("%s: %v\n", "WorkindDirectory", constants.WorkindDirectory)
-	fmt.Printf("%s: %v\n", "ConfigFile", constants.ConfigFilePath)
-	fmt.Printf("%s: %v\n", "BitburnerRoot", config.Values.Directory)
-	fmt.Printf("%s: %v\n", "IncludeFileExt", config.Values.FilePatterns.Include)
-	fmt.Printf("%s: %v\n", "FileScanDelay", config.Values.FilePatterns.Exclude)
-	fmt.Printf("%s: %v\n", "NoWatcher", constants.NoWatcher)
-	fmt.Printf("%s: %v\n", "NoServer", constants.NoServer)
-	fmt.Printf("%s: %v\n", "KeepAlive", constants.KeepAlive)
-	println("")
+var testFunctions = map[string]func(){
+	"logger":  clogger.TestLogger,
+	"client":  websocket.TestClient,
+	"cli":     cli.TestCli,
+	"watcher": watcher.TestWatcher,
+}
 
-	// watcher.FileScanner()
-	// watcher.Initialize()
+func Register(name string, fn func()) {
+	testFunctions[name] = fn
+}
+
+func DoTest(args ...string) {
+	log.Printf("Running debug with args: %v\n", args)
+
+	for _, arg := range args {
+		var fn, exists = testFunctions[arg]
+
+		if !exists {
+			log.Printf("Unknown test function name: %s\n", arg)
+			continue
+		}
+
+		fn()
+	}
 }

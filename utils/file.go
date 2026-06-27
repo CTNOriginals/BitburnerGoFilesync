@@ -3,6 +3,8 @@ package utils
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
@@ -14,14 +16,14 @@ import (
 func ForEachFileInDir(dir string, fn func(file os.FileInfo)) {
 	files, err := os.ReadDir(dir)
 	if err != nil {
-		fmt.Printf("utils/ForEachFileInDir os.ReadDir(): %v\n", err)
+		clog.Error(err)
 		return
 	}
 
 	for _, file := range files {
 		info, err := file.Info()
 		if err != nil {
-			fmt.Printf("utils/ForEachFileInDir file.Info(): %v\n", err)
+			clog.Error(err)
 			continue
 		}
 
@@ -42,51 +44,26 @@ func ForEachFileInDirRecursive(dir string, fn func(file os.FileInfo, dir string)
 	})
 }
 
+func GetRelativePath(path string) string {
+	return strings.TrimPrefix(path, config.Values.Directory)
+}
+
 func GetAbsolutePath(path string) string {
-	return fmt.Sprintf("%s/%s", config.Values.Directory, path)
+	return filepath.Join(config.Values.Directory, path)
+}
+
+func ToBitburnerPath(path string) string {
+	path = filepath.ToSlash(path)
+	path = GetRelativePath(path)
+	return path
 }
 
 // The path needs to be relative the the bitburner dir
 func GetFileContentByPath(path string) []byte {
-	var filePath = GetAbsolutePath(path)
-
-	if !ctnfile.FileExists(filePath) {
-		fmt.Printf("utils/GetFileContentByPath File does not exist: %s\n", filePath)
+	if !ctnfile.FileExists(path) {
+		clog.Errorf("File does not exist: %s\n", path)
 		return []byte{}
 	}
 
-	return ctnfile.GetFileBytes(filePath)
-}
-
-// Will return the content with any string termenating character escapes.
-//
-// The output of this will be able to be passed in as a json value
-// without it escaping out of its own falue field
-func SanitizeFileContent(content []byte) []byte {
-	sanitized := []byte{}
-
-	for _, char := range content {
-		switch char {
-		case '\\':
-			sanitized = append(sanitized, '\\', char)
-
-			// switch content[i+1] {
-			// case 'n', 't', 'r', '/':
-			// 	//? Add an extra '\' to preserve the escaped string
-			// 	sanitized = append(sanitized, '\\', char)
-			// }
-		case '\r':
-			continue
-		case '"':
-			sanitized = append(sanitized, '\\', char)
-		case '\n':
-			sanitized = append(sanitized, '\\', 'n')
-		case '\t':
-			sanitized = append(sanitized, '\\', 't')
-		default:
-			sanitized = append(sanitized, char)
-		}
-	}
-
-	return sanitized
+	return ctnfile.GetFileBytes(path)
 }

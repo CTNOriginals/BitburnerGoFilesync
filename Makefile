@@ -49,11 +49,32 @@ help: ##@help Display all commands and descriptions
 		} \
 	}' $(MAKEFILE_LIST)
 
+list: ##@help List all targets and their commands
+	@awk 'BEGIN { \
+		target = ""; cmds = ""; \
+	} \
+	/^[.a-zA-Z_-]+:/ && !/^\.PHONY/ { \
+		if (target != "" && cmds != "") { \
+			printf "  \033[36m%-15s\033[0m\n%s\n", target, cmds; \
+		} \
+		split($$0, a, ":"); \
+		target = (a[1] == "help" || a[1] == "list") ? "" : a[1]; \
+		cmds = ""; \
+	} \
+	/^\t/ && target != "" { \
+		cmds = cmds "    " substr($$0, 2) "\n"; \
+	} \
+	END { \
+		if (target != "" && cmds != "") { \
+			printf "  \033[36m%-15s\033[0m\n%s\n", target, cmds; \
+		} \
+	}' $(MAKEFILE_LIST)
+
 version: ##@help Log the current version
 	@echo "v$(CURRENT_VERSION_PATCH)"
 
 # proto: ##@help For prototyping makefile functionality
-# 	@echo hello "$@"
+# 	@echo hello $1
 
 # -- Git --
 .PHONY: git-graph adog
@@ -62,22 +83,27 @@ git-graph: ##@git Log decorated graph
 	git log --all --decorate --oneline --graph
 	# git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all
 
-# -- Project --
-.PHONY: run wrun debug test build-win build-linux build-mac build
+# -- Run --
+.PHONY: run debug test wrun
 
-WGO_INCLUDE := -file .go -file .toml
+WGO_INCLUDE := -file .go -file .toml -file Makefile
 
 run: ##@run Run normally. Pass arguments like so: args="arg1 arg2 ...".
-	go run ./main.go $(args)
+	go run . $(args)
 
-wrun: ##@run Run and watch for file changes. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo $(WGO_INCLUDE) go run ./main.go $(args)
+debug: ##@run Run with --test $(testargs).
+	go run . $(args) --test $(testargs)
 
-debug: ##@run Run and watch with the --test flag. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo $(WGO_INCLUDE) go run . $(args) --test
+test: ##@run go test $(args); for all packaged that contain at least 1 *_test.go script.
+	go test $(args) $$(go list -f '{{if len .TestGoFiles}}{{.ImportPath}}{{end}}' ./...)
 
-test: ##@run go test and watch. Requires wgo: https://github.com/bokwoon95/wgo
-	wgo $(WGO_INCLUDE) go test -v ./...
+wrun: ##@run Run a make target and restart on file change. make wrun <wgoargs="args..."> target=[TARGET]. Requires wgo: https://github.com/bokwoon95/wgo
+	wgo $(WGO_INCLUDE) $(wgoargs) $(MAKE) $(target)
+wrunstdin: ##@run Run a make wrun with wgoargs -stdin.
+	$(MAKE) wrun wgoargs="-stdin $(wgoargs)" target="$(target)"
+
+# -- Build --
+.PHONY: build-win build-linux build-mac build
 
 build-win: ##@build Build for windows. Binary will be located at ./build/
 	GOOS=windows GOARCH=amd64 go build -o ./build/BitburnerGoFilesync_win.exe ./main.go

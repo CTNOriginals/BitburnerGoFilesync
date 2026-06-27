@@ -1,35 +1,50 @@
 package watcher
 
 import (
-	"fmt"
 	"os"
-	"strings"
 	"time"
 
+	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
-	"github.com/CTNOriginals/BitburnerGoFilesync/utils"
-	"github.com/bmatcuk/doublestar/v4"
-
-	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
+	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 )
 
-var FileStateMap MFileState = MFileState{}
+var clog = clogger.Default.Clone(clogger.SClog{
+	Name: "watcher",
+})
 
-// Initialize all relevant files and store them
-// in a data object along with their current states.
+var rootDir string
+var fileStateMap MFileState
+
 func Initialize() {
-	// Register the existing files without calling the OnCreate event
-	// to prevent them from being sent over the websocket
-	for _, file := range getUnregisteredFiles(config.Values.Directory) {
-		FileStateMap[file.Path] = file
-	}
+	rootDir = config.Values.Directory
+	fileStateMap = make(MFileState)
+	clog.Infof("Watcher Initialize, dir: %s", rootDir)
+
+	generatePatternPaths()
+	fileStateMap.GetNewEntries(rootDir, func(path string) {
+		var err = fileStateMap.Push(path)
+		if err != nil {
+			clog.Errorf("Encountered an unexpected error while getting file info %s:\n%v", path, err)
+		}
+	})
 }
 
-func FileScanner() {
-	fmt.Printf("Scanning files in: %s\n", config.Values.Directory)
-
+func StartScanner() {
+	<-*websocket.Client.OnReadySub()
 	for {
-		scanFiles()
+		fileStateMap.GetNewEntries(rootDir, func(path string) {
+			var err = fileStateMap.Push(path)
+
+			if err != nil {
+				clog.Errorf("Encountered an unexpected error while getting file info %s:\n%v", path, err)
+				return
+			}
+
+			fileEventHandler.Emit(OnFileCreate, path)
+		})
+
+		scan()
 
 		if config.Values.FileScanInterval > 0 {
 			time.Sleep(time.Millisecond * time.Duration(config.Values.FileScanInterval))
@@ -37,100 +52,25 @@ func FileScanner() {
 	}
 }
 
-// Scans all file states in FileStates.
-// Once a change is detected on one of the files,
-// the event will be added to the state.
-func scanFiles() {
-	for path, state := range FileStateMap {
-		var fullPath = utils.GetAbsolutePath(path)
+func scan() {
+	for path, modTime := range fileStateMap {
+		var info, err = os.Stat(path)
 
-		if !ctnfile.FileExists(fullPath) {
-			FileEventHandlerMap.Handle(state, OnFileDelete)
-			continue
-		}
-
-		if state.GetInfo().ModTime().Compare(state.Info.ModTime()) == 1 {
-			FileEventHandlerMap.Handle(state, OnFileModify)
-		}
-	}
-
-	newFiles := getUnregisteredFiles(config.Values.Directory)
-
-	for _, file := range newFiles {
-		fmt.Printf("new file: %s\n", file)
-		FileEventHandlerMap.Handle(file, OnFileCreate)
-	}
-}
-
-// Checks the dir recursivly for any files
-// that are not present in FileStates and returns them.
-func getUnregisteredFiles(dir string) (newFiles []*FileInfo) {
-	utils.ForEachFileInDirRecursive(dir, func(file os.FileInfo, dir string) {
-		var reldir = strings.Replace(dir, config.Values.Directory, "", 1)
-		// Relative path to bitburners root dir
-		var path string
-
-		if reldir == "" {
-			path = file.Name()
-		} else {
-			path = fmt.Sprintf("%s/%s", reldir, file.Name())
-
-			// Remove the first '/' if it is present.
-			// This ensures a little more consistency
-			// revative to the paths that are at the root level.
-			if path[0] == '/' {
-				path = path[1:]
+		if err != nil {
+			if !os.IsNotExist(err) {
+				clog.Errorf("Unknown error on path %s:\n%v", path, err)
 			}
-		}
 
-		if !shouldIncludeFile(path) {
-			return
-		}
-
-		_, exists := FileStateMap[path]
-
-		if exists {
-			return
-		}
-
-		newFiles = append(newFiles, &FileInfo{Path: path, Info: file})
-	})
-
-	return newFiles
-}
-
-// Check if the file path should be included
-// according to the config values Include and Exclude patternd
-func shouldIncludeFile(path string) bool {
-	for _, pattern := range config.Values.FilePatterns.Exclude {
-		if !patternMatch(pattern, path) {
+			fileEventHandler.Emit(OnFileDelete, path)
+			delete(fileStateMap, path)
 			continue
 		}
 
-		return false
-	}
-
-	for _, pattern := range config.Values.FilePatterns.Include {
-		if !patternMatch(pattern, path) {
+		if modTime.Equal(info.ModTime()) {
 			continue
 		}
 
-		return true
+		fileEventHandler.Emit(OnFileModify, path)
+		fileStateMap[path] = info.ModTime()
 	}
-
-	return len(config.Values.FilePatterns.Include) == 0
-}
-
-func patternMatch(pattern string, path string) bool {
-	var match bool
-	var err error
-
-	match, err = doublestar.PathMatch(pattern, path)
-
-	if err != nil {
-		fmt.Printf("Pattern match error: %v (%s > %s = %t)\n", err, pattern, path, match)
-		return false
-	}
-
-	return match
 }

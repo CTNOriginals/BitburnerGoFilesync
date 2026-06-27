@@ -1,24 +1,18 @@
 package arguments
 
 import (
-	"fmt"
-	"os"
+	"runtime"
 	"strconv"
-	"strings"
 
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication"
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication/constructor"
-	"github.com/CTNOriginals/BitburnerGoFilesync/communication/definitions"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	"github.com/CTNOriginals/BitburnerGoFilesync/test"
-	"github.com/gorilla/websocket"
 
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 	ctnstring "github.com/CTNOriginals/CTNGoUtils/v2/string"
 )
 
-// This list can be used inside the actions of arguments
+// NOTE: This list can be used inside the actions of arguments
 // to workaround the initialization cycle error.
 // It will be assigned once ParseArgs is called.
 var onInitList argList = nil
@@ -57,41 +51,13 @@ var argumentList = argList{
 			},
 		},
 		Action: func(params []string) {
-			if len(params) > 0 {
-				for _, param := range params {
-					var def, exists = onInitList.GetDefByAlias("--" + params[0])
-					if !exists {
-						fmt.Printf("Unknown argument flag: %s\n", param)
-						continue
-					}
-
-					println(def.String())
-				}
-
-				os.Exit(0)
-				return
+			if len(params) == 0 {
+				printHelp()
+			} else {
+				printHelpSelect(params...)
 			}
 
-			var maxAliasSpace = 0
-
-			// Precalculate the max amount of spaces any alias will ever take in
-			// to then be able to apply that space before the descrition of each argument
-			for _, def := range onInitList {
-				var length = len(strings.Join(def.Alias, ", "))
-				if length > maxAliasSpace {
-					maxAliasSpace = length
-				}
-			}
-
-			for _, def := range onInitList {
-				var alias = strings.Join(def.Alias, ", ")
-				var desc = ctnstring.Repeat(" ", maxAliasSpace-len(alias))
-				desc += strings.Join(def.Description, "\n"+ctnstring.Repeat(" ", maxAliasSpace+2))
-
-				fmt.Printf("%s: %s\n\n", alias, desc)
-			}
-
-			os.Exit(0)
+			runtime.Goexit()
 		},
 	},
 	{Alias: []string{"--full-help", "--fhelp"},
@@ -102,10 +68,10 @@ var argumentList = argList{
 		Params: argParameters{},
 		Action: func(params []string) {
 			for _, arg := range onInitList {
-				println(arg.String())
+				clog.Message(arg.String())
 			}
 
-			os.Exit(0)
+			runtime.Goexit()
 		},
 	},
 	{Alias: []string{"--config"},
@@ -122,8 +88,8 @@ var argumentList = argList{
 		},
 		Action: func(params []string) {
 			if len(params) == 0 {
-				fmt.Print("'--config' requires at least 1 parameter.\n")
-				os.Exit(1)
+				clog.Error("'--config' requires at least 1 parameter.\n")
+				runtime.Goexit()
 			}
 
 			constants.ConfigFilePath = params[0]
@@ -142,13 +108,13 @@ var argumentList = argList{
 		},
 		Action: func(params []string) {
 			if len(params) == 0 {
-				fmt.Print("'--dir' requires at least 1 parameter.\n")
-				os.Exit(1)
+				clog.Error("'--dir' requires at least 1 parameter.\n")
+				runtime.Goexit()
 			}
 
 			if !ctnfile.PathExists(params[0]) {
-				fmt.Printf("'--dir' directory does not exist: %s\n", params[0])
-				os.Exit(1)
+				clog.Errorf("'--dir' directory does not exist: %s\n", params[0])
+				runtime.Goexit()
 			}
 
 			config.ValidateBitburnerDirectory(params[0])
@@ -182,8 +148,8 @@ var argumentList = argList{
 		},
 		Action: func(params []string) {
 			if len(params) == 0 {
-				fmt.Print("'--port' requires at least 1 parameter.\n")
-				os.Exit(1)
+				clog.Error("'--port' requires at least 1 parameter.\n")
+				runtime.Goexit()
 			}
 
 			config.Values.Port = params[0]
@@ -202,20 +168,20 @@ var argumentList = argList{
 		},
 		Action: func(params []string) {
 			if len(params) == 0 {
-				fmt.Println("'--scan-interval' requires at least 1 parameter.")
-				os.Exit(1)
+				clog.Error("'--scan-interval' requires at least 1 parameter.")
+				runtime.Goexit()
 			}
 
 			if !ctnstring.Validate(params[0], "1234567890") {
-				fmt.Println("'--scan-interval' only accepts number characters")
-				os.Exit(1)
+				clog.Error("'--scan-interval' only accepts number characters")
+				runtime.Goexit()
 			}
 
 			var num, err = strconv.ParseInt(params[0], 0, 64)
 
 			if err != nil {
-				fmt.Println("'--scan-interval'", err)
-				os.Exit(1)
+				clog.Error("'--scan-interval'", err)
+				runtime.Goexit()
 			}
 
 			config.Values.FileScanInterval = int(num)
@@ -223,44 +189,43 @@ var argumentList = argList{
 	},
 	{Alias: []string{"--get-definitions"},
 		Description: []string{
+			"Currently not functional.",
 			"Requests the NetscriptDefinitions.d.ts file when a connection is established.",
 			"The definitions file will be created in bitburners root directory.",
 		},
 		Params: argParameters{},
 		Action: func(params []string) {
-			var onResponse = func(message *constructor.Message) {
-				if message.IsError {
-					println(message.Response)
-					return
-				}
-
-				var content, ok = message.Response.(string)
-				if !ok {
-					fmt.Printf("'--get-definitions' expects a string response but received another type instead: %v", message.Response)
-					return
-				}
-				ctnfile.WriteFile(config.Values.Directory+"/NetscriptDefinitions.d.ts", strings.Split(content, "\n"))
-			}
-
-			var onConnect = func(ws *websocket.Conn) {
-				communication.SendRequest(definitions.GetDefinitionFile, onResponse)
-			}
-
-			communication.OnConnectionCallbacks = append(communication.OnConnectionCallbacks, onConnect)
+			clog.Error("TODO: Handle --get-definitions")
 		},
 	},
 
 	{Alias: []string{"DEBUG ARGUMENTS"}},
 
-	{Alias: []string{"--test", "--debug"},
+	{Alias: []string{"--test"},
 		Description: []string{
-			"Runs the test function if it exists",
+			"Runs the test and with the provided inputs.",
+		},
+		Params: argParameters{
+			{Name: "packages",
+				Description: []string{
+					"Packages to run the test functions of.",
+					"Can be multiple seperated by spaces.",
+				},
+			},
+		},
+		Action: func(params []string) {
+			constants.Debug = true
+			test.DoTest(params...)
+			runtime.Goexit()
+		},
+	},
+	{Alias: []string{"--debug"},
+		Description: []string{
+			"Enables debug mode, mostly means that debug logs will be printed.",
 		},
 		Params: argParameters{},
 		Action: func(params []string) {
 			constants.Debug = true
-			test.DoTest()
-			os.Exit(0)
 		},
 	},
 	{Alias: []string{"--no-watcher"},
@@ -272,36 +237,22 @@ var argumentList = argList{
 			constants.NoWatcher = true
 		},
 	},
-	{Alias: []string{"--no-server"},
+	{Alias: []string{"--no-server", "--no-client", "--no-websocket"},
 		Description: []string{
 			"Prevents the program from creating a server and connecting to bitburner.",
 		},
-		Params: argParameters{
-			{Name: "keep-alive", Description: []string{
-				"Accepts: true, false",
-				"Usually when a server is ran, the program wont exit as it keeps evaluating it,",
-				"if this parameter is set to true, the program will still be prevented from exiting.",
-			}},
-		},
+		Params: argParameters{},
 		Action: func(params []string) {
 			constants.NoServer = true
-
-			if len(params) > 0 && params[0] == "true" {
-				constants.KeepAlive = true
-			}
 		},
 	},
-	// {Alias: []string{"--config"},
-	// 	Description: []string{
-	// 		"COMING SOON: Specify the location of the config file.",
-	// 	},
-	// 	Params: argParameters{
-	// 		{Name: "file", Description: []string{
-	// 			"The file path to the config",
-	// 		}},
-	// 	},
-	// 	Action: func(params []string) {
-	// 		println("TODO: Add a global config")
-	// 	},
-	// },
+	{Alias: []string{"--no-cli"},
+		Description: []string{
+			"Prevents the program running the cli.",
+		},
+		Params: argParameters{},
+		Action: func(params []string) {
+			constants.NoCli = true
+		},
+	},
 }

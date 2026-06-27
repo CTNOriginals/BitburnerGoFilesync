@@ -1,7 +1,9 @@
-package utils
+package websocket
 
 import "github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 
 var clog = clogger.Default.Clone(clogger.SClog{
-	Name: "utils",
+	Name: "websocket",
 })
+
+var Client = &SClient{}

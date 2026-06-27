@@ -1,100 +1,172 @@
 package watcher
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
-
-	"github.com/CTNOriginals/BitburnerGoFilesync/config"
-	. "github.com/smartystreets/goconvey/convey"
+	"time"
 )
 
-func testFilePattern(path string, state bool) {
-	var assertion = ShouldBeTrue
-
-	if !state {
-		assertion = ShouldBeFalse
-	}
-
-	Convey(path, func() {
-		So(shouldIncludeFile(path), assertion)
-	})
+type TEventCall struct {
+	event EFileEvent
+	path  string
 }
 
-func TestPatternMatching(t *testing.T) {
-	Convey("Config values are populated", t, func() {
-		Convey("Include and Exclude are empty, all should be true", func() {
-			config.Values.FilePatterns.Include = []string{}
-			config.Values.FilePatterns.Exclude = []string{}
+func TestEmitDispatchesCorrectHandler(t *testing.T) {
+	var recorded string
+	var handler = MEventHandler{
+		OnFileCreate: func(path string) { recorded = path },
+	}
 
-			testFilePattern("index.ts", true)
-			testFilePattern("index.d.ts", true)
-			testFilePattern("dir/index.ts", true)
-			testFilePattern("dir/index.d.ts", true)
-			testFilePattern("foo/bar/dir/index.ts", true)
-			testFilePattern("foo/bar/dir/index.d.ts", true)
-		})
+	handler.Emit(OnFileCreate, "test.ts")
 
-		Convey("Include *.ts Exclude *.d.ts", func() {
-			config.Values.FilePatterns.Include = []string{
-				"*.ts",
-			}
-			config.Values.FilePatterns.Exclude = []string{
-				"*.d.ts",
-			}
+	if recorded != "test.ts" {
+		t.Errorf("Emit recorded %q, want %q", recorded, "test.ts")
+	}
+}
 
-			Convey("Should return true", func() {
-				testFilePattern("index.ts", true)
-				testFilePattern("dir/index.ts", true)
-				testFilePattern("foo/bar/dir/index.ts", true)
-			})
-			Convey("Should return false", func() {
-				testFilePattern("index.d.ts", false)
-				testFilePattern("dir/index.d.ts", false)
-				testFilePattern("foo/bar/dir/index.d.ts", false)
-			})
-		})
+func TestEmitPanicsOnMissingKey(t *testing.T) {
+	var handler = MEventHandler{}
 
-		Convey("Include **/*.ts Exclude **/*.d.ts", func() {
-			config.Values.FilePatterns.Include = []string{
-				"**/*.ts",
-			}
-			config.Values.FilePatterns.Exclude = []string{
-				"**/*.d.ts",
-			}
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("expected panic for missing event handler")
+		}
+	}()
 
-			Convey("Should return true", func() {
-				testFilePattern("dir/index.ts", true)
-				testFilePattern("foo/bar/dir/index.ts", true)
-			})
-			Convey("Should return false", func() {
-				testFilePattern("index.ts", false)
-				testFilePattern("index.d.ts", false)
-				testFilePattern("dir/index.d.ts", false)
-				testFilePattern("foo/bar/dir/index.d.ts", false)
-			})
-		})
+	handler.Emit(OnFileCreate, "test.ts")
+}
 
-		Convey("Include **/foo/** Exclude **/foo/bar/**", func() {
-			config.Values.FilePatterns.Include = []string{
-				"foo/**",
-				"**/foo/**",
-			}
-			config.Values.FilePatterns.Exclude = []string{
-				"foo/bar/**",
-				"**/foo/bar/**",
-			}
+func TestScanDetectsModification(t *testing.T) {
+	var dir = t.TempDir()
+	var filePath = filepath.Join(dir, "test.ts")
+	os.WriteFile(filePath, []byte("original"), 0644)
 
-			Convey("Should return true", func() {
-				testFilePattern("foo/index.ts", true)
-				testFilePattern("root/foo/child/main.js", true)
-				testFilePattern("root/dir/foo/index.html", true)
-			})
-			Convey("Should return false", func() {
-				testFilePattern("index.ts", false)
-				testFilePattern("root/index.d.ts", false)
-				testFilePattern("foo/bar/index.ts", false)
-				testFilePattern("root/foo/bar/index.ts", false)
-			})
+	var past = time.Now().Add(-time.Hour)
+	os.Chtimes(filePath, past, past)
 
-		})
+	var savedState = fileStateMap
+	var savedHandler = fileEventHandler
+	t.Cleanup(func() {
+		fileStateMap = savedState
+		fileEventHandler = savedHandler
 	})
+
+	fileStateMap = MFileState{filePath: past}
+
+	var recorded []TEventCall
+	fileEventHandler = MEventHandler{
+		OnFileModify: func(path string) { recorded = append(recorded, TEventCall{OnFileModify, path}) },
+		OnFileDelete: func(path string) { recorded = append(recorded, TEventCall{OnFileDelete, path}) },
+	}
+
+	os.WriteFile(filePath, []byte("modified"), 0644)
+
+	scan()
+
+	if len(recorded) != 1 {
+		t.Fatalf("expected 1 event, got %d: %v", len(recorded), recorded)
+	}
+	if recorded[0].event != OnFileModify {
+		t.Errorf("expected OnFileModify, got %v", recorded[0].event)
+	}
+	if recorded[0].path != filePath {
+		t.Errorf("expected path %q, got %q", filePath, recorded[0].path)
+	}
+
+	if fileStateMap[filePath] == past {
+		t.Error("scan() did not update fileStateMap with new modtime")
+	}
+}
+
+func TestScanDetectsDeletion(t *testing.T) {
+	var dir = t.TempDir()
+	var filePath = filepath.Join(dir, "test.ts")
+	os.WriteFile(filePath, []byte("content"), 0644)
+
+	var savedState = fileStateMap
+	var savedHandler = fileEventHandler
+	t.Cleanup(func() {
+		fileStateMap = savedState
+		fileEventHandler = savedHandler
+	})
+
+	fileStateMap = MFileState{filePath: time.Now()}
+
+	var recorded []TEventCall
+	fileEventHandler = MEventHandler{
+		OnFileDelete: func(path string) { recorded = append(recorded, TEventCall{OnFileDelete, path}) },
+	}
+
+	os.Remove(filePath)
+
+	scan()
+
+	if len(recorded) != 1 {
+		t.Fatalf("expected 1 event, got %d: %v", len(recorded), recorded)
+	}
+	if recorded[0].event != OnFileDelete {
+		t.Errorf("expected OnFileDelete, got %v", recorded[0].event)
+	}
+	if recorded[0].path != filePath {
+		t.Errorf("expected path %q, got %q", filePath, recorded[0].path)
+	}
+
+	if _, exists := fileStateMap[filePath]; exists {
+		t.Error("scan() did not delete entry from fileStateMap")
+	}
+}
+
+func TestScanSkipsUnchangedFiles(t *testing.T) {
+	var dir = t.TempDir()
+	var filePath = filepath.Join(dir, "test.ts")
+	os.WriteFile(filePath, []byte("content"), 0644)
+
+	var info, _ = os.Stat(filePath)
+	var modTime = info.ModTime()
+
+	var savedState = fileStateMap
+	var savedHandler = fileEventHandler
+	t.Cleanup(func() {
+		fileStateMap = savedState
+		fileEventHandler = savedHandler
+	})
+
+	fileStateMap = MFileState{filePath: modTime}
+
+	var recorded []TEventCall
+	fileEventHandler = MEventHandler{
+		OnFileCreate: func(path string) { recorded = append(recorded, TEventCall{OnFileCreate, path}) },
+		OnFileModify: func(path string) { recorded = append(recorded, TEventCall{OnFileModify, path}) },
+		OnFileDelete: func(path string) { recorded = append(recorded, TEventCall{OnFileDelete, path}) },
+	}
+
+	scan()
+
+	if len(recorded) != 0 {
+		t.Errorf("expected 0 events for unchanged file, got %d: %v", len(recorded), recorded)
+	}
+}
+
+func TestScanNoOpOnEmptyMap(t *testing.T) {
+	var savedState = fileStateMap
+	var savedHandler = fileEventHandler
+	t.Cleanup(func() {
+		fileStateMap = savedState
+		fileEventHandler = savedHandler
+	})
+
+	fileStateMap = make(MFileState)
+
+	var recorded []TEventCall
+	fileEventHandler = MEventHandler{
+		OnFileModify: func(path string) { recorded = append(recorded, TEventCall{OnFileModify, path}) },
+		OnFileDelete: func(path string) { recorded = append(recorded, TEventCall{OnFileDelete, path}) },
+	}
+
+	scan()
+
+	if len(recorded) != 0 {
+		t.Errorf("expected 0 events for empty map, got %d", len(recorded))
+	}
 }
