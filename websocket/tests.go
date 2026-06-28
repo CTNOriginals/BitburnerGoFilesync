@@ -9,7 +9,7 @@ func TestClient() {
 	go Client.Start(config.Values.Port)
 	defer Client.Close()
 
-	<-*Client.OnReadySub()
+	<-*Client.OnReadySubNotify()
 	clog.Debug("OnReady!")
 
 	Client.Socket.GetAllFiles(Params_GetAllFiles{

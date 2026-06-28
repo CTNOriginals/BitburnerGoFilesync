@@ -111,7 +111,7 @@ func (this *SClient) onReady() {
 	clog.Infof("Ready!")
 }
 
-func (this *SClient) OnReadySub() *chan bool {
+func (this *SClient) OnReadySubNotify() *chan bool {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
 
