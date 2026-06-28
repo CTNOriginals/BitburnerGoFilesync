@@ -1,7 +1,8 @@
 package config
 
 type SConfigLogging struct {
-	NoColor bool
+	NoColor   bool
+	LogConfig bool
 }
 
 func (this SConfigLogging) ValidateValues() error {

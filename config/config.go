@@ -12,9 +12,6 @@ import (
 )
 
 func init() {
-	// BUG: this happens a little too late for some logs
-	// that already got printed, resulting in those logs
-	// containing color regardless of the setting.
 	clogger.ConfigValueNoColor = &Values.Logging.NoColor
 }
 
@@ -22,8 +19,11 @@ var clog = clogger.Default.Clone(clogger.SClog{
 	Name: "config",
 
 	LogLevelState: clogger.MLogLevelState{
-		clogger.LogInfo | clogger.LogDebug: func() bool {
-			return constants.LogConfig
+		clogger.LogInfo: func() bool {
+			return Values.Logging.LogConfig
+		},
+		clogger.LogDebug: func() bool {
+			return constants.Debug && Values.Logging.LogConfig
 		},
 	},
 })
@@ -49,7 +49,8 @@ var Values = &SConfig{
 		Exclude: []string{"**/*.d.ts"},
 	},
 	Logging: SConfigLogging{
-		NoColor: false,
+		NoColor:   false,
+		LogConfig: false,
 	},
 }
 
@@ -61,8 +62,6 @@ func Initialize() {
 		clog.Fatalf("Default config values, marshal error:\n%v\n", err)
 	}
 
-	clog.Debugf("Defaults:\n%s\n", content)
-
 	if !ctnfile.FileExists(constants.ConfigFilePath) {
 		var content, _ = toml.Marshal(Values)
 		ctnfile.WriteFile(constants.ConfigFilePath, strings.Split(string(content), "\n"))
@@ -72,8 +71,10 @@ func Initialize() {
 		clog.Fatalf("Config decode error:\n%v", err)
 	}
 
+	clog.Debugf("Defaults:\n%s\n", content)
+	clog.Debugf("Config Values:\n%+v\n", ctnstruct.ToString(Values))
+
 	validateConfigValues()
-	clog.Debugf("Config Values:\n%+v\n", Values)
 }
 
 func validateConfigValues() {
