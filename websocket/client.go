@@ -90,6 +90,9 @@ func (this *SClient) onReady() {
 	this.Connection.SetCloseHandler(this.onClose)
 	this.Socket.Open()
 
+	go this.sender()
+	go this.listener()
+
 	// Unblock any scripts waiting on this signal
 	for i, sub := range this.onReadyNotify {
 		*sub <- true
@@ -104,9 +107,6 @@ func (this *SClient) onReady() {
 			this.onReadyCallback = slices.Delete(this.onReadyCallback, i, i+1)
 		}
 	}
-
-	go this.sender()
-	go this.listener()
 
 	clog.Infof("Ready!")
 }
