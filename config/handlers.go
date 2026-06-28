@@ -1,12 +1,38 @@
 package config
 
+import (
+	"os"
+	"path/filepath"
+)
+
 type SConfigHandlersNSDefinitions struct {
 	GetOnConnect bool
 	Destination  string
 }
 
 func (this *SConfigHandlersNSDefinitions) ValidateValues() error {
-	return nil
+	var fileExists = func() error {
+		var stat, err = os.Stat(this.Destination)
+		clog.Debugf("nsdef path: %s", stat.Name())
+		return err
+	}
+
+	if filepath.IsAbs(this.Destination) {
+		return fileExists()
+	}
+
+	// TODO: finish this
+	// this.Destination = filepath.Clean(this.Destination)
+	//
+	// var relpath, err = filepath.Rel(Values.Directory, this.Destination)
+	//
+	// if err != nil {
+	// 	return err
+	// }
+	//
+	// this.Destination = relpath
+
+	return fileExists()
 }
 
 type SConfigHandlers struct {
