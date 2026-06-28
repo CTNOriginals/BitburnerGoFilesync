@@ -15,7 +15,7 @@ func setupPatternTest(t *testing.T, dir string, include, exclude []string) {
 	t.Cleanup(func() { *config.Values = saved })
 
 	config.Values.Directory = dir
-	config.Values.FilePatterns = config.TConfigFilrPatterns{
+	config.Values.FilePatterns = config.SConfigFilrPatterns{
 		Include: include,
 		Exclude: exclude,
 	}

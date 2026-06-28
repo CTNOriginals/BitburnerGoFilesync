@@ -28,31 +28,31 @@ var clog = clogger.Default.Clone(clogger.SClog{
 	},
 })
 
-type TConfigFilrPatterns struct {
+type SConfigFilrPatterns struct {
 	Include []string
 	Exclude []string
 }
-type TConfigLogging struct {
+type SConfigLogging struct {
 	NoColor bool
 }
 
-type TConfig struct {
+type SConfig struct {
 	Port             string
 	Directory        string
 	FileScanInterval int
-	FilePatterns     TConfigFilrPatterns
-	Logging          TConfigLogging
+	FilePatterns     SConfigFilrPatterns
+	Logging          SConfigLogging
 }
 
-var Values = &TConfig{
+var Values = &SConfig{
 	Port:             "8080",
 	Directory:        "./",
 	FileScanInterval: 1000,
-	FilePatterns: TConfigFilrPatterns{
+	FilePatterns: SConfigFilrPatterns{
 		Include: []string{"**/*.js", "**/*.ts"},
 		Exclude: []string{"**/*.d.ts"},
 	},
-	Logging: TConfigLogging{
+	Logging: SConfigLogging{
 		NoColor: false,
 	},
 }
