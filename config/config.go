@@ -8,7 +8,7 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
-	"github.com/bmatcuk/doublestar/v4"
+	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 )
 
 func init() {
@@ -28,10 +28,10 @@ var clog = clogger.Default.Clone(clogger.SClog{
 	},
 })
 
-type SConfigFilrPatterns struct {
-	Include []string
-	Exclude []string
+type IConfigGroup interface {
+	ValidateValues() error
 }
+
 type SConfigLogging struct {
 	NoColor bool
 }
@@ -83,16 +83,26 @@ func Initialize() {
 func validateConfigValues() {
 	ValidateBitburnerDirectory(Values.Directory)
 
-	var invalidPatterns = make([]string, 0)
+	var validated = true
 
-	for _, pattern := range append(Values.FilePatterns.Include, Values.FilePatterns.Exclude...) {
-		if !doublestar.ValidatePathPattern(pattern) {
-			invalidPatterns = append(invalidPatterns, pattern)
+	var fields = ctnstruct.Keys(Values)
+	var values = ctnstruct.Values(Values)
+
+	for i, field := range fields {
+		var value = values[i]
+
+		switch val := value.(type) {
+		case IConfigGroup:
+			var err = val.ValidateValues()
+			if err != nil {
+				clog.Errorf("Unable to validate config field: %s\n%v", field, err)
+				validated = false
+			}
 		}
 	}
 
-	if len(invalidPatterns) > 0 {
-		clog.Fatalf("The following file pattens are invalid:\n%s", strings.Join(invalidPatterns, "\n"))
+	if !validated {
+		clog.Fatalf("Invalid config")
 		runtime.Goexit()
 	}
 }
