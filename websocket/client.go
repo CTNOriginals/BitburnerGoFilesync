@@ -103,7 +103,7 @@ func (this *SClient) onReady() {
 	// Call each subscribed callback
 	for i, sub := range this.onReadyCallback {
 		// if callback returns true: unsubscribe
-		if !sub() {
+		if sub() {
 			this.onReadyCallback = slices.Delete(this.onReadyCallback, i, i+1)
 		}
 	}
