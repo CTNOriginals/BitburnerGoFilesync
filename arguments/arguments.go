@@ -255,4 +255,13 @@ var argumentList = argList{
 			constants.NoCli = true
 		},
 	},
+	{Alias: []string{"--no-handlers"},
+		Description: []string{
+			"Prevents the program initializing the handlers.",
+		},
+		Params: argParameters{},
+		Action: func(params []string) {
+			constants.NoHandlers = true
+		},
+	},
 }

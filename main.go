@@ -11,6 +11,7 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/config"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
+	"github.com/CTNOriginals/BitburnerGoFilesync/handlers"
 	"github.com/CTNOriginals/BitburnerGoFilesync/watcher"
 	"github.com/CTNOriginals/BitburnerGoFilesync/websocket"
 )
@@ -45,6 +46,10 @@ func main() {
 	config.Initialize()
 
 	arguments.ParseSpecificArgs(args, false, "--config")
+
+	if !constants.NoHandlers {
+		handlers.Initialize()
+	}
 
 	if !constants.NoCli {
 		go cli.CommandWatcher()
