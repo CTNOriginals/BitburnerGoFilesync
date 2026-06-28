@@ -74,6 +74,7 @@ The config file by default will be named `config.toml` and the initial content w
 | - Exclude | Which files to ignore. This is checked before the include patterns.  | `["**/*.d.ts"]` |
 | [Logging] | Control what is and isnt logged |  |
 | - NoColor | Prevent the logger from applying ansi color coding to the log prefix. | `false` |
+| - LogConfig | Enable config logging. | `false` |
 
 ## How to build
 
