@@ -8,12 +8,16 @@ import (
 	wsgorilla "github.com/gorilla/websocket"
 )
 
+type FnOnReadyCallback func() (unsub bool)
+
 type SClient struct {
 	Connection *wsgorilla.Conn
 	Socket     *SSocket
 
-	onReadyNotify []*chan bool
-	mutex         sync.Mutex
+	onReadyNotify   []*chan bool
+	onReadyCallback []FnOnReadyCallback
+
+	mutex sync.Mutex
 }
 
 func (this *SClient) Active() bool {
@@ -86,12 +90,18 @@ func (this *SClient) onReady() {
 	this.Connection.SetCloseHandler(this.onClose)
 	this.Socket.Open()
 
-	if len(this.onReadyNotify) > 0 {
-		// Unblock any scripts waiting on this signal
-		for i, sub := range this.onReadyNotify {
-			*sub <- true
-			close(*sub)
-			this.onReadyNotify = slices.Delete(this.onReadyNotify, i, i+1)
+	// Unblock any scripts waiting on this signal
+	for i, sub := range this.onReadyNotify {
+		*sub <- true
+		close(*sub)
+		this.onReadyNotify = slices.Delete(this.onReadyNotify, i, i+1)
+	}
+
+	// Call each subscribed callback
+	for i, sub := range this.onReadyCallback {
+		// if callback returns true: unsubscribe
+		if !sub() {
+			this.onReadyCallback = slices.Delete(this.onReadyCallback, i, i+1)
 		}
 	}
 
@@ -113,6 +123,18 @@ func (this *SClient) OnReadySub() *chan bool {
 	this.onReadyNotify = append(this.onReadyNotify, &sub)
 
 	return &sub
+}
+
+// Subscribe with a callback that will be called each time [SClient.onReady] is called.
+func (this *SClient) OnReadySubCallback(cb FnOnReadyCallback) {
+	this.mutex.Lock()
+	defer this.mutex.Unlock()
+
+	if this.onReadyCallback == nil {
+		this.onReadyCallback = make([]FnOnReadyCallback, 0)
+	}
+
+	this.onReadyCallback = append(this.onReadyCallback, cb)
 }
 
 func (this *SClient) onConnect(w http.ResponseWriter, r *http.Request) {
