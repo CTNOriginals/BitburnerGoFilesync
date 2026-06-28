@@ -32,10 +32,6 @@ type IConfigGroup interface {
 	ValidateValues() error
 }
 
-type SConfigLogging struct {
-	NoColor bool
-}
-
 type SConfig struct {
 	Port             string
 	Directory        string
