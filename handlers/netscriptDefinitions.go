@@ -15,14 +15,14 @@ type SNetscriptDefinitions struct{}
 func newNetscriptDefinitions() *SNetscriptDefinitions {
 	var nsdef = &SNetscriptDefinitions{}
 
-	websocket.Client.OnReadySubCallback(nsdef.clientOnConnect)
+	if config.Values.Handlers.NetscriptDefinitions.GetOnConnect == true {
+		websocket.Client.OnReadySubCallback(nsdef.clientOnConnect)
+	}
 
 	return nsdef
 }
 
 func (this SNetscriptDefinitions) clientOnConnect() (unsub bool) {
-	// TODO: add a config option to disable this function from running
-
 	var dest = config.Values.Handlers.NetscriptDefinitions.Destination
 
 	var stat, err = os.Stat(dest)
