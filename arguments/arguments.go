@@ -187,17 +187,6 @@ var argumentList = argList{
 			config.Values.FileScanInterval = int(num)
 		},
 	},
-	{Alias: []string{"--get-definitions"},
-		Description: []string{
-			"Currently not functional.",
-			"Requests the NetscriptDefinitions.d.ts file when a connection is established.",
-			"The definitions file will be created in bitburners root directory.",
-		},
-		Params: argParameters{},
-		Action: func(params []string) {
-			clog.Error("TODO: Handle --get-definitions")
-		},
-	},
 
 	{Alias: []string{"DEBUG ARGUMENTS"}},
 
@@ -253,6 +242,15 @@ var argumentList = argList{
 		Params: argParameters{},
 		Action: func(params []string) {
 			constants.NoCli = true
+		},
+	},
+	{Alias: []string{"--no-handlers"},
+		Description: []string{
+			"Prevents the program initializing the handlers.",
+		},
+		Params: argParameters{},
+		Action: func(params []string) {
+			constants.NoHandlers = true
 		},
 	},
 }

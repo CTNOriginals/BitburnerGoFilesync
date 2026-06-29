@@ -38,6 +38,7 @@ type SConfig struct {
 	FileScanInterval int
 	FilePatterns     SConfigFilrPatterns
 	Logging          SConfigLogging
+	Handlers         *SConfigHandlers
 }
 
 var Values = &SConfig{
@@ -51,6 +52,12 @@ var Values = &SConfig{
 	Logging: SConfigLogging{
 		NoColor:   false,
 		LogConfig: false,
+	},
+	Handlers: &SConfigHandlers{
+		NSDefinitions: &SConfigHandlersNSDefinitions{
+			Enable:      true,
+			Destination: "./",
+		},
 	},
 }
 

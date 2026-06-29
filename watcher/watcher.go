@@ -31,7 +31,7 @@ func Initialize() {
 }
 
 func StartScanner() {
-	<-*websocket.Client.OnReadySub()
+	<-*websocket.Client.OnReadySubNotify()
 	for {
 		fileStateMap.GetNewEntries(rootDir, func(path string) {
 			var err = fileStateMap.Push(path)
