@@ -85,9 +85,18 @@ func Initialize() {
 }
 
 func validateConfigValues() {
-	ValidateBitburnerDirectory(Values.Directory)
-
+	// ValidateBitburnerDirectory(Values.Directory)
 	var validated = true
+	var fieldError = func(field string, err error) {
+		validated = false
+		clog.Errorf("Unable to validate config field: %s\n%v", field, err)
+	}
+
+	var dirPath, err = ValidateFilePath(constants.WorkindDirectory, Values.Directory)
+	Values.Directory = dirPath
+	if err != nil {
+		fieldError("Directory", err)
+	}
 
 	var fields = ctnstruct.Keys(Values)
 	var values = ctnstruct.Values(Values)
@@ -99,8 +108,7 @@ func validateConfigValues() {
 		case IConfigGroup:
 			var err = val.ValidateValues()
 			if err != nil {
-				clog.Errorf("Unable to validate config field: %s\n%v", field, err)
-				validated = false
+				fieldError(field, err)
 			}
 		}
 	}
