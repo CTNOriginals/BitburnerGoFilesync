@@ -3,6 +3,8 @@ package config
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 )
 
 type SConfigHandlersNSDefinitions struct {
@@ -12,8 +14,7 @@ type SConfigHandlersNSDefinitions struct {
 
 func (this *SConfigHandlersNSDefinitions) ValidateValues() error {
 	var fileExists = func() error {
-		var stat, err = os.Stat(this.Destination)
-		clog.Debugf("nsdef path: %s", stat.Name())
+		var _, err = os.Stat(this.Destination)
 		return err
 	}
 
@@ -21,16 +22,21 @@ func (this *SConfigHandlersNSDefinitions) ValidateValues() error {
 		return fileExists()
 	}
 
-	// TODO: finish this
-	// this.Destination = filepath.Clean(this.Destination)
-	//
-	// var relpath, err = filepath.Rel(Values.Directory, this.Destination)
-	//
-	// if err != nil {
-	// 	return err
-	// }
-	//
-	// this.Destination = relpath
+	var baseDir = filepath.Dir(constants.ConfigFilePath)
+
+	this.Destination = filepath.Clean(filepath.Join(baseDir, this.Destination))
+
+	if filepath.IsAbs(this.Destination) {
+		return fileExists()
+	}
+
+	var abspath, err = filepath.Abs(this.Destination)
+
+	if err != nil {
+		return err
+	}
+
+	this.Destination = abspath
 
 	return fileExists()
 }
