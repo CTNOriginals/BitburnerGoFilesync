@@ -15,7 +15,7 @@ type SNSDefinitions struct{}
 func newNetscriptDefinitions() *SNSDefinitions {
 	var nsdef = &SNSDefinitions{}
 
-	if config.Values.Handlers.NSDefinitions.GetOnConnect == true {
+	if config.Values.Handlers.NSDefinitions.Enable == true {
 		websocket.Client.OnReadySubCallback(nsdef.clientOnConnect)
 	}
 

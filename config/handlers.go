@@ -8,8 +8,8 @@ import (
 )
 
 type SConfigHandlersNSDefinitions struct {
-	GetOnConnect bool
-	Destination  string
+	Enable      bool
+	Destination string
 }
 
 func (this *SConfigHandlersNSDefinitions) ValidateValues() error {

@@ -55,8 +55,8 @@ var Values = &SConfig{
 	},
 	Handlers: &SConfigHandlers{
 		NSDefinitions: &SConfigHandlersNSDefinitions{
-			GetOnConnect: true,
-			Destination:  "./",
+			Enable:      true,
+			Destination: "./",
 		},
 	},
 }
