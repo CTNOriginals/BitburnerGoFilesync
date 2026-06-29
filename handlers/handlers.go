@@ -8,7 +8,7 @@ var clog = clogger.Default.Clone(clogger.SClog{
 	Name: "handlers",
 })
 
-var NetscriptDefinitions *SNetscriptDefinitions
+var NetscriptDefinitions *SNSDefinitions
 
 func Initialize() {
 	NetscriptDefinitions = newNetscriptDefinitions()

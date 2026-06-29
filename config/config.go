@@ -54,7 +54,7 @@ var Values = &SConfig{
 		LogConfig: false,
 	},
 	Handlers: &SConfigHandlers{
-		NetscriptDefinitions: &SConfigHandlersNSDefinitions{
+		NSDefinitions: &SConfigHandlersNSDefinitions{
 			GetOnConnect: true,
 			Destination:  "./",
 		},

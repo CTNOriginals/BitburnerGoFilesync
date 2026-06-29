@@ -10,20 +10,20 @@ import (
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )
 
-type SNetscriptDefinitions struct{}
+type SNSDefinitions struct{}
 
-func newNetscriptDefinitions() *SNetscriptDefinitions {
-	var nsdef = &SNetscriptDefinitions{}
+func newNetscriptDefinitions() *SNSDefinitions {
+	var nsdef = &SNSDefinitions{}
 
-	if config.Values.Handlers.NetscriptDefinitions.GetOnConnect == true {
+	if config.Values.Handlers.NSDefinitions.GetOnConnect == true {
 		websocket.Client.OnReadySubCallback(nsdef.clientOnConnect)
 	}
 
 	return nsdef
 }
 
-func (this SNetscriptDefinitions) clientOnConnect() (unsub bool) {
-	var dest = config.Values.Handlers.NetscriptDefinitions.Destination
+func (this SNSDefinitions) clientOnConnect() (unsub bool) {
+	var dest = config.Values.Handlers.NSDefinitions.Destination
 
 	var stat, err = os.Stat(dest)
 

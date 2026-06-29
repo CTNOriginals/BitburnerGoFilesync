@@ -42,12 +42,12 @@ func (this *SConfigHandlersNSDefinitions) ValidateValues() error {
 }
 
 type SConfigHandlers struct {
-	NetscriptDefinitions *SConfigHandlersNSDefinitions
+	NSDefinitions *SConfigHandlersNSDefinitions
 }
 
 func (this *SConfigHandlers) ValidateValues() error {
 	var fields = []IConfigGroup{
-		this.NetscriptDefinitions,
+		this.NSDefinitions,
 	}
 
 	for _, field := range fields {
