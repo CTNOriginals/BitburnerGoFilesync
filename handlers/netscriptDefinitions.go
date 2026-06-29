@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -21,14 +22,27 @@ func newNetscriptDefinitions() *SNetscriptDefinitions {
 
 func (this SNetscriptDefinitions) clientOnConnect() (unsub bool) {
 	// TODO: add a config option to disable this function from running
-	// TODO: add dedicated config field for nsdef destination dir
-	var dest = config.Values.Directory
+
+	var dest = config.Values.Handlers.NetscriptDefinitions.Destination
+
+	var stat, err = os.Stat(dest)
+
+	if err != nil {
+		clog.Errorf("Unable to download NetscriptDefinitions to %s:\n%v", dest, err)
+		return true
+	}
+
+	var destFile = dest
+
+	if stat.IsDir() {
+		destFile = filepath.Join(dest, "NetscriptDefinitions.d.ts")
+	}
 
 	clog.Debugf("Downloading NetscriptDefinitions to %s", dest)
 
 	websocket.Client.Socket.GetDefinitionFile(func(result *websocket.Result_GetDefinitionFile) {
 		var content = string(*result)
-		ctnfile.WriteFile(filepath.Join(dest, "NetscriptDefinitions.d.ts"), strings.Split(content, "\n"))
+		ctnfile.WriteFile(destFile, strings.Split(content, "\n"))
 	})
 
 	return true
