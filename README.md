@@ -75,6 +75,10 @@ The config file by default will be named `config.toml` and the initial content w
 | [Logging] | Control what is and isnt logged |  |
 | - NoColor | Prevent the logger from applying ansi color coding to the log prefix. | `false` |
 | - LogConfig | Enable config logging. | `false` |
+| [Handlers] | Controls for few small but useful features |  |
+| -[NSDefinitions] | Specify if and where to download the NetscriptDefinitions.d.ts file. |  |
+| - - Enable | Wether to download NetscriptDefinitions from bitburner the first time you connect to the remote. | `true` |
+| - - Destination | The file path destination of where to download the file to. If the path is not absolute, it will be relative to the location of the config.toml file. | `./` |
 
 ## How to build
 
