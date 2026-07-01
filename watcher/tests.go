@@ -45,7 +45,7 @@ func testFileEvents() {
 	Initialize()
 	go StartScanner()
 
-	<-*websocket.Client.OnReadySub()
+	<-*websocket.Client.OnReadySubNotify()
 
 	ctnfile.WriteFile(delPath, []string{"bout to be gone"})
 	ctnfile.WriteFile(newPath, []string{"brand new"})

@@ -15,12 +15,12 @@ var PackageEntryPath = "github.com/CTNOriginals/BitburnerGoFilesync"
 var ConfigFilePath = fmt.Sprintf("%s/%s", WorkindDirectory, "config.toml")
 
 var Debug = false
-var LogConfig = false
 
 var (
-	NoWatcher = false
-	NoServer  = false
-	NoCli     = false
+	NoWatcher  = false
+	NoServer   = false
+	NoCli      = false
+	NoHandlers = false
 )
 
 func init() {

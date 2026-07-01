@@ -112,12 +112,12 @@ var argumentList = argList{
 				runtime.Goexit()
 			}
 
-			if !ctnfile.PathExists(params[0]) {
-				clog.Errorf("'--dir' directory does not exist: %s\n", params[0])
+			var path, err = ctnfile.ValidateFilePath(constants.WorkindDirectory, params[0])
+			config.Values.Directory = path
+			if err != nil {
+				clog.Errorf("'--dir' Unable to validate path: %s\n%v", params[0], err)
 				runtime.Goexit()
 			}
-
-			config.ValidateBitburnerDirectory(params[0])
 		},
 	},
 	{Alias: []string{"--include-ext", "--ext"},
@@ -187,17 +187,6 @@ var argumentList = argList{
 			config.Values.FileScanInterval = int(num)
 		},
 	},
-	{Alias: []string{"--get-definitions"},
-		Description: []string{
-			"Currently not functional.",
-			"Requests the NetscriptDefinitions.d.ts file when a connection is established.",
-			"The definitions file will be created in bitburners root directory.",
-		},
-		Params: argParameters{},
-		Action: func(params []string) {
-			clog.Error("TODO: Handle --get-definitions")
-		},
-	},
 
 	{Alias: []string{"DEBUG ARGUMENTS"}},
 
@@ -253,6 +242,15 @@ var argumentList = argList{
 		Params: argParameters{},
 		Action: func(params []string) {
 			constants.NoCli = true
+		},
+	},
+	{Alias: []string{"--no-handlers"},
+		Description: []string{
+			"Prevents the program initializing the handlers.",
+		},
+		Params: argParameters{},
+		Action: func(params []string) {
+			constants.NoHandlers = true
 		},
 	},
 }

@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"encoding/json"
+	"fmt"
 	"sync"
 )
 
@@ -79,7 +80,20 @@ func (this *SSocket) receive(body json.RawMessage) {
 	}
 
 	var message, exists = this.Messages[response.Id]
-	clog.Debugf("Received message: %s", string(body))
+	clog.Debugf("Received message: %s", func() string {
+		var content = string(body)
+		var cutoff = 100
+		var sep = fmt.Sprintf(" ...[%d characters]... ", len(content)-cutoff)
+
+		if len(content) <= cutoff+len(sep) {
+			return content
+		}
+
+		var lhs = content[:(cutoff/2)+1]
+		var rhs = content[len(content)-(cutoff/2):]
+
+		return lhs + sep + rhs
+	}())
 
 	if !exists {
 		clog.Errorf("Message id does not exist: %d\n", response.Id)

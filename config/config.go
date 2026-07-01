@@ -8,13 +8,10 @@ import (
 	"github.com/CTNOriginals/BitburnerGoFilesync/clogger"
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
-	"github.com/bmatcuk/doublestar/v4"
+	ctnstruct "github.com/CTNOriginals/CTNGoUtils/v2/struct"
 )
 
 func init() {
-	// BUG: this happens a little too late for some logs
-	// that already got printed, resulting in those logs
-	// containing color regardless of the setting.
 	clogger.ConfigValueNoColor = &Values.Logging.NoColor
 }
 
@@ -22,38 +19,45 @@ var clog = clogger.Default.Clone(clogger.SClog{
 	Name: "config",
 
 	LogLevelState: clogger.MLogLevelState{
-		clogger.LogInfo | clogger.LogDebug: func() bool {
-			return constants.LogConfig
+		clogger.LogInfo: func() bool {
+			return Values.Logging.LogConfig
+		},
+		clogger.LogDebug: func() bool {
+			return constants.Debug && Values.Logging.LogConfig
 		},
 	},
 })
 
-type TConfigFilrPatterns struct {
-	Include []string
-	Exclude []string
-}
-type TConfigLogging struct {
-	NoColor bool
+type IConfigGroup interface {
+	ValidateValues() error
 }
 
-type TConfig struct {
+type SConfig struct {
 	Port             string
 	Directory        string
 	FileScanInterval int
-	FilePatterns     TConfigFilrPatterns
-	Logging          TConfigLogging
+	FilePatterns     SConfigFilePatterns
+	Logging          SConfigLogging
+	Handlers         *SConfigHandlers
 }
 
-var Values = &TConfig{
+var Values = &SConfig{
 	Port:             "8080",
 	Directory:        "./",
 	FileScanInterval: 1000,
-	FilePatterns: TConfigFilrPatterns{
+	FilePatterns: SConfigFilePatterns{
 		Include: []string{"**/*.js", "**/*.ts"},
 		Exclude: []string{"**/*.d.ts"},
 	},
-	Logging: TConfigLogging{
-		NoColor: false,
+	Logging: SConfigLogging{
+		NoColor:   false,
+		LogConfig: false,
+	},
+	Handlers: &SConfigHandlers{
+		NSDefinitions: &SConfigHandlersNSDefinitions{
+			Enable:      true,
+			Destination: "./",
+		},
 	},
 }
 
@@ -65,8 +69,6 @@ func Initialize() {
 		clog.Fatalf("Default config values, marshal error:\n%v\n", err)
 	}
 
-	clog.Debugf("Defaults:\n%s\n", content)
-
 	if !ctnfile.FileExists(constants.ConfigFilePath) {
 		var content, _ = toml.Marshal(Values)
 		ctnfile.WriteFile(constants.ConfigFilePath, strings.Split(string(content), "\n"))
@@ -76,23 +78,41 @@ func Initialize() {
 		clog.Fatalf("Config decode error:\n%v", err)
 	}
 
+	clog.Debugf("Defaults:\n%s\n", content)
+	clog.Debugf("Config Values:\n%+v\n", ctnstruct.ToString(Values))
+
 	validateConfigValues()
-	clog.Debugf("Config Values:\n%+v\n", Values)
 }
 
 func validateConfigValues() {
-	ValidateBitburnerDirectory(Values.Directory)
+	var validated = true
+	var fieldError = func(field string, err error) {
+		validated = false
+		clog.Fatalf("Unable to validate config field: %s\n%v", field, err)
+	}
 
-	var invalidPatterns = make([]string, 0)
+	var dirPath, err = ctnfile.ValidateFilePath(constants.WorkindDirectory, Values.Directory)
+	Values.Directory = dirPath
+	if err != nil {
+		fieldError("Directory", err)
+	}
 
-	for _, pattern := range append(Values.FilePatterns.Include, Values.FilePatterns.Exclude...) {
-		if !doublestar.ValidatePathPattern(pattern) {
-			invalidPatterns = append(invalidPatterns, pattern)
+	var fields = ctnstruct.Keys(Values)
+	var values = ctnstruct.Values(Values)
+
+	for i, field := range fields {
+		var value = values[i]
+
+		switch val := value.(type) {
+		case IConfigGroup:
+			var err = val.ValidateValues()
+			if err != nil {
+				fieldError(field, err)
+			}
 		}
 	}
 
-	if len(invalidPatterns) > 0 {
-		clog.Fatalf("The following file pattens are invalid:\n%s", strings.Join(invalidPatterns, "\n"))
+	if !validated {
 		runtime.Goexit()
 	}
 }
