@@ -7,7 +7,7 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 )
 
-var patternPaths config.SConfigFilrPatterns
+var patternPaths config.SConfigFilePatterns
 var pathCache map[string]bool
 
 func generatePatternPaths() {

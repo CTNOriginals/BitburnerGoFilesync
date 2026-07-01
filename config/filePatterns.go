@@ -7,12 +7,12 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 )
 
-type SConfigFilrPatterns struct {
+type SConfigFilePatterns struct {
 	Include []string
 	Exclude []string
 }
 
-func (this SConfigFilrPatterns) ValidateValues() error {
+func (this SConfigFilePatterns) ValidateValues() error {
 	var invalidPatterns = make([]string, 0)
 
 	for _, pattern := range append(Values.FilePatterns.Include, Values.FilePatterns.Exclude...) {

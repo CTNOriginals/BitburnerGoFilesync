@@ -36,7 +36,7 @@ type SConfig struct {
 	Port             string
 	Directory        string
 	FileScanInterval int
-	FilePatterns     SConfigFilrPatterns
+	FilePatterns     SConfigFilePatterns
 	Logging          SConfigLogging
 	Handlers         *SConfigHandlers
 }
@@ -45,7 +45,7 @@ var Values = &SConfig{
 	Port:             "8080",
 	Directory:        "./",
 	FileScanInterval: 1000,
-	FilePatterns: SConfigFilrPatterns{
+	FilePatterns: SConfigFilePatterns{
 		Include: []string{"**/*.js", "**/*.ts"},
 		Exclude: []string{"**/*.d.ts"},
 	},
