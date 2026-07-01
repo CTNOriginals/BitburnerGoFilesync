@@ -1,64 +1,85 @@
 package config
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
 )
 
-func TestHandlersNSDefinitionsValidateValues_Valid(t *testing.T) {
+func TestHandlersNSDefinitionsValidateValues(t *testing.T) {
 	var savedConfigPath = constants.ConfigFilePath
 	t.Cleanup(func() { constants.ConfigFilePath = savedConfigPath })
 
-	var dir = t.TempDir()
-	constants.ConfigFilePath = filepath.Join(dir, "config.toml")
+	var base = t.TempDir()
+	constants.ConfigFilePath = filepath.Join(base, "config.toml")
 
-	var nsd = SConfigHandlersNSDefinitions{
-		Destination: dir,
+	type TCase struct {
+		name        string
+		destination string
+		setup       func(dir string)
+		useWrapper  bool
+		wantErr     bool
 	}
 
-	var err = nsd.ValidateValues()
-	if err != nil {
-		t.Errorf("ValidateValues() = %v, want nil", err)
-	}
-	if nsd.Destination != dir {
-		t.Errorf("Destination = %q, want %q", nsd.Destination, dir)
-	}
-}
-
-func TestHandlersNSDefinitionsValidateValues_Invalid(t *testing.T) {
-	var savedConfigPath = constants.ConfigFilePath
-	t.Cleanup(func() { constants.ConfigFilePath = savedConfigPath })
-
-	var dir = t.TempDir()
-	constants.ConfigFilePath = filepath.Join(dir, "config.toml")
-
-	var nsd = SConfigHandlersNSDefinitions{
-		Destination: "/nonexistent/path/that/does/not/exist",
-	}
-
-	var err = nsd.ValidateValues()
-	if err == nil {
-		t.Error("ValidateValues() = nil, want error for nonexistent path")
-	}
-}
-
-func TestHandlersValidateValues(t *testing.T) {
-	var savedConfigPath = constants.ConfigFilePath
-	t.Cleanup(func() { constants.ConfigFilePath = savedConfigPath })
-
-	var dir = t.TempDir()
-	constants.ConfigFilePath = filepath.Join(dir, "config.toml")
-
-	var handlers = &SConfigHandlers{
-		NSDefinitions: &SConfigHandlersNSDefinitions{
-			Destination: "/nonexistent/path",
+	var cases = []TCase{
+		{
+			name:        "existing directory",
+			destination: base,
+		},
+		{
+			name:        "existing file",
+			destination: filepath.Join(base, "def.ts"),
+			setup: func(dir string) {
+				os.WriteFile(filepath.Join(dir, "def.ts"), []byte("content"), 0644)
+			},
+		},
+		{
+			name:        "relative filename",
+			destination: "def.ts",
+			setup: func(dir string) {
+				os.WriteFile(filepath.Join(dir, "def.ts"), []byte("content"), 0644)
+			},
+		},
+		{
+			name:        "non-existent",
+			destination: "/nonexistent/deadbeef",
+			wantErr:     true,
+		},
+		{
+			name:        "handler wraps nsdefinition error",
+			destination: "/nonexistent/deadbeef",
+			useWrapper:  true,
+			wantErr:     true,
 		},
 	}
 
-	var err = handlers.ValidateValues()
-	if err == nil {
-		t.Error("ValidateValues() = nil, want error propagated from NSDefinitions")
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.setup != nil {
+				tc.setup(base)
+			}
+
+			var err error
+			if tc.useWrapper {
+				err = (&SConfigHandlers{
+					NSDefinitions: &SConfigHandlersNSDefinitions{
+						Destination: tc.destination,
+					},
+				}).ValidateValues()
+			} else {
+				err = (&SConfigHandlersNSDefinitions{
+					Destination: tc.destination,
+				}).ValidateValues()
+			}
+
+			if tc.wantErr && err == nil {
+				t.Error("expected error, got nil")
+			}
+			if !tc.wantErr && err != nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+		})
 	}
 }
