@@ -36,7 +36,7 @@ type SConfig struct {
 	Port             string
 	Directory        string
 	FileScanInterval int
-	FilePatterns     SConfigFilrPatterns
+	FilePatterns     SConfigFilePatterns
 	Logging          SConfigLogging
 	Handlers         *SConfigHandlers
 }
@@ -45,7 +45,7 @@ var Values = &SConfig{
 	Port:             "8080",
 	Directory:        "./",
 	FileScanInterval: 1000,
-	FilePatterns: SConfigFilrPatterns{
+	FilePatterns: SConfigFilePatterns{
 		Include: []string{"**/*.js", "**/*.ts"},
 		Exclude: []string{"**/*.d.ts"},
 	},
@@ -85,9 +85,17 @@ func Initialize() {
 }
 
 func validateConfigValues() {
-	ValidateBitburnerDirectory(Values.Directory)
-
 	var validated = true
+	var fieldError = func(field string, err error) {
+		validated = false
+		clog.Fatalf("Unable to validate config field: %s\n%v", field, err)
+	}
+
+	var dirPath, err = ctnfile.ValidateFilePath(constants.WorkindDirectory, Values.Directory)
+	Values.Directory = dirPath
+	if err != nil {
+		fieldError("Directory", err)
+	}
 
 	var fields = ctnstruct.Keys(Values)
 	var values = ctnstruct.Values(Values)
@@ -99,14 +107,12 @@ func validateConfigValues() {
 		case IConfigGroup:
 			var err = val.ValidateValues()
 			if err != nil {
-				clog.Errorf("Unable to validate config field: %s\n%v", field, err)
-				validated = false
+				fieldError(field, err)
 			}
 		}
 	}
 
 	if !validated {
-		clog.Fatalf("Invalid config")
 		runtime.Goexit()
 	}
 }

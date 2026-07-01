@@ -112,12 +112,12 @@ var argumentList = argList{
 				runtime.Goexit()
 			}
 
-			if !ctnfile.PathExists(params[0]) {
-				clog.Errorf("'--dir' directory does not exist: %s\n", params[0])
+			var path, err = ctnfile.ValidateFilePath(constants.WorkindDirectory, params[0])
+			config.Values.Directory = path
+			if err != nil {
+				clog.Errorf("'--dir' Unable to validate path: %s\n%v", params[0], err)
 				runtime.Goexit()
 			}
-
-			config.ValidateBitburnerDirectory(params[0])
 		},
 	},
 	{Alias: []string{"--include-ext", "--ext"},

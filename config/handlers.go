@@ -1,10 +1,10 @@
 package config
 
 import (
-	"os"
 	"path/filepath"
 
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
+	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )
 
 type SConfigHandlersNSDefinitions struct {
@@ -13,32 +13,9 @@ type SConfigHandlersNSDefinitions struct {
 }
 
 func (this *SConfigHandlersNSDefinitions) ValidateValues() error {
-	var fileExists = func() error {
-		var _, err = os.Stat(this.Destination)
-		return err
-	}
-
-	if filepath.IsAbs(this.Destination) {
-		return fileExists()
-	}
-
-	var baseDir = filepath.Dir(constants.ConfigFilePath)
-
-	this.Destination = filepath.Clean(filepath.Join(baseDir, this.Destination))
-
-	if filepath.IsAbs(this.Destination) {
-		return fileExists()
-	}
-
-	var abspath, err = filepath.Abs(this.Destination)
-
-	if err != nil {
-		return err
-	}
-
-	this.Destination = abspath
-
-	return fileExists()
+	var path, err = ctnfile.ValidateFilePath(filepath.Dir(constants.ConfigFilePath), this.Destination)
+	this.Destination = path
+	return err
 }
 
 type SConfigHandlers struct {
@@ -53,6 +30,7 @@ func (this *SConfigHandlers) ValidateValues() error {
 	for _, field := range fields {
 		var err = field.ValidateValues()
 		if err != nil {
+			clog.Errorf("Unable to validate field: %T", field)
 			return err
 		}
 	}
