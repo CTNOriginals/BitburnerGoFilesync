@@ -88,7 +88,7 @@ func validateConfigValues() {
 	var validated = true
 	var fieldError = func(field string, err error) {
 		validated = false
-		clog.Errorf("Unable to validate config field: %s\n%v", field, err)
+		clog.Fatalf("Unable to validate config field: %s\n%v", field, err)
 	}
 
 	var dirPath, err = ctnfile.ValidateFilePath(constants.WorkindDirectory, Values.Directory)
@@ -113,7 +113,6 @@ func validateConfigValues() {
 	}
 
 	if !validated {
-		clog.Fatalf("Invalid config")
 		runtime.Goexit()
 	}
 }

@@ -30,6 +30,7 @@ func (this *SConfigHandlers) ValidateValues() error {
 	for _, field := range fields {
 		var err = field.ValidateValues()
 		if err != nil {
+			clog.Errorf("Unable to validate field: %T", field)
 			return err
 		}
 	}
