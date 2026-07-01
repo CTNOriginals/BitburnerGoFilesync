@@ -92,7 +92,7 @@ func validateConfigValues() {
 		clog.Errorf("Unable to validate config field: %s\n%v", field, err)
 	}
 
-	var dirPath, err = ValidateFilePath(constants.WorkindDirectory, Values.Directory)
+	var dirPath, err = ctnfile.ValidateFilePath(constants.WorkindDirectory, Values.Directory)
 	Values.Directory = dirPath
 	if err != nil {
 		fieldError("Directory", err)

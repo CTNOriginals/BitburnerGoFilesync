@@ -1,7 +1,10 @@
 package config
 
 import (
+	"path/filepath"
+
 	"github.com/CTNOriginals/BitburnerGoFilesync/constants"
+	ctnfile "github.com/CTNOriginals/CTNGoUtils/v2/file"
 )
 
 type SConfigHandlersNSDefinitions struct {
@@ -10,7 +13,7 @@ type SConfigHandlersNSDefinitions struct {
 }
 
 func (this *SConfigHandlersNSDefinitions) ValidateValues() error {
-	var path, err = ValidateFilePath(constants.ConfigFilePath, this.Destination)
+	var path, err = ctnfile.ValidateFilePath(filepath.Dir(constants.ConfigFilePath), this.Destination)
 	this.Destination = path
 	return err
 }
