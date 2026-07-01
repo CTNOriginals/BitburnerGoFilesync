@@ -98,7 +98,7 @@ test: ##@run go test $(args); for all packaged that contain at least 1 *_test.go
 	go test $(args) $$(go list -f '{{if len .TestGoFiles}}{{.ImportPath}}{{end}}' ./...)
 
 test-coverage: ##@run Generate an preview test coverage in html form.
-	$(MAKE) test args="-coverprofile tmp/cover.out"
+	$(MAKE) test args="$(args) -coverprofile tmp/cover.out"
 	go tool cover -html="tmp/cover.out" -o "tmp/cover.html"
 	xdg-open tmp/cover.html
 
