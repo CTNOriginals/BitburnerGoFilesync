@@ -85,7 +85,6 @@ func Initialize() {
 }
 
 func validateConfigValues() {
-	// ValidateBitburnerDirectory(Values.Directory)
 	var validated = true
 	var fieldError = func(field string, err error) {
 		validated = false
