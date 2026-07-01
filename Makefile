@@ -84,7 +84,7 @@ git-graph: ##@git Log decorated graph
 	# git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all
 
 # -- Run --
-.PHONY: run debug test wrun
+.PHONY: run debug test test-coverage wrun
 
 WGO_INCLUDE := -file .go -file .toml -file Makefile
 
@@ -96,6 +96,11 @@ debug: ##@run Run with --test $(testargs).
 
 test: ##@run go test $(args); for all packaged that contain at least 1 *_test.go script.
 	go test $(args) $$(go list -f '{{if len .TestGoFiles}}{{.ImportPath}}{{end}}' ./...)
+
+test-coverage: ##@run Generate an preview test coverage in html form.
+	$(MAKE) test args="-coverprofile tmp/cover.out"
+	go tool cover -html="tmp/cover.out" -o "tmp/cover.html"
+	xdg-open tmp/cover.html
 
 wrun: ##@run Run a make target and restart on file change. make wrun <wgoargs="args..."> target=[TARGET]. Requires wgo: https://github.com/bokwoon95/wgo
 	wgo $(WGO_INCLUDE) $(wgoargs) $(MAKE) $(target)
