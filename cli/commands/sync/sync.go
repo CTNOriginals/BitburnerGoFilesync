@@ -14,10 +14,13 @@ var clog = clogger.Default.Clone(clogger.SClog{
 	Name: "cmdsync",
 })
 
+var warning = "[WARNING] Force overwrites any existing files on bitburner."
+
 var def = commands.Definition{
 	Name: "sync",
 	Description: []string{
 		"Sync all your local files to bitburner at once.",
+		warning,
 	},
 
 	Options: commands.TList{
@@ -25,6 +28,7 @@ var def = commands.Definition{
 			Name: "confirm",
 			Description: []string{
 				"Whith this option, the sync will execute the operation.",
+				warning,
 			},
 			ExpectValue: false,
 		},
@@ -64,7 +68,12 @@ var def = commands.Definition{
 		}
 
 		if dry {
-			clog.Info("No action was taken.\nTo confirm the sync, you have to confirm this action.\nrun: 'sync confirm'")
+			clog.Info(
+				"No action was taken.",
+				"\nTo confirm the sync, you have to confirm this action.",
+				"\n", warning,
+				"\nrun: 'sync confirm' to execute the sync",
+			)
 			return
 		}
 	},

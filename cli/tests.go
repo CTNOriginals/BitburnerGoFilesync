@@ -10,11 +10,11 @@ import (
 func TestCli() {
 	clog.Infof("Commands:\n%s\n", commands.List.StringRecurse())
 
-	testSegments()
+	// testSegments()
 	cliCommands()
-	cliHelp()
+	// cliHelp()
 
-	CommandWatcher()
+	// CommandWatcher()
 }
 
 func cliTester(commands []string) {
@@ -33,8 +33,10 @@ func cliCommands() {
 
 	cliTester([]string{
 		// "config",
-		"prototype 123",
-		"prototype \"42\"",
+		// "prototype 123",
+		// "prototype \"42\"",
+		"sync",
+		"sync confirm",
 	})
 }
 
