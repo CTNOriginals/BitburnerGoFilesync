@@ -53,8 +53,8 @@ func GetAbsolutePath(path string) string {
 }
 
 func ToBitburnerPath(path string) string {
-	path = filepath.ToSlash(path)
 	path = GetRelativePath(path)
+	path = filepath.ToSlash(path)
 	return path
 }
 
